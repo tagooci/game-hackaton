@@ -27,21 +27,59 @@
       "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
       "files": [
         "client/public/content/assets/environment/construction-barrier.glb",
-        "client/public/content/assets/environment/road-bend.glb",
-        "client/public/content/assets/environment/road-crossroad.glb",
-        "client/public/content/assets/environment/road-intersection.glb",
         "client/public/content/assets/environment/road-roundabout.glb",
         "client/public/content/assets/environment/road-side-entry.glb",
         "client/public/content/assets/environment/road-side-exit.glb",
         "client/public/content/assets/environment/road-side.glb",
         "client/public/content/assets/environment/road-sign-stop.glb",
         "client/public/content/assets/environment/road-sign-warning.glb",
-        "client/public/content/assets/environment/road-straight.glb",
         "client/public/content/assets/environment/traffic-light.glb",
         "client/public/content/assets/vehicles/sedan.glb",
         "client/public/content/assets/vehicles/truck.glb"
       ],
       "source_commit": "579ca27e1cf29e252695759afb0cb763c8454636"
+    },
+    {
+      "id": "Kenney:Train Kit railway",
+      "title": "Train Kit — straight track (no rolling stock)",
+      "author": "Kenney",
+      "source_url": "https://kenney.nl/assets/train-kit",
+      "download_url": "https://opengameart.org/sites/default/files/kenney_train-kit_0.zip",
+      "license": "CC0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "files": [
+        "client/public/content/assets/railway/railroad-straight.glb",
+        "client/public/content/assets/railway/License.txt"
+      ]
+    },
+    {
+      "id": "local:road-props",
+      "title": "Tunnel, shelters, crossing signs and inset rails",
+      "author": "Project",
+      "source_name": "client/scripts/build-road-props.py",
+      "files": [
+        "client/public/content/assets/props/bus-stop.glb",
+        "client/public/content/assets/props/rail-crossing-sign.glb",
+        "client/public/content/assets/props/railroad-crossing.glb",
+        "client/public/content/assets/props/tunnel-section.glb"
+      ]
+    },
+    {
+      "id": "Kenney:City Kit Roads 2.1 compact map",
+      "title": "City Kit Roads 2.1 — roads, derived ramps and level crossings",
+      "author": "Kenney",
+      "source_url": "https://kenney.nl/assets/city-kit-roads",
+      "license": "CC0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "files": [
+        "client/public/content/assets/environment/road-straight.glb",
+        "client/public/content/assets/environment/road-bend.glb",
+        "client/public/content/assets/environment/road-intersection.glb",
+        "client/public/content/assets/environment/road-crossroad.glb",
+        "client/public/content/assets/environment/road-ramp.glb",
+        "client/public/content/assets/environment/road-level-crossing.glb",
+        "client/public/content/assets/environment/bridge-pillar.glb"
+      ]
     }
   ],
   "version": 1

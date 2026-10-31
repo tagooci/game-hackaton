@@ -1,0 +1,1 @@
+{"id":"road-8-6","bounds":{"minX":160,"maxX":180,"minZ":120,"maxZ":140},"objects":[{"id":"rail:160:168","assetId":"railroad-straight","x":164,"y":-0.07,"z":120,"heading":1.5707963267948966,"scale":[2,0.8,2]},{"id":"rail:168:176","assetId":"railroad-straight","x":172,"y":-0.07,"z":120,"heading":1.5707963267948966,"scale":[2,0.8,2]}],"signs":[]}

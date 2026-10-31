@@ -1,4 +1,4 @@
-export interface PlayerState { x: number; z: number; heading: number }
+export interface PlayerState { x: number; z: number; heading: number; y?: number; pitch?: number }
 export interface VehicleControls { throttle: number; steering: number; brake: number }
 export interface PlayerSnapshot extends PlayerState {
   id: string; name: string; vehicleType: string; speed: number; steering: number; lastInputSeq: number; wheelAngle: number; color: number;
@@ -19,7 +19,8 @@ function object(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 function pose(value: unknown): boolean {
-  return object(value) && ['x', 'z', 'heading'].every(key => typeof value[key] === 'number' && Number.isFinite(value[key]));
+  return object(value) && ['x', 'z', 'heading'].every(key => typeof value[key] === 'number' && Number.isFinite(value[key]))
+    && ['y', 'pitch'].every(key => value[key] === undefined || typeof value[key] === 'number' && Number.isFinite(value[key]));
 }
 function context(value: Record<string, unknown>): boolean {
   return typeof value.sceneId === 'string' && Number.isSafeInteger(value.epoch);

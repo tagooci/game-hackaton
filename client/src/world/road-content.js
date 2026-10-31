@@ -14,6 +14,10 @@ export class RoadContent {
     this.loaded = new Map();
     this.reserved = 0;
     this.rendered = [];
+    this.groups = new Map();
+    this.activeHashes = new Set();
+    this.activeObjects = [];
+    this.activeKey = "";
     this.planKey = '';
     this.serial = Promise.resolve();
     this.revision = 0;
@@ -73,58 +77,89 @@ export class RoadContent {
     }
   }
 
+  stats() {
+    const resources = [...this.loaded.values()].map(({ resource }) => ({ id: resource.id, bytes: resource.bytes, kind: resource.kind }));
+    return {
+      chunk: this.activeKey, requestedChunk: this.planKey, resources,
+      activeBytes: resources.reduce((sum, resource) => sum + resource.bytes, 0),
+      reservedBytes: this.reserved, budgetBytes: this.budget,
+      meshes: this.rendered.length,
+    };
+  }
+
+  releaseUnused(hashes) {
+    for (const [hash, entry] of this.loaded) if (!hashes.has(hash)) {
+      if (entry.resource.kind === 'model') entry.value.dispose();
+      this.loaded.delete(hash);
+    }
+  }
+
   clearMeshes() {
     for (const mesh of this.rendered) mesh.dispose(false, false);
     this.rendered = [];
+    this.groups.clear();
+  }
+
+  matrices(objects) {
+    const matrices = new Float32Array(objects.length * 16);
+    objects.forEach((object, index) => {
+      Matrix.Compose(Array.isArray(object.scale) ? Vector3.FromArray(object.scale) : new Vector3(object.scale, object.scale, object.scale),
+        Quaternion.FromEulerAngles(0, object.heading, 0),
+        new Vector3(object.x, object.y ?? (object.reference ? 0 : -0.1), object.z)).copyToArray(matrices, index * 16);
+    });
+    return matrices;
+  }
+
+  // До загрузки освобождаем только участки за дальностью видимости.
+  // Видимая часть дороги остаётся на экране даже при ошибке сети.
+  trimDistant(chunkIds) {
+    this.activeObjects = this.activeObjects.filter(object => !object.chunkId || chunkIds.has(object.chunkId));
+    const hashes = new Set([this.registry.get(this.manifest.overviewResourceId).sha256]);
+    for (const object of this.activeObjects) {
+      hashes.add(this.registry.get(object.assetId).sha256);
+      if (object.chunkId) hashes.add(this.registry.get(object.chunkId).sha256);
+    }
+    for (const [id, meshes] of this.groups) {
+      const objects = this.activeObjects.filter(object => object.assetId === id);
+      if (!objects.length) {
+        for (const mesh of meshes) mesh.dispose(false, false);
+        this.groups.delete(id);
+      } else for (const mesh of meshes) {
+        mesh.thinInstanceSetBuffer('matrix', this.matrices(objects), 16, true);
+        mesh.thinInstanceRefreshBoundingInfo(true);
+      }
+    }
+    this.rendered = [...this.groups.values()].flat();
+    this.activeHashes = hashes;
+    this.releaseUnused(hashes);
   }
 
   // Очередь не допускает одновременных резервов двух планов.
   // Устаревший результат не создаёт объекты новой области.
   update(x, z, force = false) {
     if (this.disposed) return this.serial;
-    const cx = Math.floor(x / this.manifest.chunkSize);
-    const cz = Math.floor(z / this.manifest.chunkSize);
-    const key = `${cx}:${cz}:${this.vehicleType ?? 'none'}`;
+    const step = this.manifest.streamStep ?? this.manifest.chunkSize;
+    const key = `${Math.floor(x/step)}:${Math.floor(z/step)}:${this.vehicleType ?? 'none'}`;
     if (!force && key === this.planKey) return this.serial;
     this.planKey = key;
     const revision = ++this.revision;
     this.serial = this.serial.catch(() => {}).then(async () => {
       if (revision !== this.revision) return;
-      const size = this.manifest.chunkSize;
-      // Минимальная соседняя порция: текущий участок и ближайшие дороги.
-      // Если сумма не помещается, план отклоняется, лимит не увеличивается.
-      const candidates = this.manifest.chunks.filter(chunk =>
-        chunk.bounds.maxX > cx * size - size && chunk.bounds.minX < (cx + 1) * size + size &&
-        chunk.bounds.maxZ > cz * size - size && chunk.bounds.minZ < (cz + 1) * size + size)
-        .sort((a,b) => {
-          const distance = c => Math.hypot((c.bounds.minX+c.bounds.maxX)/2-x,(c.bounds.minZ+c.bounds.maxZ)/2-z);
-          // Участок под камерой обязателен, соседи добавляются по расстоянию.
-          const contains = c => x>=c.bounds.minX && x<c.bounds.maxX && z>=c.bounds.minZ && z<c.bounds.maxZ;
-          return Number(contains(b))-Number(contains(a)) || distance(a)-distance(b);
-        });
+      const radius = this.manifest.streamRadius ?? this.manifest.chunkSize;
+      const chunks = this.manifest.chunks.filter(({bounds:b}) =>
+        Math.hypot(Math.max(b.minX-x, 0, x-b.maxX), Math.max(b.minZ-z, 0, z-b.maxZ)) < radius);
       const ids = new Set([this.manifest.overviewResourceId]);
       if (this.vehicleType) ids.add(this.manifest.vehicleReference[this.vehicleType].assetId);
-      const chunks = [];
-      const cost = ids => [...new Map([...ids].map(id => { const r=this.registry.get(id); return [r.sha256,r]; })).values()].reduce((sum,r)=>sum+r.bytes,0);
-      for (const chunk of candidates) {
-        const proposed = new Set([...ids,chunk.resourceId,...chunk.assetIds]);
-        if (cost(proposed)>this.budget) {
-          if (!chunks.length) { this.planKey='';throw new Error('budget_exceeded'); }
-          continue;
-        }
-        chunks.push(chunk);
-        for (const id of proposed) ids.add(id);
-      }
+      for (const chunk of chunks) for (const id of [chunk.resourceId, ...chunk.assetIds]) ids.add(id);
+      const unique = new Map([...ids].map(id => { const r=this.registry.get(id); return [r.sha256,r]; }));
+      const cost = [...unique.values()].reduce((sum,r)=>sum+r.bytes,0);
+      if (cost > this.budget) { this.planKey='';throw new Error('budget_exceeded'); }
+      // Исключённые из нового круга участки уже дальше streamRadius.
+      this.trimDistant(new Set(chunks.map(chunk => chunk.resourceId)));
       const resources = [...ids].map(id => this.registry.get(id));
       this.report({ transitioning: true });
-      // В авторском просмотре допустим переход через экран загрузки:
-      // сначала освобождаем старые ресурсы, затем резервируем новые.
-      this.clearMeshes();
+      // Старые meshes и контейнеры остаются видимыми до готовности новой области.
       const hashes = new Set(resources.map(r => r.sha256));
-      for (const [hash, entry] of this.loaded) if (!hashes.has(hash)) {
-        if (entry.resource.kind === 'model') entry.value.dispose();
-        this.loaded.delete(hash);
-      }
       for (const resource of resources) {
         if (revision !== this.revision) return;
         await this.acquire(resource);
@@ -133,9 +168,9 @@ export class RoadContent {
       const objects = [];
       for (const chunk of chunks) {
         const data = this.loaded.get(this.registry.get(chunk.resourceId).sha256).value;
-        objects.push(...data.objects);
+        objects.push(...data.objects.map(object => ({ ...object, chunkId: chunk.resourceId })));
         for (const sign of data.signs) objects.push({ ...sign,
-          assetId: sign.type === 'stop' ? 'road-sign-stop' : 'traffic-light', scale: 4 });
+          chunkId: chunk.resourceId, assetId: sign.type === 'stop' ? 'road-sign-stop' : 'traffic-light', scale: 4 });
       }
       if (this.vehicleType) {
         const reference = this.manifest.vehicleReference[this.vehicleType];
@@ -146,47 +181,81 @@ export class RoadContent {
         if (!groups.has(object.assetId)) groups.set(object.assetId, []);
         groups.get(object.assetId).push(object);
       }
-      for (const [id, instances] of groups) {
-        const container = this.loaded.get(this.registry.get(id).sha256).value;
-        const sourceMeshes = container.meshes.filter(mesh => mesh.getTotalVertices() > 0);
-        let normalization = Matrix.Identity();
-        const reference = instances[0].reference;
-        if (reference) {
-          const min = new Vector3(Infinity,Infinity,Infinity), max = new Vector3(-Infinity,-Infinity,-Infinity);
+      const staged = new Map();
+      const created = [];
+      try {
+        for (const [id, instances] of groups) {
+          const container = this.loaded.get(this.registry.get(id).sha256).value;
+          const sourceMeshes = container.meshes.filter(mesh => mesh.getTotalVertices() > 0);
+          let normalization = Matrix.Identity();
+          const reference = instances[0].reference;
+          if (reference) {
+            const min = new Vector3(Infinity,Infinity,Infinity), max = new Vector3(-Infinity,-Infinity,-Infinity);
+            for (const source of sourceMeshes) {
+              source.computeWorldMatrix(true);
+              min.minimizeInPlace(source.getBoundingInfo().boundingBox.minimumWorld);
+              max.maximizeInPlace(source.getBoundingInfo().boundingBox.maximumWorld);
+            }
+            normalization = Matrix.Translation(-(min.x+max.x)/2,-min.y,-(min.z+max.z)/2)
+              .multiply(Matrix.Scaling(reference.width/(max.x-min.x),reference.height/(max.y-min.y),reference.length/(max.z-min.z)));
+          }
           for (const source of sourceMeshes) {
             source.computeWorldMatrix(true);
-            min.minimizeInPlace(source.getBoundingInfo().boundingBox.minimumWorld);
-            max.maximizeInPlace(source.getBoundingInfo().boundingBox.maximumWorld);
+            const existing = this.groups.get(id)?.find(mesh => mesh.metadata.sourceId === source.uniqueId);
+            const mesh = existing ?? new Mesh(`roads:${id}`, this.scene);
+            if (!existing) {
+              mesh.setEnabled(false);
+              mesh.metadata = { sourceId: source.uniqueId };
+              created.push(mesh);
+              for (const kind of source.getVerticesDataKinds()) {
+                const buffer = source.getVertexBuffer(kind);
+                // Квантизованные нормали/цвета нужно декодировать перед впеканием.
+                mesh.setVerticesData(kind, buffer.getFloatData(source.getTotalVertices(), true));
+              }
+              // bakeTransformIntoVertices меняет winding при зеркальном импорте glTF.
+              // Индексы должны быть собственной копией, ориентация — как у источника.
+              mesh.setIndices(source.getIndices().slice());
+              mesh.sideOrientation = source.sideOrientation;
+              mesh.material = source.material;
+              // Впекаем только преобразование импорта: оси glTF и деквантизацию.
+              mesh.bakeTransformIntoVertices(source.getWorldMatrix().multiply(normalization));
+            }
+            const matrices = this.matrices(instances);
+            if (!existing) mesh.thinInstanceSetBuffer('matrix', matrices, 16, true);
+            if (!staged.has(id)) staged.set(id, []);
+            staged.get(id).push({ mesh, matrices });
           }
-          normalization = Matrix.Translation(-(min.x+max.x)/2,-min.y,-(min.z+max.z)/2)
-            .multiply(Matrix.Scaling(reference.width/(max.x-min.x),reference.height/(max.y-min.y),reference.length/(max.z-min.z)));
         }
-        for (const source of sourceMeshes) {
-          source.computeWorldMatrix(true);
-          const mesh = new Mesh(`roads:${id}`, this.scene);
-          for (const kind of source.getVerticesDataKinds()) {
-            const buffer = source.getVertexBuffer(kind);
-            // Квантизованные нормали/цвета нужно декодировать перед впеканием.
-            mesh.setVerticesData(kind, buffer.getFloatData(source.getTotalVertices(), true));
-          }
-          mesh.setIndices(source.getIndices());
-          mesh.material = source.material;
-          // Впекаем только преобразование импорта: оси glTF и деквантизацию.
-          mesh.bakeTransformIntoVertices(source.getWorldMatrix().multiply(normalization));
-          const matrices = new Float32Array(instances.length * 16);
-          instances.forEach((object, index) => {
-            Matrix.Compose(new Vector3(object.scale, object.scale, object.scale),
-              Quaternion.FromEulerAngles(0, object.heading, 0),
-              new Vector3(object.x, object.reference ? 0 : -0.1, object.z)).copyToArray(matrices, index * 16);
-          });
+        // Подготавливаем шейдеры новых типов дорог, не скрывая текущие.
+        await Promise.all(created.map(mesh => mesh.material.forceCompilationAsync(mesh, { useInstances: true })));
+        if (revision !== this.revision) {
+          for (const mesh of created) mesh.dispose(false, false);
+          this.releaseUnused(this.activeHashes);
+          return;
+        }
+        // Один синхронный обмен: общая геометрия сохраняется, меняются только матрицы.
+        for (const entries of staged.values()) for (const { mesh, matrices } of entries) {
           mesh.thinInstanceSetBuffer('matrix', matrices, 16, true);
           mesh.thinInstanceRefreshBoundingInfo(true);
-          this.rendered.push(mesh);
+          mesh.setEnabled(true);
         }
+        for (const [id, meshes] of this.groups) if (!staged.has(id)) {
+          for (const mesh of meshes) mesh.dispose(false, false);
+        }
+        this.groups = new Map([...staged].map(([id, entries]) => [id, entries.map(entry => entry.mesh)]));
+        this.rendered = [...this.groups.values()].flat();
+        this.activeKey = key;
+        this.activeObjects = objects;
+        this.activeHashes = hashes;
+        this.releaseUnused(hashes);
+      } catch (error) {
+        for (const mesh of created) mesh.dispose(false, false);
+        throw error;
       }
       this.report({ ready: true, transitioning: false, chunks: chunks.length, objects: objects.length });
     });
     this.serial = this.serial.catch(error => {
+      this.releaseUnused(this.activeHashes);
       if (revision === this.revision) this.planKey = '';
       throw error;
     });

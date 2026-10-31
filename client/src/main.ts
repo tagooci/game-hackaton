@@ -48,6 +48,11 @@ function startGame(account: Account): () => void {
   // Сцена содержит камеру, свет и объекты.
   const scene = new Scene(engine);
   scene.clearColor = new Color4(0.73, 0.82, 0.87, 1);
+  // Дальняя граница подгрузки скрыта за плавным туманом.
+  scene.fogMode = Scene.FOGMODE_LINEAR;
+  scene.fogColor = new Color3(0.73, 0.82, 0.87);
+  scene.fogStart = 25;
+  scene.fogEnd = 40;
 
   // Длина модели в метрах; пропорции сохраняются при загрузке.
   const vehicle = createVehicleView(scene, 4.4);
@@ -63,8 +68,9 @@ function startGame(account: Account): () => void {
     scene,
   );
   camera.lockedTarget = vehicle.body;
+  camera.maxZ = 140;
   camera.lowerRadiusLimit = 5;
-  camera.upperRadiusLimit = 20;
+  camera.upperRadiusLimit = 12;
   camera.lowerBetaLimit = 0.2;
   camera.upperBetaLimit = Math.PI / 2 - 0.05;
   camera.panningSensibility = 0;
@@ -88,6 +94,7 @@ function startGame(account: Account): () => void {
 
   const groundMaterial = new StandardMaterial('ground-material', scene);
   groundMaterial.diffuseColor = Color3.FromHexString('#7D9478');
+  groundMaterial.specularColor = Color3.Black();
   ground.position.y = -0.12;
   ground.material = groundMaterial;
   const lines: Vector3[][] = [];
@@ -118,6 +125,7 @@ function startGame(account: Account): () => void {
   const serverUrl = `${wsProtocol}//${location.host}/ws/v2`;
   const remotePlayers = createRemotePlayers(scene);
   const roads = new RoadContent(scene, () => {});
+  if (import.meta.env.DEV) Object.defineProperty(window, 'roadCache', { configurable: true, get: () => roads.stats() });
   let mapReady = false;
   let mapLoading = false;
   let mapError = false;
@@ -128,7 +136,6 @@ function startGame(account: Account): () => void {
     return roads.update(x, z).then(() => {
       mapLoading = false;
       mapError = false;
-      overlay.hidden = true;
     }).catch(error => {
       mapLoading = false;
       mapError = true;
@@ -138,7 +145,7 @@ function startGame(account: Account): () => void {
     });
   }
   const stopStateSender = startStateSender(serverUrl, {
-    getControls: () => mapLoading || mapError ? neutralControls : controls.getControls(),
+    getControls: () => mapError ? neutralControls : controls.getControls(),
     prepareScene: async message => {
       const expected = new Set(['car-kit/sedan.glb', 'car-kit/Textures/colormap.png']);
       if (message.plan.resources.length !== expected.size || message.plan.resources.some(r => !expected.has(r.id))) {
@@ -185,16 +192,16 @@ function startGame(account: Account): () => void {
       x: pose.x + (targetPose.x - pose.x) * blend,
       z: pose.z + (targetPose.z - pose.z) * blend,
       heading: pose.heading + angle * blend,
+      y: (pose.y ?? 0) + ((targetPose.y ?? 0) - (pose.y ?? 0)) * blend,
+      pitch: (pose.pitch ?? 0) + ((targetPose.pitch ?? 0) - (pose.pitch ?? 0)) * blend,
       wheelAngle: (pose.wheelAngle ?? 0) + ((targetPose.wheelAngle ?? 0) - (pose.wheelAngle ?? 0)) * blend,
       color: targetPose.color,
     });
     grid.position.set(Math.floor(pose.x), 0, Math.floor(pose.z));
     if (mapReady && !mapLoading && !mapError) {
-      const size = roads.manifest.chunkSize;
+      const size = roads.manifest.streamStep ?? roads.manifest.chunkSize;
       const key = `${Math.floor(pose.x / size)}:${Math.floor(pose.z / size)}:none`;
       if (key !== roads.planKey) {
-        overlay.hidden = false;
-        overlay.textContent = 'Загрузка дороги…';
         void updateRoads(pose.x, pose.z).catch(() => {});
       }
     }
@@ -213,6 +220,7 @@ function startGame(account: Account): () => void {
     controls.dispose();
     events.abort();
     engine.stopRenderLoop();
+    if (import.meta.env.DEV) Reflect.deleteProperty(window, 'roadCache');
     roads.dispose();
     remotePlayers.dispose();
     vehicle.dispose();

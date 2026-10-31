@@ -1,0 +1,1 @@
+{"id":"road-0-3","bounds":{"minX":0,"maxX":20,"minZ":60,"maxZ":80},"objects":[{"id":"0:60:bridge","assetId":"road-ramp","x":0,"y":-0.1,"z":60,"heading":-1.5707963267948966,"scale":10},{"id":"0:70:ground","assetId":"road-straight","x":0,"y":-0.1,"z":70,"heading":1.5707963267948966,"scale":10}],"signs":[]}
