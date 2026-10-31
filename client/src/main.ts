@@ -8,6 +8,7 @@ import { MeshBuilder } from '@babylonjs/core/Meshes/meshBuilder';
 import { Vector3 } from '@babylonjs/core/Maths/math.vector';
 import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial';
 import { startStateSender } from './network/stateSender';
+import { createRemotePlayers } from './players/remotePlayers';
 
 const EYE_HEIGHT = 1.7;
 const events = new AbortController();
@@ -91,6 +92,7 @@ const serverUrl = import.meta.env.VITE_SERVER_WS_URL
   || `${wsProtocol}//${window.location.hostname}:8000/ws`;
 
 const name = (new URLSearchParams(window.location.search).get('name') || 'Игрок').trim().slice(0, 24) || 'Игрок';
+const remotePlayers = createRemotePlayers(scene);
 
 const stopStateSender = startStateSender(serverUrl, {
   name,
@@ -106,10 +108,13 @@ const stopStateSender = startStateSender(serverUrl, {
     camera.cameraDirection.setAll(0);
     camera.cameraRotation.setAll(0);
   },
+  onMessage: message => remotePlayers.handleMessage(message),
+  onDisconnect: () => remotePlayers.clear(),
 });
 
 // На каждом кадре рисуем сцену из положения камеры.
 engine.runRenderLoop(() => {
+  remotePlayers.update();
   scene.render();
 });
 
@@ -123,6 +128,7 @@ function dispose(): void {
   events.abort();
   if (document.pointerLockElement === canvas) document.exitPointerLock();
   engine.stopRenderLoop();
+  remotePlayers.dispose();
   scene.dispose();
   engine.dispose();
   canvas.remove();
