@@ -17,6 +17,8 @@ static/
 .env
 .env.*
 !.env.example
+client/certs/*
+!client/certs/.gitkeep
 
 # Local agent instructions and browser automation output
 AGENTS.md
