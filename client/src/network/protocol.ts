@@ -1,91 +1,52 @@
-export interface PlayerState {
-  x: number;
-  z: number;
-  heading: number;
-}
-
-export interface PlayerStateMessage extends PlayerState {
-  type: 'state';
-}
-
-export interface VehicleControls {
-  throttle: number;
-  steering: number;
-  brake: number;
-}
-
-export interface VehicleInputMessage extends VehicleControls {
-  type: 'input';
-  sceneId: string;
-  epoch: number;
-  seq: number;
-}
-
+export interface PlayerState { x: number; z: number; heading: number }
+export interface VehicleControls { throttle: number; steering: number; brake: number }
 export interface PlayerSnapshot extends PlayerState {
-  id: string;
+  id: string; name: string; vehicleType: string; speed: number; steering: number; lastInputSeq: number;
 }
-
-export interface PlayerInfo extends PlayerSnapshot {
-  name: string;
-  zone: string;
+export interface SceneContext { sceneId: string; epoch: number }
+export interface ScenePrepare extends SceneContext {
+  type: 'scene_prepare'; spawn: PlayerState;
+  plan: { revision: number; resources: { id: string; url: string; bytes: number }[] };
 }
-
-export interface WelcomeMessage extends PlayerState {
-  type: 'welcome';
-  id: string;
-  zone: string;
-  players: PlayerInfo[];
-  controlMode?: 'vehicle';
-  sceneId?: string;
-  epoch?: number;
-}
-
 export type ServerMessage =
-  | WelcomeMessage
-  | { type: 'snapshot'; tick: number; players: PlayerSnapshot[] }
-  | ({ type: 'player_joined' } & PlayerInfo)
-  | { type: 'player_left'; id: string }
+  | { type: 'welcome'; v: 2; playerId: string; inputHz: number }
+  | ScenePrepare
+  | ({ type: 'scene_start'; startTick: number; tick: number } & SceneContext)
+  | ({ type: 'snapshot'; tick: number; players: PlayerSnapshot[] } & SceneContext)
   | { type: 'error'; code: string; text: string };
 
-function isObject(value: unknown): value is Record<string, unknown> {
+function object(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
-
-function isState(value: Record<string, unknown>): boolean {
-  return ['x', 'z', 'heading'].every(key => typeof value[key] === 'number' && Number.isFinite(value[key]));
+function pose(value: unknown): boolean {
+  return object(value) && ['x', 'z', 'heading'].every(key => typeof value[key] === 'number' && Number.isFinite(value[key]));
 }
-
-function isPlayer(value: unknown): boolean {
-  return isObject(value) && typeof value.id === 'string' && isState(value);
+function context(value: Record<string, unknown>): boolean {
+  return typeof value.sceneId === 'string' && Number.isSafeInteger(value.epoch);
 }
-
-function isPlayerInfo(value: unknown): boolean {
-  return isPlayer(value) && isObject(value) && typeof value.name === 'string' && typeof value.zone === 'string';
-}
-
-/** Ignore unknown types and extra fields, as required by protocol v1. */
 export function parseServerMessage(text: string): ServerMessage | undefined {
-  let value: unknown;
-  try { value = JSON.parse(text); } catch { return undefined; }
-  if (!isObject(value)) return undefined;
-  switch (value.type) {
+  let v: unknown;
+  try { v = JSON.parse(text); } catch { return; }
+  if (!object(v)) return;
+  switch (v.type) {
     case 'welcome':
-      if (!isPlayer(value) || typeof value.zone !== 'string' || !Array.isArray(value.players) || !value.players.every(isPlayerInfo)) return undefined;
+      if (v.v !== 2 || typeof v.playerId !== 'string' || !Number.isInteger(v.inputHz) || Number(v.inputHz) < 1 || Number(v.inputHz) > 60) return;
+      break;
+    case 'scene_prepare':
+      if (!context(v) || !pose(v.spawn) || !object(v.plan) || !Number.isSafeInteger(v.plan.revision) || !Array.isArray(v.plan.resources)
+        || !v.plan.resources.every(r => object(r) && typeof r.id === 'string' && typeof r.url === 'string' && Number.isSafeInteger(r.bytes) && Number(r.bytes) >= 0)) return;
+      break;
+    case 'scene_start':
+      if (!context(v) || !Number.isSafeInteger(v.startTick) || !Number.isSafeInteger(v.tick)) return;
       break;
     case 'snapshot':
-      if (!Number.isSafeInteger(value.tick) || !Array.isArray(value.players) || !value.players.every(isPlayer)) return undefined;
-      break;
-    case 'player_joined':
-      if (!isPlayerInfo(value)) return undefined;
-      break;
-    case 'player_left':
-      if (typeof value.id !== 'string') return undefined;
+      if (!context(v) || !Number.isSafeInteger(v.tick) || !Array.isArray(v.players)
+        || !v.players.every(p => object(p) && typeof p.id === 'string' && typeof p.name === 'string' && pose(p))) return;
       break;
     case 'error':
-      if (typeof value.code !== 'string' || typeof value.text !== 'string') return undefined;
+      if (typeof v.code !== 'string' || typeof v.text !== 'string') return;
       break;
-    default:
-      return undefined;
+    default: return;
   }
-  return value as unknown as ServerMessage;
+  return v as unknown as ServerMessage;
 }

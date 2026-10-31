@@ -14,3 +14,17 @@ canvas {
   outline: none;
   touch-action: none;
 }
+
+body { font-family: system-ui, sans-serif; background: #303047; color: #fff; }
+button, input { font: inherit; padding: 0.7rem; border-radius: 6px; border: 1px solid #888; }
+button { cursor: pointer; }
+button:disabled { cursor: wait; opacity: 0.6; }
+.auth-screen, .loading-screen { position: absolute; inset: 0; display: grid; place-items: center; background: #303047; }
+.auth-form { width: min(340px, calc(100vw - 48px)); display: grid; gap: 12px; }
+.auth-form h1 { font-size: 1.5rem; }
+.auth-form label { display: grid; gap: 6px; }
+.auth-form [hidden], .loading-screen[hidden] { display: none; }
+.auth-tabs { display: flex; gap: 8px; }
+.auth-tabs button { flex: 1; }
+.auth-form [role=alert] { color: #ffb8a8; margin: 0; }
+.logout { position: absolute; top: 12px; right: 12px; }

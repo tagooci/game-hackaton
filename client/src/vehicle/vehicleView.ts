@@ -36,7 +36,7 @@ export function createVehicleView(scene: Scene, length: number, name = 'local-ve
   body.parent = root;
   let instance: InstantiatedEntries | undefined;
 
-  loadModel(scene)
+  const ready = loadModel(scene)
     .then(container => {
       if (root.isDisposed()) return;
       instance = container.instantiateModelsToScene(meshName => `${name}-${meshName}`, false);
@@ -49,8 +49,8 @@ export function createVehicleView(scene: Scene, length: number, name = 'local-ve
       model.position.set(-(min.x + max.x) * scale / 2, -min.y * scale, -(min.z + max.z) * scale / 2);
       model.parent = root;
       body.position.y = (max.y - min.y) * scale / 2;
-    })
-    .catch(error => console.error('Не удалось загрузить модель машины:', error));
+    });
+  ready.catch(error => console.error('Не удалось загрузить модель машины:', error));
 
   function setPose(pose: VehiclePose): void {
     root.position.set(pose.x, 0, pose.z);
@@ -66,5 +66,5 @@ export function createVehicleView(scene: Scene, length: number, name = 'local-ve
     instance?.dispose();
   }
 
-  return { root, body, setPose, getPose, dispose };
+  return { root, body, ready, setPose, getPose, dispose };
 }

@@ -1,6 +1,6 @@
 import { createVehicleView } from '../vehicle/vehicleView.ts';
 import type { Scene } from '@babylonjs/core/scene.js';
-import type { PlayerInfo, PlayerSnapshot, ServerMessage } from '../network/protocol';
+import type { PlayerSnapshot, ServerMessage } from '../network/protocol';
 
 const INTERPOLATION_DELAY_MS = 100;
 const MAX_SAMPLES = 8;
@@ -15,11 +15,11 @@ export function createRemotePlayers(scene: Scene, createView = createVehicleView
   let ownId: string | undefined;
   let lastTick = -1;
 
-  function addPlayer(player: PlayerInfo, now: number): void {
+  function addPlayer(player: PlayerSnapshot, now: number): void {
     if (player.id === ownId || players.has(player.id)) return;
     const vehicle = createView(scene, 4.4, `player-${player.id}`);
     vehicle.setPose(player);
-    vehicle.root.metadata = { playerId: player.id, name: player.name, zone: player.zone };
+    vehicle.root.metadata = { playerId: player.id, name: player.name };
     players.set(player.id, { vehicle, samples: [{ ...player, time: now }] });
   }
 
@@ -34,25 +34,28 @@ export function createRemotePlayers(scene: Scene, createView = createVehicleView
     switch (message.type) {
       case 'welcome':
         clear();
-        ownId = message.id;
-        for (const player of message.players) addPlayer(player, now);
+        ownId = message.playerId;
         break;
-      case 'player_joined':
-        if (ownId) addPlayer(message, now);
+      case 'scene_prepare': {
+        const id = ownId;
+        clear();
+        ownId = id;
         break;
+      }
       case 'snapshot':
         if (!ownId || message.tick <= lastTick) return;
         lastTick = message.tick;
+        const visible = new Set(message.players.map(player => player.id));
+        for (const [id, player] of players) {
+          if (!visible.has(id)) { player.vehicle.dispose(); players.delete(id); }
+        }
         for (const state of message.players) {
+          addPlayer(state, now);
           const player = players.get(state.id);
-          if (!player) continue; // Own player and not-yet-announced IDs are ignored.
+          if (!player) continue; // Своя машина отображается отдельно.
           player.samples.push({ ...state, time: now });
           if (player.samples.length > MAX_SAMPLES) player.samples.shift();
         }
-        break;
-      case 'player_left':
-        players.get(message.id)?.vehicle.dispose();
-        players.delete(message.id);
         break;
     }
   }

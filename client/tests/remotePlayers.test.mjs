@@ -6,7 +6,8 @@ import { Scene } from '@babylonjs/core/scene.js';
 import { createRemotePlayers } from '../src/players/remotePlayers.ts';
 
 const other = { id: 'p2', name: 'Bob', zone: 'world', x: 0, z: 2, heading: 0 };
-const welcome = { type: 'welcome', id: 'p1', zone: 'world', x: 0, z: 0, heading: 0, players: [other] };
+const welcome = { type: 'welcome', playerId: 'p1', v: 2, inputHz: 20 };
+const snapshot = { type: 'snapshot', tick: 0, players: [other] };
 
 function setup(t) {
   const engine = new NullEngine();
@@ -24,11 +25,11 @@ function setup(t) {
   return { scene, remote };
 }
 
-test('welcome creates other player, joined is not duplicated, own player stays hidden', t => {
+test('full snapshots create cars without duplicates and hide own player', t => {
   const { scene, remote } = setup(t);
   remote.handleMessage(welcome, 0);
-  remote.handleMessage({ type: 'player_joined', ...other }, 0);
-  remote.handleMessage({ type: 'player_joined', ...other, id: 'p1' }, 0);
+  remote.handleMessage(snapshot, 0);
+  remote.handleMessage({ ...snapshot, tick: 1, players: [other, {...other, id: 'p1'}] }, 0);
   assert.equal(scene.transformNodes.length, 1);
   assert.equal(scene.getTransformNodeByName('player-p1'), null);
   assert.equal(scene.getTransformNodeByName('player-p2').metadata.name, 'Bob');
@@ -38,6 +39,7 @@ test('welcome creates other player, joined is not duplicated, own player stays h
 test('snapshot interpolates at 100 ms delay and rotates across pi by the short path', t => {
   const { scene, remote } = setup(t);
   remote.handleMessage(welcome, 0);
+  remote.handleMessage(snapshot, 0);
   remote.handleMessage({ type: 'snapshot', tick: 1, players: [{ ...other, x: 1, heading: 3.1 }] }, 100);
   remote.handleMessage({ type: 'snapshot', tick: 2, players: [{ ...other, x: 3, heading: -3.1 }] }, 150);
   remote.update(225);
@@ -49,18 +51,19 @@ test('snapshot interpolates at 100 ms delay and rotates across pi by the short p
   assert.equal(mesh.position.x, 3);
 });
 
-test('missing snapshots do not remove player; leave, disconnect and new welcome clear meshes', t => {
+test('full snapshots remove missing cars; transitions and disconnect clear interpolation', t => {
   const { scene, remote } = setup(t);
   remote.handleMessage(welcome, 0);
+  remote.handleMessage(snapshot, 0);
   remote.handleMessage({ type: 'snapshot', tick: 1, players: [] }, 100);
-  assert.equal(scene.transformNodes.length, 1);
-  remote.handleMessage({ type: 'player_left', id: 'p2' }, 150);
   assert.equal(scene.transformNodes.length, 0);
-  remote.handleMessage({ type: 'player_joined', ...other }, 200);
+  assert.equal(scene.transformNodes.length, 0);
+  remote.handleMessage({...snapshot, tick: 2}, 200);
   remote.clear();
   assert.equal(scene.transformNodes.length, 0);
   remote.handleMessage(welcome, 300);
+  remote.handleMessage(snapshot, 300);
   assert.equal(scene.transformNodes.length, 1);
-  remote.handleMessage({ ...welcome, players: [] }, 400);
+  remote.handleMessage({ type: 'scene_prepare' }, 400);
   assert.equal(scene.transformNodes.length, 0);
 });

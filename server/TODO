@@ -1,0 +1,18 @@
+Server/client pipeline — integrated
+===================================
+
+[x] Auth screen: login, registration, confirmation, display name; 400/401/409
+    errors preserve fields. HttpOnly cookie; no token/password localStorage.
+[x] Session bootstrap: /me, /content/bootstrap, logout back to auth.
+[x] Loading screen: authenticated /ws/v2, prepare/ready/start; model and texture
+    are ready before scene_ready. Controls wait for startTick. Close codes
+    1008/4001 return to auth with a message.
+[x] Game screen: v2 input context and seq; authoritative full snapshots;
+    interpolation resets on transition/disconnect; immediate braking on blur.
+[x] Backend: step_vehicle at fixed 30 Hz, real local asset metadata, validation
+    of input/seq/epoch/rate/timeout, snapshots of all connected ready players.
+
+Remaining world features (outside this integration):
+- Chunk streaming and enforcement of the 10% content cache budget. Metadata is
+  accurate, but the tiny test scene currently uses all available world content.
+- Map, collision geometry, scenario transitions and traffic rules.
