@@ -59,7 +59,7 @@ def test_auth_validation_cookie_bootstrap_and_logout(client):
     assert client.post('/api/v2/login', json={'username': 'alice', 'password': 'incorrect'}).status_code == 401
     assert client.post('/api/v2/login', json={'username': 'alice', 'password': 'password123'}).status_code == 200
     bootstrap = client.get('/api/v2/content/bootstrap').json()
-    assert bootstrap['worldBytes'] == sum(r['bytes'] for r in module.world_resources()) > 0
+    assert bootstrap['worldBytes'] == module.WORLD_MAP['worldBytes'] + sum(r['bytes'] for r in module.world_resources())
     assert bootstrap['cacheBudgetBytes'] == bootstrap['worldBytes'] // 10
     client.post('/api/v2/logout')
     assert client.get('/api/v2/me').status_code == 401
@@ -84,7 +84,7 @@ def test_v2_physics_validation_timeout_and_saved_position(client):
         ws.send_json(input_message())
         time.sleep(0.15)
         state = module.v2_players[account['playerId']]
-        assert state['vehicle'].z > 0
+        assert state['vehicle'].x > module.WORLD_MAP['spawn']['x']
         ws.send_json(input_message(throttle=-1))  # Duplicate seq cannot overwrite accepted input.
         time.sleep(0.03)
         assert state['controls'].throttle == 1
@@ -92,10 +92,14 @@ def test_v2_physics_validation_timeout_and_saved_position(client):
         time.sleep(0.8)
         assert state['vehicle'].speed == 0
         assert state['applied_seq'] == 1
+        saved_x = state['vehicle'].x
         saved_z = state['vehicle'].z
     with client.websocket_connect('/ws/v2') as ws:
         _, plan = ready(ws)
+        assert plan['spawn']['x'] == pytest.approx(saved_x)
         assert plan['spawn']['z'] == pytest.approx(saved_z)
+        assert plan['mapId'] == module.WORLD_MAP['worldId']
+        assert plan['plan']['mapManifestUrl'] == '/content/world/manifest.json'
         assert module.v2_players[account['playerId']]['seq'] == 0
 
 
@@ -113,9 +117,9 @@ def test_two_accounts_full_snapshots_and_disconnect(client):
             b.send_json(input_message())
             for _ in range(20):
                 snapshot = receive(a, 'snapshot')
-                if next(p for p in snapshot['players'] if p['id'] == bob['playerId'])['z'] > 0:
+                if next(p for p in snapshot['players'] if p['id'] == bob['playerId'])['x'] > module.WORLD_MAP['spawn']['x']:
                     break
-            assert next(p for p in snapshot['players'] if p['id'] == bob['playerId'])['z'] > 0
+            assert next(p for p in snapshot['players'] if p['id'] == bob['playerId'])['x'] > module.WORLD_MAP['spawn']['x']
         for _ in range(20):
             if {p['id'] for p in receive(a, 'snapshot')['players']} == {alice['playerId']}:
                 break
@@ -131,7 +135,7 @@ def test_scene_gate_rate_limit_and_duplicate_connection(client):
         receive(ws, 'scene_prepare')
         ws.send_json(input_message())
         time.sleep(0.1)
-        assert next(iter(module.v2_players.values()))['vehicle'].z == 0
+        assert next(iter(module.v2_players.values()))['vehicle'].x == module.WORLD_MAP['spawn']['x']
         for _ in range(65):
             ws.send_json(input_message())
         assert receive(ws, 'error')['code'] == 'rate_limited'

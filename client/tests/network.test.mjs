@@ -5,7 +5,7 @@ import { parseServerMessage } from '../src/network/protocol.ts';
 
 const welcome = { type: 'welcome', v: 2, playerId: 'p1', inputHz: 20 };
 const scene = { sceneId: 'world:main', epoch: 1 };
-const prepare = { type: 'scene_prepare', ...scene, spawn: {x: 0, z: 0, heading: 0}, plan: {revision: 1, resources: []} };
+const prepare = { type: 'scene_prepare', ...scene, spawn: {x: 0, z: 0, heading: 0}, plan: {mapManifestUrl: '/content/world/manifest.json', revision: 1, resources: []} };
 const start = { type: 'scene_start', ...scene, tick: 2, startTick: 3 };
 const snapshot = { type: 'snapshot', ...scene, tick: 3, players: [] };
 

@@ -45,6 +45,7 @@ async def physics_loop():
 PROTOCOL_VERSION = 1
 V2_PROTOCOL_VERSION = 2
 STATIC_DIR = Path(__file__).resolve().parent.parent / 'client' / 'dist'
+WORLD_MAP = json.loads((Path(__file__).resolve().parent.parent / 'client/public/content/world/manifest.json').read_text())
 SESSION_COOKIE = "game_session"
 database = Database()
 auth = AuthService(database)
@@ -100,6 +101,14 @@ async def lifespan(app: FastAPI):
         database.close()
 
 app = FastAPI(lifespan=lifespan)
+
+@app.middleware("http")
+async def content_no_store(request: Request, call_next):
+    response = await call_next(request)
+    if request.url.path.startswith('/content/'):
+        response.headers['Cache-Control'] = 'no-store'
+    return response
+
 
 async def send(ws: WebSocket, data: dict) -> bool:
     try:
@@ -226,10 +235,10 @@ async def logout(game_session: str | None = Cookie(default=None)):
 async def get_content_bootstrap(game_session: str | None = Cookie(default=None)):
     if auth.account_for_session(game_session) is None:
         raise HTTPException(status_code=401, detail="not authenticated")
-    world_bytes = sum(resource["bytes"] for resource in world_resources())
+    world_bytes = WORLD_MAP["worldBytes"] + sum(resource["bytes"] for resource in world_resources())
     return {
-        "worldId": "training-city",
-        "contentVersion": "build-01",
+        "worldId": WORLD_MAP["worldId"],
+        "contentVersion": WORLD_MAP["contentVersion"],
         "worldBytes": world_bytes,
         "cacheBudgetBytes": world_bytes // 10,
         "accounting": "unique_resource_bytes",
@@ -288,6 +297,9 @@ async def get_v2_websocket(websocket: WebSocket):
     v2_scene_ready.discard(player_id)
     old = v2_players.get(player_id)
     state = old["vehicle"] if old else VehicleState(*database.safe_position(player_id))
+    # Позиции прежней тестовой площадки переносим на старт дорожной карты.
+    if abs(state.x) <= 50 and abs(state.z) <= 50:
+        state = VehicleState(**WORLD_MAP["spawn"])
     player = {"id": player_id, "name": account["name"], "ws": websocket, "v2": True,
               "vehicle": VehicleState(state.x, state.z, state.heading), "controls": Controls(brake=1),
               "seq": 0, "input_time": 0.0, "color": old["color"] if old else secrets.randbelow(5)}
@@ -357,13 +369,14 @@ async def get_v2_websocket(websocket: WebSocket):
                         "sceneId": scene_id,
                         "epoch": epoch,
                         "sceneKind": "world",
-                        "mapId": "world",
+                        "mapId": WORLD_MAP["worldId"],
                         "scenarioId": None,
                         "roleId": None,
                         "vehicleType": "car",
                         "spawn": {"x": state.x, "z": state.z, "heading": state.heading},
                         "participants": [],
-                        "plan": {"revision": 1, "chunkIds": [], "resources": world_resources()},
+                        "plan": {"revision": 1, "chunkIds": [], "resources": world_resources(),
+                                 "mapManifestUrl": "/content/world/manifest.json"},
                         "timeoutMs": 30000,
                     },
                 )

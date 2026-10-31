@@ -17,6 +17,31 @@
       "source_url": "https://kenney.nl/assets/car-kit",
       "title": "Car Kit 3.1 — sedan",
       "warnings": []
+    },
+    {
+      "id": "Kenney:City Kit Roads 2.2 and map references",
+      "title": "Road map assets from frontend 579ca27",
+      "author": "Kenney",
+      "source_url": "https://kenney.nl/assets/city-kit-roads",
+      "license": "CC0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "files": [
+        "client/public/content/assets/environment/construction-barrier.glb",
+        "client/public/content/assets/environment/road-bend.glb",
+        "client/public/content/assets/environment/road-crossroad.glb",
+        "client/public/content/assets/environment/road-intersection.glb",
+        "client/public/content/assets/environment/road-roundabout.glb",
+        "client/public/content/assets/environment/road-side-entry.glb",
+        "client/public/content/assets/environment/road-side-exit.glb",
+        "client/public/content/assets/environment/road-side.glb",
+        "client/public/content/assets/environment/road-sign-stop.glb",
+        "client/public/content/assets/environment/road-sign-warning.glb",
+        "client/public/content/assets/environment/road-straight.glb",
+        "client/public/content/assets/environment/traffic-light.glb",
+        "client/public/content/assets/vehicles/sedan.glb",
+        "client/public/content/assets/vehicles/truck.glb"
+      ],
+      "source_commit": "579ca27e1cf29e252695759afb0cb763c8454636"
     }
   ],
   "version": 1
