@@ -8,6 +8,8 @@ import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera';
 import { HemisphericLight } from '@babylonjs/core/Lights/hemisphericLight';
 import { MeshBuilder } from '@babylonjs/core/Meshes/meshBuilder';
 import { Vector3 } from '@babylonjs/core/Maths/math.vector';
+import { Color3 } from '@babylonjs/core/Maths/math.color';
+import type { VehiclePose } from './vehicle/vehicleView';
 import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial';
 import { startStateSender } from './network/stateSender';
 import { createRemotePlayers } from './players/remotePlayers';
@@ -70,23 +72,36 @@ function startGame(account: Account): () => void {
   canvas.tabIndex = 0;
   const controls = createVehicleControls(canvas);
   let ownId = '';
-  let targetPose = vehicle.getPose();
+  let targetPose: VehiclePose = vehicle.getPose();
 
   // Освещение сверху.
   new HemisphericLight('light', new Vector3(0, 1, 0), scene);
 
-  // Горизонтальная плоскость 10 × 10 метров на высоте Y = 0.
+  // Площадка 100 × 100 м; шаг сетки — 1 м.
   const ground = MeshBuilder.CreateGround(
     'ground',
-    { width: 10, height: 10 },
+    { width: 100, height: 100 },
     scene,
   );
 
-  ground.material = new StandardMaterial('ground-material', scene);
+  const groundMaterial = new StandardMaterial('ground-material', scene);
+  groundMaterial.diffuseColor = new Color3(0.3, 0.32, 0.35);
+  ground.material = groundMaterial;
+  const lines: Vector3[][] = [];
+  for (let i = -50; i <= 50; i++) {
+    lines.push([new Vector3(i, 0.01, -50), new Vector3(i, 0.01, 50)]);
+    lines.push([new Vector3(-50, 0.01, i), new Vector3(50, 0.01, i)]);
+  }
+  const grid = MeshBuilder.CreateLineSystem('ground-grid', { lines }, scene);
+  grid.color = new Color3(0.5, 0.53, 0.57);
 
   const overlay = document.createElement('div');
   overlay.className = 'loading-screen';
   overlay.textContent = 'Подключение…';
+  canvas.addEventListener('click', () => {
+    if (!overlay.hidden || document.pointerLockElement === canvas) return;
+    canvas.requestPointerLock().catch(error => console.warn('Не удалось захватить курсор:', error));
+  }, eventOptions);
   const logout = document.createElement('button');
   logout.className = 'logout';
   logout.textContent = `Выйти (${account.name})`;
@@ -141,6 +156,8 @@ function startGame(account: Account): () => void {
       x: pose.x + (targetPose.x - pose.x) * blend,
       z: pose.z + (targetPose.z - pose.z) * blend,
       heading: pose.heading + angle * blend,
+      wheelAngle: (pose.wheelAngle ?? 0) + ((targetPose.wheelAngle ?? 0) - (pose.wheelAngle ?? 0)) * blend,
+      color: targetPose.color,
     });
     remotePlayers.update();
     scene.render();
@@ -152,6 +169,7 @@ function startGame(account: Account): () => void {
   }, eventOptions);
 
   function dispose(): void {
+    if (document.pointerLockElement === canvas) document.exitPointerLock();
     stopStateSender();
     controls.dispose();
     events.abort();

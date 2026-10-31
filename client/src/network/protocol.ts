@@ -1,7 +1,7 @@
 export interface PlayerState { x: number; z: number; heading: number }
 export interface VehicleControls { throttle: number; steering: number; brake: number }
 export interface PlayerSnapshot extends PlayerState {
-  id: string; name: string; vehicleType: string; speed: number; steering: number; lastInputSeq: number;
+  id: string; name: string; vehicleType: string; speed: number; steering: number; lastInputSeq: number; wheelAngle: number; color: number;
 }
 export interface SceneContext { sceneId: string; epoch: number }
 export interface ScenePrepare extends SceneContext {
@@ -41,7 +41,8 @@ export function parseServerMessage(text: string): ServerMessage | undefined {
       break;
     case 'snapshot':
       if (!context(v) || !Number.isSafeInteger(v.tick) || !Array.isArray(v.players)
-        || !v.players.every(p => object(p) && typeof p.id === 'string' && typeof p.name === 'string' && pose(p))) return;
+        || !v.players.every(p => object(p) && typeof p.id === 'string' && typeof p.name === 'string' && pose(p)
+          && typeof p.wheelAngle === 'number' && Number.isFinite(p.wheelAngle) && Number.isInteger(p.color) && Number(p.color) >= 0 && Number(p.color) < 5)) return;
       break;
     case 'error':
       if (typeof v.code !== 'string' || typeof v.text !== 'string') return;

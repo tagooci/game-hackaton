@@ -73,6 +73,8 @@ export function createRemotePlayers(scene: Scene, createView = createVehicleView
         x: from.x + (to.x - from.x) * t,
         z: from.z + (to.z - from.z) * t,
         heading: from.heading + angle * t,
+        wheelAngle: (from.wheelAngle ?? 0) + ((to.wheelAngle ?? 0) - (from.wheelAngle ?? 0)) * t,
+        color: to.color,
       });
     }
   }

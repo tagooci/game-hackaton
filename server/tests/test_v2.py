@@ -75,6 +75,9 @@ def test_v2_physics_validation_timeout_and_saved_position(client):
         welcome, plan = ready(ws)
         assert welcome['playerId'] == account['playerId']
         assert len(plan['plan']['resources']) == 2
+        first = receive(ws, 'snapshot')['players'][0]
+        assert 0 <= first['color'] < 5
+        assert first['wheelAngle'] == 0
         ws.send_json(input_message(epoch=99))
         ws.send_json(input_message(throttle=2))
         assert receive(ws, 'error')['code'] == 'bad_value'

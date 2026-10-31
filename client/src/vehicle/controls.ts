@@ -14,10 +14,11 @@ export function createVehicleControls(canvas: HTMLCanvasElement) {
   }, options);
   window.addEventListener('keyup', event => { keys.delete(event.code); }, options);
   window.addEventListener('blur', clear, options);
+  document.addEventListener('pointerlockchange', () => { if (document.pointerLockElement !== canvas) { clear(); canvas.blur(); } }, options);
   document.addEventListener('visibilitychange', () => { if (document.hidden) clear(); }, options);
 
   function getControls(): VehicleControls {
-    if (document.activeElement !== canvas || !document.hasFocus() || document.hidden) {
+    if (document.pointerLockElement !== canvas || document.activeElement !== canvas || !document.hasFocus() || document.hidden) {
       return { throttle: 0, steering: 0, brake: 1 };
     }
     return {

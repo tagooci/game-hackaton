@@ -1,5 +1,8 @@
 import '@babylonjs/loaders/glTF/2.0/glTFLoader.js';
 import { LoadAssetContainerAsync } from '@babylonjs/core/Loading/sceneLoader.js';
+import { VertexBuffer } from '@babylonjs/core/Buffers/buffer.js';
+import { Quaternion, Vector3 } from '@babylonjs/core/Maths/math.vector.js';
+import type { Mesh } from '@babylonjs/core/Meshes/mesh.js';
 import { TransformNode } from '@babylonjs/core/Meshes/transformNode.js';
 import type { AssetContainer, InstantiatedEntries } from '@babylonjs/core/assetContainer.js';
 import type { Scene } from '@babylonjs/core/scene.js';
@@ -8,9 +11,11 @@ export interface VehiclePose {
   x: number;
   z: number;
   heading: number;
+  wheelAngle?: number;
+  color?: number;
 }
 
-// Одна загрузка на сцену; машины используют общую геометрию и материалы.
+// Одна загрузка на сцену; текстура и материалы общие для всех машин.
 const models = new WeakMap<Scene, Promise<AssetContainer>>();
 
 function loadModel(scene: Scene): Promise<AssetContainer> {
@@ -35,13 +40,46 @@ export function createVehicleView(scene: Scene, length: number, name = 'local-ve
   const body = new TransformNode(`${name}-camera-target`, scene);
   body.parent = root;
   let instance: InstantiatedEntries | undefined;
+  let wheelAngle = 0;
+  let color = 3; // До первого snapshot — исходный красный кузов.
+  let paintMesh: Mesh | undefined;
+  let originalUVs: number[] | undefined;
+  const frontWheels: Mesh[] = [];
+
+  function updateAppearance(): void {
+    if (!paintMesh || !originalUVs) return;
+    const uvs = originalUVs.slice();
+    for (let i = 0; i < uvs.length; i += 2) {
+      // В sedan.glb красный кузов использует этот столбец палитры.
+      // Нижние серые участки той же колонки оставляем без изменений.
+      if (Math.abs(uvs[i] - 0.84375) < 0.001 && uvs[i + 1] < 0.5) {
+        uvs[i] = 0.46875 + color * 0.125;
+      }
+    }
+    paintMesh.setVerticesData(VertexBuffer.UVKind, uvs);
+  }
 
   const ready = loadModel(scene)
     .then(container => {
       if (root.isDisposed()) return;
-      instance = container.instantiateModelsToScene(meshName => `${name}-${meshName}`, false);
+      instance = container.instantiateModelsToScene(meshName => `${name}-${meshName}`, false, { doNotInstantiate: true });
       const model = new TransformNode(`${name}-model`, scene);
       for (const node of instance.rootNodes) node.parent = model;
+      for (const mesh of model.getChildMeshes()) {
+        if (mesh.name === `${name}-body`) {
+          paintMesh = mesh as Mesh;
+          paintMesh.makeGeometryUnique();
+          originalUVs = Array.from(paintMesh.getVerticesData(VertexBuffer.UVKind)!);
+        }
+        if (mesh.name.includes('wheel-front-')) {
+          const wheel = mesh as Mesh;
+          wheel.setPivotPoint(wheel.getBoundingInfo().boundingBox.center);
+          frontWheels.push(wheel);
+        }
+      }
+      updateAppearance();
+      // Знак учитывает преобразование glTF в левую систему координат Babylon.
+      for (const wheel of frontWheels) wheel.rotationQuaternion = Quaternion.RotationAxis(Vector3.Up(), -wheelAngle);
       // Сохраняем пропорции, ставим колёса на землю и центрируем кузов.
       const { min, max } = model.getHierarchyBoundingVectors(true);
       const scale = length / (max.z - min.z);
@@ -55,10 +93,20 @@ export function createVehicleView(scene: Scene, length: number, name = 'local-ve
   function setPose(pose: VehiclePose): void {
     root.position.set(pose.x, 0, pose.z);
     root.rotation.y = pose.heading;
+    const nextAngle = pose.wheelAngle ?? wheelAngle;
+    const nextColor = pose.color ?? color;
+    if (nextAngle !== wheelAngle || nextColor !== color) {
+      const colorChanged = nextColor !== color;
+      wheelAngle = nextAngle;
+      color = nextColor;
+      // Знак учитывает преобразование glTF в левую систему координат Babylon.
+      for (const wheel of frontWheels) wheel.rotationQuaternion = Quaternion.RotationAxis(Vector3.Up(), -wheelAngle);
+      if (colorChanged) updateAppearance();
+    }
   }
 
   function getPose(): VehiclePose {
-    return { x: root.position.x, z: root.position.z, heading: root.rotation.y };
+    return { x: root.position.x, z: root.position.z, heading: root.rotation.y, wheelAngle, color };
   }
 
   function dispose(): void {

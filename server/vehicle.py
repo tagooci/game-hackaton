@@ -12,9 +12,9 @@ class VehicleConfig:
     acceleration: float = 4.0
     brakeDeceleration: float = 8.0
     rollingDeceleration: float = 0.45
-    maxSteerAngle: float = 0.6
+    maxSteerAngle: float = 0.8
     steeringRate: float = 3.0
-    maxLateralAcceleration: float = 5.5
+    maxLateralAcceleration: float = 8.0
     directionChangeDelay: float = 0.25
 
 
@@ -38,6 +38,12 @@ class VehicleState:
 
 def approach(value: float, target: float, amount: float) -> float:
     return value + max(-amount, min(amount, target - value))
+
+
+def steering_angle(speed: float, steering: float, config: VehicleConfig) -> float:
+    """Фактический угол передних колёс, с ограничением на скорости."""
+    speed_limit = math.atan(config.maxLateralAcceleration * config.wheelbase / max(speed * speed, 0.01))
+    return steering * min(config.maxSteerAngle, speed_limit)
 
 
 def step_vehicle(state: VehicleState, controls: Controls, config: VehicleConfig, dt: float) -> VehicleState:
@@ -72,9 +78,7 @@ def step_vehicle(state: VehicleState, controls: Controls, config: VehicleConfig,
         speed = max(-config.maxReverseSpeed, min(config.maxForwardSpeed, speed))
 
     # На скорости уменьшаем угол колёс, чтобы машина не разворачивалась резко.
-    speed_limit = math.atan(config.maxLateralAcceleration * config.wheelbase / max(speed * speed, 0.01))
-    turn_limit = min(config.maxSteerAngle, speed_limit)
-    wheel_angle = steering * turn_limit
+    wheel_angle = steering_angle(speed, steering, config)
     distance = (state.speed + speed) * 0.5 * dt
     turn = distance / config.wheelbase * math.tan(wheel_angle)
     midpoint_heading = state.heading + turn * 0.5

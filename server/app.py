@@ -12,7 +12,7 @@ from fastapi import Cookie, FastAPI, HTTPException, Request, WebSocket, WebSocke
 from fastapi.staticfiles import StaticFiles
 
 from .state import players, add_player, remove_player, public_view, others_view, snapshot_view
-from .vehicle import Controls, VehicleConfig, VehicleState, step_vehicle
+from .vehicle import Controls, VehicleConfig, VehicleState, step_vehicle, steering_angle
 from .auth import AuthService
 from .db import Database
 
@@ -251,6 +251,8 @@ def _v2_player_snapshot(player_id: str) -> dict:
         "id": player_id, "name": player["name"], "vehicleType": "car", "roleId": None,
         **{key: round(getattr(state, key), 3) for key in ("x", "z", "heading", "speed", "steering")},
         "lastInputSeq": player.get("applied_seq", 0),
+        "wheelAngle": round(steering_angle(state.speed, state.steering, VEHICLE_CONFIG), 4),
+        "color": player["color"],
     }
 
 
@@ -288,7 +290,7 @@ async def get_v2_websocket(websocket: WebSocket):
     state = old["vehicle"] if old else VehicleState(*database.safe_position(player_id))
     player = {"id": player_id, "name": account["name"], "ws": websocket, "v2": True,
               "vehicle": VehicleState(state.x, state.z, state.heading), "controls": Controls(brake=1),
-              "seq": 0, "input_time": 0.0}
+              "seq": 0, "input_time": 0.0, "color": old["color"] if old else secrets.randbelow(5)}
     v2_players[player_id] = player
     window_start = asyncio.get_running_loop().time()
     message_count = 0

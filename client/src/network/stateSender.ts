@@ -100,6 +100,7 @@ export function startStateSender(url: string, options: ConnectionOptions): () =>
   }
   window.addEventListener('blur', sendInput);
   document.addEventListener('visibilitychange', sendInput);
+  document.addEventListener('pointerlockchange', sendInput);
   connect();
   return () => {
     stopped = true;
@@ -108,6 +109,7 @@ export function startStateSender(url: string, options: ConnectionOptions): () =>
     clearTimeout(timeout);
     window.removeEventListener('blur', sendInput);
     document.removeEventListener('visibilitychange', sendInput);
+    document.removeEventListener('pointerlockchange', sendInput);
     socket.onmessage = null;
     socket.onclose = null;
     socket.onopen = null;
