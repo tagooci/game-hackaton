@@ -1,18 +1,13 @@
-/* Убираем стандартные отступы и занимаем всё окно браузера. */
-html,
-body {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  overflow: hidden;
-}
-
-/* Canvas должен заполнять окно без зазоров. */
-#renderCanvas {
-  display: block;
-  width: 100%;
-  height: 100%;
-
-  /* Жесты над сценой обрабатывает камера Babylon.js. */
-  touch-action: none;
-}
+html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#182124;font-family:system-ui,sans-serif}
+#renderCanvas{display:block;width:100%;height:100%;touch-action:none;outline:none}
+.map-panel{position:fixed;top:18px;left:18px;width:270px;max-height:calc(100vh - 64px);overflow:auto;padding:20px;color:#eaf0ec;background:#14211fee;border:1px solid #53665c;border-radius:14px;box-shadow:0 8px 40px #0003}
+.eyebrow{font-size:10px;letter-spacing:1.4px;color:#b1c9b7}h1{font-size:22px;margin:8px 0 12px}.map-panel p{font-size:12px;line-height:1.7;color:#c7d6cc}
+#road-map{display:block;width:100%;height:230px;background:#23332c;border-radius:8px;margin-top:16px}
+#road-map line{stroke:#b2c1b9;stroke-width:10;stroke-linecap:round}#road-map .one-way{stroke:#dfba6a;stroke-dasharray:20 12}
+#road-map .map-node{cursor:pointer}#road-map .map-node:focus{outline:none}#road-map .map-node:hover circle,#road-map .map-node:focus circle{stroke:#fff;stroke-width:10}
+#road-map .junction{fill:#b2c1b9}#road-map .crossroad{fill:#ebae75}#road-map .roundabout{fill:#23332c;stroke:#80c8b3;stroke-width:12}#road-map text{font-size:55px;fill:#f1f5ed;pointer-events:none}
+#camera-marker{fill:#f6df76;stroke:#18221b;stroke-width:8;pointer-events:none}
+.map-legend{font-size:11px;color:#b5c7ba;margin:9px 0 15px}#cache-stats{font-size:12px;line-height:1.8;font-variant-numeric:tabular-nums}#cache-stats strong{color:#cdeca1}
+#map-error{color:#ffb4a0;font-size:12px;line-height:1.6;margin-top:10px}.map-note{font-size:10px;line-height:1.6;color:#9fb1a4;border-top:1px solid #405248;margin-top:15px;padding-top:12px}
+@media(max-width:700px){.map-panel{width:190px;padding:12px;top:8px;left:8px}#road-map{height:150px}}
+.reference-control{display:block;font-size:12px;line-height:1.8;margin-bottom:12px}.reference-control select{display:block;width:100%;background:#2b4035;border:1px solid #617966;border-radius:5px;color:#eaf0ec;padding:7px}

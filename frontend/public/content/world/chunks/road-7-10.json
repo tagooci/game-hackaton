@@ -1,0 +1,1 @@
+{"id":"road-7-10","bounds":{"minX":700,"maxX":800,"minZ":1000,"maxZ":1100},"objects":[{"id":"B","assetId":"road-bend","x":700,"z":1000,"heading":0,"scale":10}],"lanes":[],"signs":[],"stopLines":[],"obstacles":[],"triggers":[],"conflictAreas":[]}

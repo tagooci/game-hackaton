@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "generate:world": "node scripts/generate-world.mjs",
+    "generate:roads": "node scripts/generate-road-map.mjs"
   },
   "devDependencies": {
     "vite": "^8.3.5"

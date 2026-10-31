@@ -1,0 +1,100 @@
+{
+  "road-straight": {
+    "id": "road-straight",
+    "kind": "model",
+    "url": "/content/assets/environment/road-straight.glb",
+    "bytes": 2648,
+    "sha256": "677dc54eb6335f7d7d9a848c30d6dafcff87238569178648bb402ad53b533161"
+  },
+  "road-bend": {
+    "id": "road-bend",
+    "kind": "model",
+    "url": "/content/assets/environment/road-bend.glb",
+    "bytes": 8420,
+    "sha256": "1f9641f43f7b906729f5f4cc54175597b30b652d4d6f75dcb3c984eb23f661bd"
+  },
+  "road-intersection": {
+    "id": "road-intersection",
+    "kind": "model",
+    "url": "/content/assets/environment/road-intersection.glb",
+    "bytes": 3736,
+    "sha256": "2a264920f678901ee05426cf2b2a271b529dc61572dc079f820172917b2909c0"
+  },
+  "road-crossroad": {
+    "id": "road-crossroad",
+    "kind": "model",
+    "url": "/content/assets/environment/road-crossroad.glb",
+    "bytes": 4624,
+    "sha256": "959d4c4ebc0943e74675ea5e2e745df8414c9b19f79cccfcdbf0fa85e3f67885"
+  },
+  "road-roundabout": {
+    "id": "road-roundabout",
+    "kind": "model",
+    "url": "/content/assets/environment/road-roundabout.glb",
+    "bytes": 42524,
+    "sha256": "02c0243930235b3934c6a4daae268ea3bb78e2a70047fef86a74d0b753854e8f"
+  },
+  "road-side-entry": {
+    "id": "road-side-entry",
+    "kind": "model",
+    "url": "/content/assets/environment/road-side-entry.glb",
+    "bytes": 9992,
+    "sha256": "424b26eb94d49ea1361935a6752d5109ddaf76563e59400a79ca473064c7f3bc"
+  },
+  "road-side-exit": {
+    "id": "road-side-exit",
+    "kind": "model",
+    "url": "/content/assets/environment/road-side-exit.glb",
+    "bytes": 9992,
+    "sha256": "415cd65a2111bdef5cca617d5f931fd89d87e04a913517cb44cdfa3d48e5dcfd"
+  },
+  "road-side": {
+    "id": "road-side",
+    "kind": "model",
+    "url": "/content/assets/environment/road-side.glb",
+    "bytes": 2636,
+    "sha256": "03e33f7b404c7883b35d0a5481b4a48bc794c382dff26fd5c41ad6066b3b45fe"
+  },
+  "road-sign-stop": {
+    "id": "road-sign-stop",
+    "kind": "model",
+    "url": "/content/assets/environment/road-sign-stop.glb",
+    "bytes": 4740,
+    "sha256": "c6162ba557e0d4bad130fad73796e4ff2e711c1676819d0459318e0671bfb282"
+  },
+  "road-sign-warning": {
+    "id": "road-sign-warning",
+    "kind": "model",
+    "url": "/content/assets/environment/road-sign-warning.glb",
+    "bytes": 5004,
+    "sha256": "03c63d626c7aed938d77c8db67c0899ec1d0257222e067b17876c7a270e0c2a7"
+  },
+  "traffic-light": {
+    "id": "traffic-light",
+    "kind": "model",
+    "url": "/content/assets/environment/traffic-light.glb",
+    "bytes": 8268,
+    "sha256": "727441348112d8db1b2e1994f9a05b327b947927f37c8af7ebc54c208eca24cf"
+  },
+  "construction-barrier": {
+    "id": "construction-barrier",
+    "kind": "model",
+    "url": "/content/assets/environment/construction-barrier.glb",
+    "bytes": 3276,
+    "sha256": "81f823840f9bc8b9774d921dc5100fedf11d2af892f37f440684097a712a8ee7"
+  },
+  "sedan": {
+    "id": "sedan",
+    "kind": "model",
+    "url": "/content/assets/vehicles/sedan.glb",
+    "bytes": 43504,
+    "sha256": "a4d8bf95c20ed51f1367bbbf62de5e62de52b74d6b9a361c1ef6a230bb0d04ed"
+  },
+  "truck": {
+    "id": "truck",
+    "kind": "model",
+    "url": "/content/assets/vehicles/truck.glb",
+    "bytes": 45056,
+    "sha256": "9e0b31e858769fbb4132085c3602835f71669ddac5d1c8f23c8d9979cd1be674"
+  }
+}
