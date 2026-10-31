@@ -90,11 +90,23 @@ const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
 const serverUrl = import.meta.env.VITE_SERVER_WS_URL
   || `${wsProtocol}//${window.location.hostname}:8000/ws`;
 
-const stopStateSender = startStateSender(serverUrl, () => ({
-  x: camera.position.x,
-  z: camera.position.z,
-  heading: camera.rotation.y,
-}));
+const name = (new URLSearchParams(window.location.search).get('name') || 'Игрок').trim().slice(0, 24) || 'Игрок';
+
+const stopStateSender = startStateSender(serverUrl, {
+  name,
+  getState: () => ({
+    x: camera.position.x,
+    z: camera.position.z,
+    heading: camera.rotation.y,
+  }),
+  onWelcome: message => {
+    // Сервер задаёт начальную позицию заново при каждом подключении.
+    camera.position.set(message.x, EYE_HEIGHT, message.z);
+    camera.rotation.set(0, message.heading, 0);
+    camera.cameraDirection.setAll(0);
+    camera.cameraRotation.setAll(0);
+  },
+});
 
 // На каждом кадре рисуем сцену из положения камеры.
 engine.runRenderLoop(() => {

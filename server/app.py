@@ -4,6 +4,7 @@ from pathlib import Path
 import asyncio
 
 from contextlib import asynccontextmanager
+from contextlib import suppress
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
@@ -14,7 +15,7 @@ TICK_RATE = 20
 tick = 0
 
 PROTOCOL_VERSION = 1
-STATIC_DIR = Path(__file__).resolve().parent.parent / 'static'
+STATIC_DIR = Path(__file__).resolve().parent.parent / 'client' / 'dist'
 
 async def snapshot_loop():
     global tick
@@ -32,8 +33,13 @@ async def snapshot_loop():
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     task = asyncio.create_task(snapshot_loop())
-    yield
-    task.cancel()
+    try:
+        yield
+    finally:
+        task.cancel()
+        with suppress(asyncio.CancelledError):
+            await task
+        players.clear()
 
 app = FastAPI(lifespan=lifespan)
 
@@ -55,11 +61,12 @@ async def broadcast(data: dict, exclude_id: str | None = None) -> None:
 
 
 def is_number(value) -> bool:
-    return (
-        isinstance(value, (int, float))
-        and not isinstance(value, bool)
-        and math.isfinite(value)
-    )
+    if not isinstance(value, (int, float)) or isinstance(value, bool):
+        return False
+    try:
+        return math.isfinite(value)
+    except OverflowError:
+        return False
 
 
 @app.get('/health')
@@ -79,13 +86,16 @@ async def get_websocket(websocket: WebSocket):
 
             try:
                 msg = json.loads(text)
-            except json.JSONDecodeError:
+            except ValueError:
                 msg = None
             if not isinstance(msg, dict):
                 await send_error(websocket, "bad_message", "expected JSON object")
                 continue
 
             msg_type = msg.get("type")
+            if not isinstance(msg_type, str):
+                await send_error(websocket, "bad_message", "type must be a string")
+                continue
 
             # до join принимаем только join
             if player is None:
@@ -93,7 +103,7 @@ async def get_websocket(websocket: WebSocket):
                     await send_error(websocket, "not_joined", "send join first")
                     continue
 
-                if msg.get("v") != PROTOCOL_VERSION:
+                if not is_number(msg.get("v")) or msg["v"] != PROTOCOL_VERSION:
                     await send_error(websocket, "bad_version", "unsupported protocol version")
                     await websocket.close()
                     return
@@ -125,6 +135,9 @@ async def get_websocket(websocket: WebSocket):
             if msg_type == "join":
                 await send_error(websocket, "already_joined", "already joined")
             elif msg_type == "state":
+                if not all(key in msg for key in ("x", "z", "heading")):
+                    await send_error(websocket, "bad_message", "state requires x, z, heading")
+                    continue
                 x, z, heading = msg.get("x"), msg.get("z"), msg.get("heading")
                 if not all(is_number(v) for v in (x, z, heading)):
                     await send_error(websocket, "bad_value", "x, z, heading must be numbers")
@@ -145,4 +158,9 @@ async def get_websocket(websocket: WebSocket):
             print(f"Left: {player['id']}")
 
 
-app.mount('/', StaticFiles(directory=STATIC_DIR, html=True), name='static')
+if STATIC_DIR.is_dir():
+    app.mount('/', StaticFiles(directory=STATIC_DIR, html=True), name='static')
+else:
+    @app.get('/')
+    async def get_build_status():
+        return {"status": "client_not_built", "hint": "Run npm ci && npm run build in client/, then restart the server"}
