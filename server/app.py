@@ -14,6 +14,15 @@ from fastapi.staticfiles import StaticFiles
 from .vehicle import Controls, VehicleConfig, VehicleState, step_vehicle, steering_angle
 from .auth import AuthService
 from .db import Database
+from .state import (
+    clear_v2_state,
+    create_v2_player,
+    mark_scene_ready,
+    remove_v2_player,
+    v2_connections,
+    v2_players,
+    v2_scene_ready,
+)
 
 TICK_RATE = 20
 tick = 0
@@ -46,10 +55,6 @@ STATIC_DIR = Path(__file__).resolve().parent.parent / 'client' / 'dist'
 SESSION_COOKIE = "game_session"
 database = Database()
 auth = AuthService(database)
-v2_connections: dict[str, WebSocket] = {}
-v2_scene_ready: set[str] = set()
-v2_players: dict[str, dict] = {}
-
 async def snapshot_loop():
     global tick
     while True:
@@ -82,12 +87,10 @@ async def lifespan(app: FastAPI):
             await task
         with suppress(asyncio.CancelledError):
             await physics_task
-        v2_connections.clear()
-        v2_scene_ready.clear()
         for player in v2_players.values():
             state = player["vehicle"]
             database.save_safe_position(player["id"], state.x, state.z, state.heading)
-        v2_players.clear()
+        clear_v2_state()
         database.close()
 
 app = FastAPI(lifespan=lifespan)
@@ -269,9 +272,15 @@ async def get_v2_websocket(websocket: WebSocket):
     v2_scene_ready.discard(player_id)
     old = v2_players.get(player_id)
     state = old["vehicle"] if old else VehicleState(*database.safe_position(player_id))
-    player = {"id": player_id, "name": account["name"], "ws": websocket, "v2": True,
-              "vehicle": VehicleState(state.x, state.z, state.heading), "controls": Controls(brake=1),
-              "seq": 0, "input_time": 0.0, "color": old["color"] if old else secrets.randbelow(5)}
+    player = create_v2_player(
+        player_id,
+        account["name"],
+        websocket,
+        (state.x, state.z, state.heading),
+        old,
+    )
+    if player["color"] is None:
+        player["color"] = secrets.randbelow(5)
     v2_players[player_id] = player
     window_start = asyncio.get_running_loop().time()
     message_count = 0
@@ -357,8 +366,7 @@ async def get_v2_websocket(websocket: WebSocket):
                     and type(message.get("revision")) is int and message.get("revision") == 1
                     and player_id not in v2_scene_ready
                 ):
-                    v2_scene_ready.add(player_id)
-                    player["start_tick"] = tick + 1
+                    mark_scene_ready(player_id, tick + 1)
                     await send(
                         websocket,
                         {
@@ -393,7 +401,7 @@ async def get_v2_websocket(websocket: WebSocket):
         if v2_players.get(player_id) is player:
             state = player["vehicle"]
             database.save_safe_position(player_id, state.x, state.z, state.heading)
-            v2_players.pop(player_id, None)
+            remove_v2_player(player_id, player)
 
 
 if STATIC_DIR.is_dir():
