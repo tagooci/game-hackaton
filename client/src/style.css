@@ -14,3 +14,19 @@ canvas {
   outline: none;
   touch-action: none;
 }
+
+.scenario-panel {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 2;
+  width: min(340px, calc(100vw - 64px));
+  padding: 16px;
+  border-radius: 12px;
+  background: #142634ed;
+  color: #edf4f6;
+  font: 14px/1.5 system-ui, sans-serif;
+}
+.scenario-panel h1 { margin: 0; font-size: 18px; }
+.scenario-panel a { color: #9adeff; }
+.scenario-panel select { padding: 5px; margin-left: 8px; }

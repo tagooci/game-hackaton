@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "scenarioId": "priority-01",
+  "mapId": "junction-01",
+  "title": "Равнозначный перекрёсток",
+  "worldSize": 100,
+  "roadWidth": 14,
+  "intersectionHalfSize": 7,
+  "finishDistance": 30,
+  "queueSeconds": 10,
+  "loadingSeconds": 30,
+  "countdownSeconds": 3,
+  "durationSeconds": 90,
+  "resultSeconds": 5,
+  "roles": [
+    {"roleId": "car_driver", "vehicleType": "car", "entry": "south", "spawn": {"x": 3.5, "z": -12, "heading": 0}, "length": 4.4, "width": 1.8, "height": 1.5},
+    {"roleId": "truck_driver", "vehicleType": "truck", "entry": "east", "spawn": {"x": 14, "z": 3.5, "heading": -1.5707963267948966}, "length": 8, "width": 2.5, "height": 3},
+    {"roleId": "tram_driver", "vehicleType": "tram", "entry": "north", "spawn": {"x": -1.5, "z": 17, "heading": -3.141592653589793}, "length": 14, "width": 2.6, "height": 3.4}
+  ],
+  "stopLines": [
+    {"x": 3.5, "z": -9, "heading": 0, "width": 6},
+    {"x": 9, "z": 3.5, "heading": -1.5707963267948966, "width": 6},
+    {"x": -3.5, "z": 9, "heading": -3.141592653589793, "width": 6},
+    {"x": -9, "z": -3.5, "heading": 1.5707963267948966, "width": 6}
+  ],
+  "exits": {
+    "north": {"heading": 0},
+    "east": {"heading": 1.5707963267948966},
+    "south": {"heading": -3.141592653589793},
+    "west": {"heading": -1.5707963267948966}
+  }
+}

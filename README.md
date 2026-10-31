@@ -1,5 +1,8 @@
 # Game Hackaton
 
+Модуль отдельного перекрёстка разрабатывается в `feature/intersection-scenario`:
+[состояние реализации, просмотр карты и интеграция](SCENARIO.md).
+
 ```text
 client/   Babylon.js + TypeScript, весь браузерный код и npm-зависимости
 server/   FastAPI, WebSocket /ws, серверное состояние игроков
