@@ -1,0 +1,39 @@
+Server/client pipeline
+======================
+
+The server-side foundation for authentication and the v2 scene handshake is
+implemented. The following client screens and integrations remain:
+
+1. Auth screen
+   - Login form: username and password.
+   - Registration form: username, password, password confirmation, display name.
+   - Show 400/401/409 errors without clearing valid form fields.
+   - Submit to POST /api/v2/login or POST /api/v2/register with credentials.
+   - On success, rely on the HttpOnly game_session cookie; do not store tokens
+     or passwords in localStorage.
+
+2. Session bootstrap
+   - On page load call GET /api/v2/me.
+   - If it returns 401, show the auth screen.
+   - If it succeeds, call GET /api/v2/content/bootstrap.
+   - On logout call POST /api/v2/logout and return to the auth screen.
+
+3. Loading screen
+   - Open /ws/v2 only after HTTP authentication succeeds.
+   - Handle welcome, scene_prepare, scene_start and error messages.
+   - Show scene loading progress and disable controls until scene_start.
+   - Load the scene plan, then send scene_ready only after all resources are ready.
+   - On 1008 return to auth; on 4001 show "account is already connected".
+
+4. Game screen
+   - Replace the v1 /ws connection with /ws/v2.
+   - Send input with sceneId, epoch and monotonically increasing seq.
+   - Render authoritative snapshots and clear stale interpolation on scene changes.
+   - Stop input immediately when the page loses focus.
+
+5. Backend prerequisites still needed before the full game screen
+   - Implement step_vehicle and the fixed 30 Hz physics loop.
+   - Replace the placeholder world scene plan and zero-byte bootstrap with real
+     local content metadata.
+   - Validate and apply input, including seq, epoch, rate and timeout handling.
+   - Broadcast all visible v2 players in snapshots, not only the current player.

@@ -5,6 +5,23 @@ client/   Babylon.js + TypeScript, весь браузерный код и npm-�
 server/   FastAPI, WebSocket /ws, серверное состояние игроков
 ```
 
+## Авторизация v2
+
+Серверная часть уже поддерживает регистрацию и вход:
+
+```text
+POST /api/v2/register
+POST /api/v2/login
+GET  /api/v2/me
+POST /api/v2/logout
+WS   /ws/v2
+```
+
+Регистрация создаёт аккаунт в локальной SQLite-базе `db/game.sqlite3` и сразу
+устанавливает HttpOnly-cookie `game_session`. Пароль в базе не хранится:
+сохраняется только PBKDF2-хеш. Клиентский экран авторизации и переход клиента
+на `/ws/v2` пока находятся в [`server/TODO`](server/TODO).
+
 ## Запуск сервера
 
 Из корня репозитория (Python 3.10+), один worker:
