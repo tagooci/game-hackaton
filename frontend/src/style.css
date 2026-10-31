@@ -1,0 +1,18 @@
+/* Убираем стандартные отступы и занимаем всё окно браузера. */
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+/* Canvas должен заполнять окно без зазоров. */
+#renderCanvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+
+  /* Жесты над сценой обрабатывает камера Babylon.js. */
+  touch-action: none;
+}
