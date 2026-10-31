@@ -59,11 +59,14 @@ export class RoadContent {
       // SHA проверяется локально и при LAN HTTP, где crypto.subtle недоступен.
       const { sha256 } = await import('./sha256.js');
       if (sha256(new Uint8Array(buffer)) !== resource.sha256) throw new Error(`resource_mismatch: ${resource.id}`);
+      const decoded = resource.encoding === 'gzip'
+        ? await new Response(new Blob([buffer]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer()
+        : buffer;
       let value;
       if (resource.kind === 'model') {
-        container = await LoadAssetContainerAsync(new Uint8Array(buffer), this.scene, { pluginExtension: '.glb' });
+        container = await LoadAssetContainerAsync(new Uint8Array(decoded), this.scene, { pluginExtension: '.glb' });
         value = container;
-      } else value = JSON.parse(new TextDecoder().decode(buffer));
+      } else value = JSON.parse(new TextDecoder().decode(decoded));
       if (this.disposed) { container?.dispose(); throw new Error('scene_disposed'); }
       const entry = { resource, value };
       this.loaded.set(resource.sha256, entry);
@@ -103,6 +106,7 @@ export class RoadContent {
   matrices(objects) {
     const matrices = new Float32Array(objects.length * 16);
     objects.forEach((object, index) => {
+      if (object.matrix) { matrices.set(object.matrix, index * 16); return; }
       Matrix.Compose(Array.isArray(object.scale) ? Vector3.FromArray(object.scale) : new Vector3(object.scale, object.scale, object.scale),
         Quaternion.FromEulerAngles(0, object.heading, 0),
         new Vector3(object.x, object.y ?? (object.reference ? 0 : -0.1), object.z)).copyToArray(matrices, index * 16);

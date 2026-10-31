@@ -1,2387 +1,1427 @@
 {
-  "worldId": "compact-interchanges-v2",
-  "contentVersion": "interchanges-02",
+  "worldId": "compact-reference-b311ebce",
+  "contentVersion": "52b5a7c597b3be26",
   "accounting": "unique_resource_bytes",
-  "worldBytes": 526962,
-  "cacheBudgetBytes": 52696,
+  "worldBytes": 1349557,
+  "cacheBudgetBytes": 134955,
   "tileSize": 10,
   "chunkSize": 20,
   "streamRadius": 65,
   "streamStep": 2.5,
   "bounds": {
-    "minX": -290,
-    "maxX": 290,
-    "minZ": -200,
-    "maxZ": 200
+    "minX": -80,
+    "maxX": 80,
+    "minZ": -100,
+    "maxZ": 60
   },
   "spawn": {
-    "x": -185,
-    "z": -2,
-    "heading": 1.5707963267948966
+    "x": 58.5,
+    "z": 40.0,
+    "heading": -3.141592653589793
   },
+  "groundColor": "#35353f",
   "resources": [
     {
-      "id": "road-straight",
+      "id": "map-742ac4b402f41e28",
+      "url": "/content/assets/imported/map-742ac4b402f41e28.glb.bin",
       "kind": "model",
-      "url": "/content/assets/environment/road-straight.glb",
-      "bytes": 2648,
-      "sha256": "677dc54eb6335f7d7d9a848c30d6dafcff87238569178648bb402ad53b533161"
+      "bytes": 3878,
+      "sha256": "9f279cf78d60a4c267dba92d17c625df11b5df1f694702d4ea8585b1ab5cb945",
+      "encoding": "gzip",
+      "label": "road-bend"
     },
     {
-      "id": "road-bend",
+      "id": "map-a80edbf0901d9ea1",
+      "url": "/content/assets/imported/map-a80edbf0901d9ea1.glb.bin",
       "kind": "model",
-      "url": "/content/assets/environment/road-bend.glb",
-      "bytes": 7364,
-      "sha256": "b5b0733efab370994e1a23fc3d70a8535aaa3886a0bfc4576d512e8810e0d1fc"
+      "bytes": 2246,
+      "sha256": "8aacad24cf4ac4ce514334db2abff8e939b06d831ebf6d76d83fb3be045ae496",
+      "encoding": "gzip",
+      "label": "road-straight"
     },
     {
-      "id": "road-intersection",
+      "id": "map-d1ae55fb9bb06b2e",
+      "url": "/content/assets/imported/map-d1ae55fb9bb06b2e.glb.bin",
       "kind": "model",
-      "url": "/content/assets/environment/road-intersection.glb",
-      "bytes": 3736,
-      "sha256": "2a264920f678901ee05426cf2b2a271b529dc61572dc079f820172917b2909c0"
+      "bytes": 3197,
+      "sha256": "09f71d143fd8277780a605b0b4f4a68971dec4d43e6b999d4a5b10bca9f58615",
+      "encoding": "gzip",
+      "label": "road-intersection-path"
     },
     {
-      "id": "road-crossroad",
+      "id": "map-ce6b36321726e251",
+      "url": "/content/assets/imported/map-ce6b36321726e251.glb.bin",
       "kind": "model",
-      "url": "/content/assets/environment/road-crossroad.glb",
-      "bytes": 4624,
-      "sha256": "959d4c4ebc0943e74675ea5e2e745df8414c9b19f79cccfcdbf0fa85e3f67885"
+      "bytes": 3626,
+      "sha256": "5706aab2efd31c1200c108812825024db3b68e074fdd18cec793f512a486636e",
+      "encoding": "gzip",
+      "label": "road-crossroad-path"
     },
     {
-      "id": "bridge-pillar",
+      "id": "map-7214df6f54891f94",
+      "url": "/content/assets/imported/map-7214df6f54891f94.glb.bin",
       "kind": "model",
-      "url": "/content/assets/environment/bridge-pillar.glb",
-      "bytes": 2544,
-      "sha256": "60f0ba5bd2450c97be4f8c4f1e92de9c0c810d4c29a808698479beb5f64f4954"
+      "bytes": 14266,
+      "sha256": "b1b4cd71fd6872694614687002f48b04651c28af5502620b5f2f5ceba111a05d",
+      "encoding": "gzip",
+      "label": "road-roundabout"
     },
     {
-      "id": "road-ramp",
+      "id": "map-241ce766ed87517d",
+      "url": "/content/assets/imported/map-241ce766ed87517d.glb.bin",
       "kind": "model",
-      "url": "/content/assets/environment/road-ramp.glb",
-      "bytes": 2648,
-      "sha256": "8e6c10a9a1f26f8a38df14a39c8610f18e5c500df922362fe02a98e3f6d4320d"
+      "bytes": 7536,
+      "sha256": "eb65265873531b8f1d0a5fae69008ae3bbe581cd7773699fcffd1098c3948448",
+      "encoding": "gzip",
+      "label": "road-slant-flat-curve"
     },
     {
-      "id": "road-level-crossing",
+      "id": "map-7bf3e5b72548225a",
+      "url": "/content/assets/imported/map-7bf3e5b72548225a.glb.bin",
       "kind": "model",
-      "url": "/content/assets/environment/road-level-crossing.glb",
-      "bytes": 2584,
-      "sha256": "e0492abe6812155ffcb66cfd31b0abc8217b97deb3c6ae1525fc2420189c5bf4"
+      "bytes": 4302,
+      "sha256": "c91dfa81417a8704c4a68c7484ebc7cfad39da84fb48f92215ec70c914efab56",
+      "encoding": "gzip",
+      "label": "road-curve"
     },
     {
-      "id": "railroad-straight",
+      "id": "map-888737959321a386",
+      "url": "/content/assets/imported/map-888737959321a386.glb.bin",
       "kind": "model",
-      "url": "/content/assets/railway/railroad-straight.glb",
-      "bytes": 11476,
-      "sha256": "0c9584769b22da16f6c4a7d973b2b1ac9031a15cf2008a307273e4088fb0e104"
+      "bytes": 3902,
+      "sha256": "00af91ffa61056e807dd530f14e923764c1756a96264a290881eb94fd44cf51e",
+      "encoding": "gzip",
+      "label": "road-bridge"
     },
     {
-      "id": "sedan",
+      "id": "map-ef898603ae3e9ddd",
+      "url": "/content/assets/imported/map-ef898603ae3e9ddd.glb.bin",
       "kind": "model",
-      "url": "/content/assets/vehicles/sedan.glb",
-      "bytes": 43504,
-      "sha256": "a4d8bf95c20ed51f1367bbbf62de5e62de52b74d6b9a361c1ef6a230bb0d04ed"
+      "bytes": 2324,
+      "sha256": "2c2a321791dc597e24addfcdfa814019dd43250bca4f3df5a83c7032c9a322fd",
+      "encoding": "gzip",
+      "label": "Support - S02 - WIDE TURN NORTH 0"
     },
     {
-      "id": "truck",
+      "id": "map-eea5c549e3afcc87",
+      "url": "/content/assets/imported/map-eea5c549e3afcc87.glb.bin",
       "kind": "model",
-      "url": "/content/assets/vehicles/truck.glb",
-      "bytes": 45056,
-      "sha256": "9e0b31e858769fbb4132085c3602835f71669ddac5d1c8f23c8d9979cd1be674"
+      "bytes": 4516,
+      "sha256": "ededd963acdb1a178527f7c01c1f31659fbb21ee9743437ce026ce93c6338c6d",
+      "encoding": "gzip",
+      "label": "Deck - S02 - WIDE TURN NORTH"
     },
     {
-      "id": "tunnel-section",
+      "id": "map-a0eeac40ecf64d0d",
+      "url": "/content/assets/imported/map-a0eeac40ecf64d0d.glb.bin",
       "kind": "model",
-      "url": "/content/assets/props/tunnel-section.glb",
-      "bytes": 3836,
-      "sha256": "d17211e0c2894a190ed8588ba562eb10da8993c1ace03159f08c8e9c5dcecbdd"
+      "bytes": 2103,
+      "sha256": "6901605b576e955c2c1f491545230fed93a812190d589763015ea56329f306e1",
+      "encoding": "gzip",
+      "label": "Deck - S03 - HORIZONTAL UPPER STRAIGHT"
     },
     {
-      "id": "bus-stop",
+      "id": "map-3fe33aa18d56eda4",
+      "url": "/content/assets/imported/map-3fe33aa18d56eda4.glb.bin",
       "kind": "model",
-      "url": "/content/assets/props/bus-stop.glb",
-      "bytes": 5192,
-      "sha256": "daeac4a6d1efe591b76fa18a297dae9d558d3700e408ffb56dbe375a50ae0cb4"
+      "bytes": 4523,
+      "sha256": "aaac1b69a0528604548f51091fb5d83156ef761dc62c9eb8c75416a705e2965c",
+      "encoding": "gzip",
+      "label": "Deck - S04 - WIDE TURN EAST"
     },
     {
-      "id": "rail-crossing-sign",
+      "id": "map-0db7c8dfbe7b5215",
+      "url": "/content/assets/imported/map-0db7c8dfbe7b5215.glb.bin",
       "kind": "model",
-      "url": "/content/assets/props/rail-crossing-sign.glb",
-      "bytes": 2464,
-      "sha256": "63010ec49890c084879b12acb867f3d1a92e7f2212f42cfe77a766ddc6796652"
+      "bytes": 2105,
+      "sha256": "412298ac79f9c301d938a90507cbb1ff33fe5eb6170af34b45195e6f89ad465b",
+      "encoding": "gzip",
+      "label": "Deck - S06 - HORIZONTAL UPPER STRAIGHT"
     },
     {
-      "id": "railroad-crossing",
+      "id": "map-4bdc8824db7ca95e",
+      "url": "/content/assets/imported/map-4bdc8824db7ca95e.glb.bin",
       "kind": "model",
-      "url": "/content/assets/props/railroad-crossing.glb",
-      "bytes": 2008,
-      "sha256": "0aa882ac357eec48b61261b836ca1de2f23597f64f18a5934a86a20640efd13d"
-    },
-    {
-      "id": "road-0--9",
-      "url": "/content/world/chunks/road-0--9.json",
-      "kind": "data",
-      "bytes": 406,
-      "sha256": "87c042f226da9126a6d72abfd794e660e180b245d784f3b59b4da6bed9d19847"
-    },
-    {
-      "id": "road-0--8",
-      "url": "/content/world/chunks/road-0--8.json",
-      "kind": "data",
-      "bytes": 321,
-      "sha256": "06cd65d76f73b9c63e4a43479c46da5fda1025f4ee5b887dddd5ceedca3d340f"
-    },
-    {
-      "id": "road-0--7",
-      "url": "/content/world/chunks/road-0--7.json",
-      "kind": "data",
-      "bytes": 403,
-      "sha256": "1f37ba0d0451a70f0f65b3e24687bb40762cbad6e384001a44b0f65358f5695b"
-    },
-    {
-      "id": "road-0--6",
-      "url": "/content/world/chunks/road-0--6.json",
-      "kind": "data",
-      "bytes": 321,
-      "sha256": "0a9a9af4e0c38fbc364d8004359adccecfe84ecd908253f57f809d7bc23598aa"
-    },
-    {
-      "id": "road-0--5",
-      "url": "/content/world/chunks/road-0--5.json",
-      "kind": "data",
-      "bytes": 318,
-      "sha256": "5d89ad42da7ef4e343d3d79fe8c74ebb9b2f2fb5d58c52c4ed258fb1a5d72c2d"
-    },
-    {
-      "id": "road-0--4",
-      "url": "/content/world/chunks/road-0--4.json",
-      "kind": "data",
-      "bytes": 395,
-      "sha256": "a86e7c78250749b5e5574cb25a370fa9e5939d99e0d272a2644ade647bfe876d"
-    },
-    {
-      "id": "road-0--3",
-      "url": "/content/world/chunks/road-0--3.json",
-      "kind": "data",
-      "bytes": 306,
-      "sha256": "7d9a1d4eb43a8ce288120ae58f34d59a9af5deafd74e213e64eb64d45b498598"
-    },
-    {
-      "id": "road-0--2",
-      "url": "/content/world/chunks/road-0--2.json",
-      "kind": "data",
-      "bytes": 305,
-      "sha256": "dfa85be7d4cf34bd31b24639ec3692d20ff0130ea3a482b97d690d5a0a675c8b"
-    },
-    {
-      "id": "road-0--1",
-      "url": "/content/world/chunks/road-0--1.json",
-      "kind": "data",
-      "bytes": 412,
-      "sha256": "d752bdc2b6fae5cfa6847d44890d902714e8ae90b2e95a2140519ac6d0e78a0f"
-    },
-    {
-      "id": "road-0-0",
-      "url": "/content/world/chunks/road-0-0.json",
-      "kind": "data",
-      "bytes": 588,
-      "sha256": "543b31ebeca49b9fab23b6700d676c482dbdd7441a860b9f4d345055caaa071b"
-    },
-    {
-      "id": "road-0-1",
-      "url": "/content/world/chunks/road-0-1.json",
-      "kind": "data",
-      "bytes": 300,
-      "sha256": "9276ba8758d3e1aa97242fba22df73b456da491b189df7b3316e3368588e5afe"
-    },
-    {
-      "id": "road-0-2",
-      "url": "/content/world/chunks/road-0-2.json",
-      "kind": "data",
-      "bytes": 300,
-      "sha256": "75126f2d7654dee55d8d2e81bbc45438cb6acefd1290a8c51a08f510596a3bfa"
-    },
-    {
-      "id": "road-0-3",
-      "url": "/content/world/chunks/road-0-3.json",
-      "kind": "data",
-      "bytes": 305,
-      "sha256": "b8ec1c14e763a2508ed700422aff1b63bcc03af9a35bc125452f9df663284239"
-    },
-    {
-      "id": "road-0-4",
-      "url": "/content/world/chunks/road-0-4.json",
-      "kind": "data",
-      "bytes": 387,
-      "sha256": "2195af9ba2b6852fcaa6e2000cde7551ea33aa62751a1e377077a5cb29e59e9b"
-    },
-    {
-      "id": "road-0-5",
-      "url": "/content/world/chunks/road-0-5.json",
-      "kind": "data",
-      "bytes": 314,
-      "sha256": "e2e25ead9786e3ff585db5b8cf8d7c65023f1a85ac7b15ff2d4c16db29a700b9"
-    },
-    {
-      "id": "road-0-6",
-      "url": "/content/world/chunks/road-0-6.json",
-      "kind": "data",
-      "bytes": 775,
-      "sha256": "9b68d337a70412aed27a1e7a5483deb0d610d5af5a88b09791cd69de031254f3"
-    },
-    {
-      "id": "road-0-7",
-      "url": "/content/world/chunks/road-0-7.json",
-      "kind": "data",
-      "bytes": 394,
-      "sha256": "ef0ad0bfd38f857578524c66b10533a7adeef6c6f93d04d45ba5a0578960e733"
-    },
-    {
-      "id": "road-0-8",
-      "url": "/content/world/chunks/road-0-8.json",
-      "kind": "data",
-      "bytes": 314,
-      "sha256": "dea5f74dad58ce6250157974230561438941926a46aff807d7597f2410905d0a"
-    },
-    {
-      "id": "road-0-9",
-      "url": "/content/world/chunks/road-0-9.json",
-      "kind": "data",
-      "bytes": 302,
-      "sha256": "2aaa63e04b82e82b74d752f6fa856dcd0c4a7485c9f31c5beb3c6438959feca8"
-    },
-    {
-      "id": "road--10-0",
-      "url": "/content/world/chunks/road--10-0.json",
-      "kind": "data",
-      "bytes": 424,
-      "sha256": "80fefabfcbb3f1f8ef91626c421a5a6a7ae899f957f319a257240df0e6950f7d"
-    },
-    {
-      "id": "road--9-0",
-      "url": "/content/world/chunks/road--9-0.json",
-      "kind": "data",
-      "bytes": 287,
-      "sha256": "1407aba8eb4b7a98570294f81cd8f77c7d0dcfff1d69c9e75a19e25aded36f0e"
-    },
-    {
-      "id": "road--8-0",
-      "url": "/content/world/chunks/road--8-0.json",
-      "kind": "data",
-      "bytes": 403,
-      "sha256": "d4f49c0e78cfd6e0b6d6849ca2d5c507582b355bef73da20b6a9a8f26a5ba3cb"
-    },
-    {
-      "id": "road--7-0",
-      "url": "/content/world/chunks/road--7-0.json",
-      "kind": "data",
-      "bytes": 287,
-      "sha256": "5509404431ff140ee5c538979fecee337d3493782c5b64e688c1efa4c698164b"
-    },
-    {
-      "id": "road--6-0",
-      "url": "/content/world/chunks/road--6-0.json",
-      "kind": "data",
-      "bytes": 287,
-      "sha256": "ce7ac21174707b78eaa2c9e9922532ef52035a8593e60142830ce583a03c4ded"
-    },
-    {
-      "id": "road--5-0",
-      "url": "/content/world/chunks/road--5-0.json",
-      "kind": "data",
-      "bytes": 400,
-      "sha256": "0c71440a55e6ef2e9745eab7cc45e4f25d7263c5a238979cfaf8668dcf7a6c7c"
-    },
-    {
-      "id": "road--4-0",
-      "url": "/content/world/chunks/road--4-0.json",
-      "kind": "data",
-      "bytes": 281,
-      "sha256": "42431dbeca400a725f3ca042419d0fff8571313bbb8a224bdcb78ec93e6997d6"
-    },
-    {
-      "id": "road--3-0",
-      "url": "/content/world/chunks/road--3-0.json",
-      "kind": "data",
-      "bytes": 281,
-      "sha256": "e4ba76963856e0682624019aa435ef091d81021d8a670a2ba771a02a8c9d2d82"
-    },
-    {
-      "id": "road--2-0",
-      "url": "/content/world/chunks/road--2-0.json",
-      "kind": "data",
-      "bytes": 395,
-      "sha256": "36a4d8b1efb06acb8b198f636145d2ccdc9c518a8780efadb363335ecd7699a1"
-    },
-    {
-      "id": "road--1-0",
-      "url": "/content/world/chunks/road--1-0.json",
-      "kind": "data",
-      "bytes": 384,
-      "sha256": "8f69a20989000060480f9ccbf93904d8e90a6614e6d8bb288cbc77be9aaa92a0"
-    },
-    {
-      "id": "road-1-0",
-      "url": "/content/world/chunks/road-1-0.json",
-      "kind": "data",
-      "bytes": 274,
-      "sha256": "83a09c447b4ff2d717062f5d57228fe5211f5366a61890bffdd1daeb207d5975"
-    },
-    {
-      "id": "road-2-0",
-      "url": "/content/world/chunks/road-2-0.json",
-      "kind": "data",
-      "bytes": 386,
-      "sha256": "073514031fb02657563d24f80835214d66b49440f7b46475730702b8e3f8530e"
-    },
-    {
-      "id": "road-3-0",
-      "url": "/content/world/chunks/road-3-0.json",
-      "kind": "data",
-      "bytes": 274,
-      "sha256": "9dcc3bc86285236ab4efe4f940f7fefa439d0973cc61b2b752bc1a5c4f1ba679"
-    },
-    {
-      "id": "road-4-0",
-      "url": "/content/world/chunks/road-4-0.json",
-      "kind": "data",
-      "bytes": 275,
-      "sha256": "f81c054d293f91cb1a5bcdd82eb0f811d35be2a25d2c34f4fc9221c8923021b8"
-    },
-    {
-      "id": "road-5-0",
-      "url": "/content/world/chunks/road-5-0.json",
-      "kind": "data",
-      "bytes": 394,
-      "sha256": "fccb4b0ea0a2384736f5efd9920e3addb5a3e0364b8c35d9bec32cf96b5f4080"
-    },
-    {
-      "id": "road-6-0",
-      "url": "/content/world/chunks/road-6-0.json",
-      "kind": "data",
-      "bytes": 280,
-      "sha256": "b402c2b19443d08076d506b38072be0516c8cadc780904a41ce852e3bc3db69b"
-    },
-    {
-      "id": "road-7-0",
-      "url": "/content/world/chunks/road-7-0.json",
-      "kind": "data",
-      "bytes": 394,
-      "sha256": "ff24dc72cb0570c0cd435929bb5e110d023a07d2f0fcf3cebb129ce438f5378f"
-    },
-    {
-      "id": "road-8-0",
-      "url": "/content/world/chunks/road-8-0.json",
-      "kind": "data",
-      "bytes": 280,
-      "sha256": "e0d2efffc444f1848bfe89cf0523feac4dd71414a8a2f768e8c19a64c51ca887"
-    },
-    {
-      "id": "road-9-0",
-      "url": "/content/world/chunks/road-9-0.json",
-      "kind": "data",
-      "bytes": 280,
-      "sha256": "6c49eaff4e222ccce7c6010b3550328b81b69ebcc8b78d6998e7acfda2cc862e"
-    },
-    {
-      "id": "road-10-0",
-      "url": "/content/world/chunks/road-10-0.json",
-      "kind": "data",
-      "bytes": 319,
-      "sha256": "02221a33cd92e428bed5f3639836eba2daaedaf4882254a15b75a8d083ff6d4f"
-    },
-    {
-      "id": "road--10--9",
-      "url": "/content/world/chunks/road--10--9.json",
-      "kind": "data",
-      "bytes": 421,
-      "sha256": "357192e699346db994fe43292815dda87b970050330ee1605723c178837a28ec"
-    },
-    {
-      "id": "road--10--8",
-      "url": "/content/world/chunks/road--10--8.json",
-      "kind": "data",
-      "bytes": 340,
-      "sha256": "ae108a74037bc048bc2fa7a4ecd5ca2a91ca1ff065f0fa51635be8e4c3303f56"
-    },
-    {
-      "id": "road--10--7",
-      "url": "/content/world/chunks/road--10--7.json",
-      "kind": "data",
-      "bytes": 446,
-      "sha256": "b7a7efa596b3106733c319eb4a07d3c7a2821082f9929d2073eddba5924d4f79"
-    },
-    {
-      "id": "road--10--6",
-      "url": "/content/world/chunks/road--10--6.json",
-      "kind": "data",
-      "bytes": 340,
-      "sha256": "b210a6a4795410a0dcfbdaeee559fa27049e8bcad7fa9dba895c1d2f6f672959"
-    },
-    {
-      "id": "road--10--5",
-      "url": "/content/world/chunks/road--10--5.json",
-      "kind": "data",
-      "bytes": 443,
-      "sha256": "6897098565d4701e4194a48b1e71cdc0fa448424679fa2dcb379233e226d4a6c"
-    },
-    {
-      "id": "road--10--4",
-      "url": "/content/world/chunks/road--10--4.json",
-      "kind": "data",
-      "bytes": 334,
-      "sha256": "688b8552570e404b22cb9cd89ecbf77a4f02655c697fa17c77c98795c4814eb1"
-    },
-    {
-      "id": "road--10--3",
-      "url": "/content/world/chunks/road--10--3.json",
-      "kind": "data",
-      "bytes": 334,
-      "sha256": "11c378e1b2f8459a1f722ce6cf1b5fb0cfeae92e3919b5fb0d084098c495c7e1"
-    },
-    {
-      "id": "road--10--2",
-      "url": "/content/world/chunks/road--10--2.json",
-      "kind": "data",
-      "bytes": 334,
-      "sha256": "773753d89754db88b1b112ed5ef08e587fbe4fd020ca9daef3bf92f08813f955"
-    },
-    {
-      "id": "road--10--1",
-      "url": "/content/world/chunks/road--10--1.json",
-      "kind": "data",
-      "bytes": 332,
-      "sha256": "88ea0d0d581f2f3d7438b55dd490cce90641afbdb48fbd5e04b8b9932d883b17"
-    },
-    {
-      "id": "road--10-1",
-      "url": "/content/world/chunks/road--10-1.json",
-      "kind": "data",
-      "bytes": 327,
-      "sha256": "652e42d9e5b4381f8aefadf7d3766c796b40efeec50920a080788e74c7292ec0"
-    },
-    {
-      "id": "road--10-2",
-      "url": "/content/world/chunks/road--10-2.json",
-      "kind": "data",
-      "bytes": 425,
-      "sha256": "4a8e338df0f1a487a74d791e31637e4840c505776832898cae779a0a5583ee43"
-    },
-    {
-      "id": "road--10-3",
-      "url": "/content/world/chunks/road--10-3.json",
-      "kind": "data",
-      "bytes": 327,
-      "sha256": "1fb7bf9209cd3e6c8627943b3d5ce6ad29c326037fd619ba153ae0449dd4712f"
-    },
-    {
-      "id": "road--10-4",
-      "url": "/content/world/chunks/road--10-4.json",
-      "kind": "data",
-      "bytes": 328,
-      "sha256": "bd096e8f4b6f209fc2ef89d109e375d76c5791f11f4f0f65d89f1a4234a3491b"
-    },
-    {
-      "id": "road--10-5",
-      "url": "/content/world/chunks/road--10-5.json",
-      "kind": "data",
-      "bytes": 437,
-      "sha256": "d006c17c6b997b73a5e8f88ba19c232fc9a92e4006117239bb7e0bf509121e6e"
-    },
-    {
-      "id": "road--10-6",
-      "url": "/content/world/chunks/road--10-6.json",
-      "kind": "data",
-      "bytes": 822,
-      "sha256": "3eb45ca3c26a4f03e20f2ac9b4f35d44f36ed0bfc866fb4f3f86ecc6ad7b8acb"
-    },
-    {
-      "id": "road--10-7",
-      "url": "/content/world/chunks/road--10-7.json",
-      "kind": "data",
-      "bytes": 437,
-      "sha256": "1fc22e319b59d83c2ba608d0cd63dc0c7ef6302cc1d07ca9846cb603b2d34d80"
-    },
-    {
-      "id": "road--10-8",
-      "url": "/content/world/chunks/road--10-8.json",
-      "kind": "data",
-      "bytes": 333,
-      "sha256": "b48987738efb1491bdf1ba35f8a3184893447c89072ec4b21b7dbeab05eabacf"
-    },
-    {
-      "id": "road--10-9",
-      "url": "/content/world/chunks/road--10-9.json",
-      "kind": "data",
-      "bytes": 312,
-      "sha256": "9718775097f0520c96081b5c778a261829050dbf1a6bbfb732aa7c16d020ae27"
-    },
-    {
-      "id": "road--9-9",
-      "url": "/content/world/chunks/road--9-9.json",
-      "kind": "data",
-      "bytes": 298,
-      "sha256": "d6eb750fa1505f7711c2c3a1b4919df99045e7b3bb573e10a0504aa8f94aaa6d"
-    },
-    {
-      "id": "road--8-9",
-      "url": "/content/world/chunks/road--8-9.json",
-      "kind": "data",
-      "bytes": 298,
-      "sha256": "a7277cc1780edd85ff147cb493b79e091d45c00222d3a034d03c36b225b4f81b"
-    },
-    {
-      "id": "road--7-9",
-      "url": "/content/world/chunks/road--7-9.json",
-      "kind": "data",
-      "bytes": 298,
-      "sha256": "ce0898ac757ef70c3fef8b63222d5f92b87a2a61c6b58fb993bd70ad30266c77"
-    },
-    {
-      "id": "road--6-9",
-      "url": "/content/world/chunks/road--6-9.json",
-      "kind": "data",
-      "bytes": 298,
-      "sha256": "0e134833f39093560870202acc05b2ef11e62de7ef87777e75c41f57b0cd7559"
-    },
-    {
-      "id": "road--5-9",
-      "url": "/content/world/chunks/road--5-9.json",
-      "kind": "data",
-      "bytes": 315,
-      "sha256": "16b65930b2f5fbf936e054b749baeb40bcd2ed2d58cbcdffe294061de6c8bc05"
-    },
-    {
-      "id": "road--4-9",
-      "url": "/content/world/chunks/road--4-9.json",
-      "kind": "data",
-      "bytes": 292,
-      "sha256": "c7e949f8225478689b410fa3b837179ee8a5cac098b4044d87bbdd653f06b881"
-    },
-    {
-      "id": "road--3-9",
-      "url": "/content/world/chunks/road--3-9.json",
-      "kind": "data",
-      "bytes": 292,
-      "sha256": "9d388823bf38adc79f7f732e4622c082c1beb2730525485f3674189cdeb6d25a"
-    },
-    {
-      "id": "road--2-9",
-      "url": "/content/world/chunks/road--2-9.json",
-      "kind": "data",
-      "bytes": 292,
-      "sha256": "aced983779ed708a113c779de84b437846a06f4dbc19dc6d70a1c6f561edb857"
-    },
-    {
-      "id": "road--1-9",
-      "url": "/content/world/chunks/road--1-9.json",
-      "kind": "data",
-      "bytes": 290,
-      "sha256": "5f54ab3378c7978555c6e07c9ca712012b1c800ee3f756a5abb0381661e29779"
-    },
-    {
-      "id": "road-1-9",
-      "url": "/content/world/chunks/road-1-9.json",
-      "kind": "data",
-      "bytes": 285,
-      "sha256": "21c97c6c0a7a6a3ae644fe167bcb1432ec1a55720b39621ee88e400492a724d4"
-    },
-    {
-      "id": "road-2-9",
-      "url": "/content/world/chunks/road-2-9.json",
-      "kind": "data",
-      "bytes": 285,
-      "sha256": "c125e3b3f002830decd45e6fb9bf41159d9dd9760992bec4271d849f898e3753"
-    },
-    {
-      "id": "road-3-9",
-      "url": "/content/world/chunks/road-3-9.json",
-      "kind": "data",
-      "bytes": 285,
-      "sha256": "613c0d56c0a0feb03d964f00cf74fbc1f027d091fed49d7ecfc432bcbdc84593"
-    },
-    {
-      "id": "road-4-9",
-      "url": "/content/world/chunks/road-4-9.json",
-      "kind": "data",
-      "bytes": 286,
-      "sha256": "971e8bac968fa2972e6127724c137a415ec7440b69b2bdb5dd7eb347a9362128"
-    },
-    {
-      "id": "road-5-9",
-      "url": "/content/world/chunks/road-5-9.json",
-      "kind": "data",
-      "bytes": 311,
-      "sha256": "4564d2944400d92fcb550d2649003ccd6d90cade7fbfa3da987fadb214ee9db4"
-    },
-    {
-      "id": "road-6-9",
-      "url": "/content/world/chunks/road-6-9.json",
-      "kind": "data",
-      "bytes": 291,
-      "sha256": "5cd15ebb0a0381b0dc8d2ccac4becfc84f106b4db358cf6562845588030cfd1f"
-    },
-    {
-      "id": "road-7-9",
-      "url": "/content/world/chunks/road-7-9.json",
-      "kind": "data",
-      "bytes": 291,
-      "sha256": "61c7ee4fa03ab1a4f63a0aae98c55b7336cc7664a1f65a0ad487b749f3b95de1"
-    },
-    {
-      "id": "road-8-9",
-      "url": "/content/world/chunks/road-8-9.json",
-      "kind": "data",
-      "bytes": 291,
-      "sha256": "3564479acff4a2cf998cac9a152a5f5d67a00e7b6591b225de56960d6c8eb34e"
-    },
-    {
-      "id": "road-9-9",
-      "url": "/content/world/chunks/road-9-9.json",
-      "kind": "data",
-      "bytes": 291,
-      "sha256": "891a1b3cd08304f57982a5ead0c1fbd3408c3f838388b864e43a0457381c27e4"
-    },
-    {
-      "id": "road-10-9",
-      "url": "/content/world/chunks/road-10-9.json",
-      "kind": "data",
-      "bytes": 206,
-      "sha256": "7a9e4ea67c4b509ab76ebaa7c2bd75a91445c57cf34719f85bef53cbc634ca96"
-    },
-    {
-      "id": "road-10-8",
-      "url": "/content/world/chunks/road-10-8.json",
-      "kind": "data",
-      "bytes": 326,
-      "sha256": "ee31e4b9eee4145f37d5160eb8f767bb2da882ae585febaa301e3fc3f19ff97b"
-    },
-    {
-      "id": "road-10-7",
-      "url": "/content/world/chunks/road-10-7.json",
-      "kind": "data",
-      "bytes": 328,
-      "sha256": "578b4ea5e02156215d047e2e550dde6135899f148e9895c2fd4307207e8f733b"
-    },
-    {
-      "id": "road-10-6",
-      "url": "/content/world/chunks/road-10-6.json",
-      "kind": "data",
-      "bytes": 805,
-      "sha256": "baf402201b7faf37ba3d559286ae478e8b61214faadbe413fe3a22e4d2e147db"
-    },
-    {
-      "id": "road-10-5",
-      "url": "/content/world/chunks/road-10-5.json",
-      "kind": "data",
-      "bytes": 328,
-      "sha256": "4aad9007189b5ddb48e2a0c99dde3ce9ff7afe4f334d1c39823ed08242ea72fe"
-    },
-    {
-      "id": "road-10-4",
-      "url": "/content/world/chunks/road-10-4.json",
-      "kind": "data",
-      "bytes": 321,
-      "sha256": "666526872753460bc9a5ddb59a971e5843f3e458bdd2600c86dbe25067a5a9c1"
-    },
-    {
-      "id": "road-10-3",
-      "url": "/content/world/chunks/road-10-3.json",
-      "kind": "data",
-      "bytes": 320,
-      "sha256": "8fbabfe83de233095cd7d4d807d7d90a209218efa050de7ea77e170e6de1658b"
-    },
-    {
-      "id": "road-10-2",
-      "url": "/content/world/chunks/road-10-2.json",
-      "kind": "data",
-      "bytes": 320,
-      "sha256": "521542872eec521c6566e7b0dbed21869caa5c5a09d2b8508c5c4bd863a825e9"
-    },
-    {
-      "id": "road-10-1",
-      "url": "/content/world/chunks/road-10-1.json",
-      "kind": "data",
-      "bytes": 320,
-      "sha256": "69d02b7ac4293d4720d01f4eb33cfb5784ea6ea57887b22e3f68e9f763b2c8b9"
-    },
-    {
-      "id": "road-10--1",
-      "url": "/content/world/chunks/road-10--1.json",
-      "kind": "data",
-      "bytes": 325,
-      "sha256": "4a505e0962f30780855dc7a130d7efdee1fcd8c889e66f13f3be4bf9d147b9bd"
-    },
-    {
-      "id": "road-10--2",
-      "url": "/content/world/chunks/road-10--2.json",
-      "kind": "data",
-      "bytes": 327,
-      "sha256": "a677f4813086edbaa6ba4666627209dd6b93a0d3edefb90ce6c95479267344da"
-    },
-    {
-      "id": "road-10--3",
-      "url": "/content/world/chunks/road-10--3.json",
-      "kind": "data",
-      "bytes": 327,
-      "sha256": "791bb9837e06592ebb875d9f21f43be967608702bf0286979f4c1813076e9709"
-    },
-    {
-      "id": "road-10--4",
-      "url": "/content/world/chunks/road-10--4.json",
-      "kind": "data",
-      "bytes": 327,
-      "sha256": "99f1db47be0e2ad719ebd616115fe57df467d6beb3c3691a1aeba4818d755ad8"
-    },
-    {
-      "id": "road-10--5",
-      "url": "/content/world/chunks/road-10--5.json",
-      "kind": "data",
-      "bytes": 332,
-      "sha256": "7d90c644cc6d181bf1119e21d7ce62dbdb74a445f52e746aa1b8d95f41cc2c80"
-    },
-    {
-      "id": "road-10--6",
-      "url": "/content/world/chunks/road-10--6.json",
-      "kind": "data",
-      "bytes": 333,
-      "sha256": "bb7c17814e2dfd36ab7128b523b3eb43a2349b8a9605a43cf45dfca7147e7d8a"
-    },
-    {
-      "id": "road-10--7",
-      "url": "/content/world/chunks/road-10--7.json",
-      "kind": "data",
-      "bytes": 335,
-      "sha256": "b6da477c350cf619ca24e525a346a07c414d69b0d1a3cb12912d7f8d71939a3a"
-    },
-    {
-      "id": "road-10--8",
-      "url": "/content/world/chunks/road-10--8.json",
-      "kind": "data",
-      "bytes": 333,
-      "sha256": "411df98939b7dd5c66f8645e17370167bf6ac75b57eeca0d097058c83e7a27ac"
-    },
-    {
-      "id": "road-10--9",
-      "url": "/content/world/chunks/road-10--9.json",
-      "kind": "data",
-      "bytes": 327,
-      "sha256": "0bc4b71c0c690dd8d5d09e903d3c9d2a83c6f410c53941fce04cd6a5fc7c9d2c"
-    },
-    {
-      "id": "road-9--9",
-      "url": "/content/world/chunks/road-9--9.json",
-      "kind": "data",
-      "bytes": 298,
-      "sha256": "8139ebcc3e4a87423c84fa777c820d49e1185b46bd5f13d7d1f90e578377cace"
-    },
-    {
-      "id": "road-8--9",
-      "url": "/content/world/chunks/road-8--9.json",
-      "kind": "data",
-      "bytes": 298,
-      "sha256": "e582cfe3809313aa832e5d72026e64d33218eeb48a2399b261868ceadf683545"
-    },
-    {
-      "id": "road-7--9",
-      "url": "/content/world/chunks/road-7--9.json",
-      "kind": "data",
-      "bytes": 298,
-      "sha256": "83eebb9535ebd02496124b1d3b774df0511c3efb974ac449bdc80897b7e8bb52"
-    },
-    {
-      "id": "road-6--9",
-      "url": "/content/world/chunks/road-6--9.json",
-      "kind": "data",
-      "bytes": 298,
-      "sha256": "eb6765dad1390e9b4c5c9936201c1261d60071fae09f419104a0f050e0fce677"
-    },
-    {
-      "id": "road-5--9",
-      "url": "/content/world/chunks/road-5--9.json",
-      "kind": "data",
-      "bytes": 419,
-      "sha256": "2532d28ffbba73f2f0373d6a0a73faf1b011969cc35aa518288cf4d9259d6a13"
-    },
-    {
-      "id": "road-4--9",
-      "url": "/content/world/chunks/road-4--9.json",
-      "kind": "data",
-      "bytes": 293,
-      "sha256": "a6a550c8ae388832f87bcf34e27de5be2387cabd65b7e356ef708b83b12309a4"
-    },
-    {
-      "id": "road-3--9",
-      "url": "/content/world/chunks/road-3--9.json",
-      "kind": "data",
-      "bytes": 292,
-      "sha256": "2e6987f3c4894f143351cedf546e1409cb7f3da611bab40548700cfafd2882dc"
-    },
-    {
-      "id": "road-2--9",
-      "url": "/content/world/chunks/road-2--9.json",
-      "kind": "data",
-      "bytes": 292,
-      "sha256": "f5f81429648438e2586cc2574bb46fdd14028c139f90346bf02a26fe6fe28366"
-    },
-    {
-      "id": "road-1--9",
-      "url": "/content/world/chunks/road-1--9.json",
-      "kind": "data",
-      "bytes": 292,
-      "sha256": "91a97a901cee8eb5c8a4b4cf2fbed8ecc13e50eede1b626472595a1a75ac713b"
-    },
-    {
-      "id": "road--1--9",
-      "url": "/content/world/chunks/road--1--9.json",
-      "kind": "data",
-      "bytes": 297,
-      "sha256": "5970f78180c76b0aa127e3d73adea47dfbc9b4908440e4921274469501353e99"
-    },
-    {
-      "id": "road--2--9",
-      "url": "/content/world/chunks/road--2--9.json",
-      "kind": "data",
-      "bytes": 299,
-      "sha256": "902fd45e871a0a40b8acb34af1745e7e8688a0b0ae2c75c7265d8a6a326adfbe"
-    },
-    {
-      "id": "road--3--9",
-      "url": "/content/world/chunks/road--3--9.json",
-      "kind": "data",
-      "bytes": 299,
-      "sha256": "47cbd52460aa60eb3d71e84faa72f915463b4d7716b852406ae2b53a706cd691"
-    },
-    {
-      "id": "road--4--9",
-      "url": "/content/world/chunks/road--4--9.json",
-      "kind": "data",
-      "bytes": 299,
-      "sha256": "a8a03a24cc3102113d5f49abbcf097fb888c032a722da0fae2562afa5e54f47d"
-    },
-    {
-      "id": "road--5--9",
-      "url": "/content/world/chunks/road--5--9.json",
-      "kind": "data",
-      "bytes": 425,
-      "sha256": "a39e4f9e444e2838084418bc1a7f977f3270920c400c1df1dc2685f20f35098b"
-    },
-    {
-      "id": "road--6--9",
-      "url": "/content/world/chunks/road--6--9.json",
-      "kind": "data",
-      "bytes": 305,
-      "sha256": "7a8b9c6b945aa6148f4b0a315fd65d13df2e95ea2a4e3fb34b56fda918c481a5"
-    },
-    {
-      "id": "road--7--9",
-      "url": "/content/world/chunks/road--7--9.json",
-      "kind": "data",
-      "bytes": 305,
-      "sha256": "4c50d248c9fdaad64c8c33264b06148df93b986d6aae56d08540b39bd565a5f0"
-    },
-    {
-      "id": "road--8--9",
-      "url": "/content/world/chunks/road--8--9.json",
-      "kind": "data",
-      "bytes": 305,
-      "sha256": "7ddbfe4772d04aec4e9e6d46f84683fc7d6867abadbd12a33ca66fdb203b8208"
-    },
-    {
-      "id": "road--9--9",
-      "url": "/content/world/chunks/road--9--9.json",
-      "kind": "data",
-      "bytes": 305,
-      "sha256": "310ea4a544f7e141d78064c1e46f7b1d3fb3e78b5ef84bf52b9fefc72d2cd177"
-    },
-    {
-      "id": "road--5--8",
-      "url": "/content/world/chunks/road--5--8.json",
-      "kind": "data",
-      "bytes": 437,
-      "sha256": "5f60110d61dfe01b92e74b3ce19b231d5e9bfbf4f6532943e1c81450a60a9d85"
-    },
-    {
-      "id": "road--5--7",
-      "url": "/content/world/chunks/road--5--7.json",
-      "kind": "data",
-      "bytes": 422,
-      "sha256": "4b7f8f05feeb61463bb0d58b3b47c39e9df42177c4e9b2e62f49e39f968b6590"
-    },
-    {
-      "id": "road--5--6",
-      "url": "/content/world/chunks/road--5--6.json",
-      "kind": "data",
-      "bytes": 338,
-      "sha256": "79436169efd018200f4d9e26b19fd0047d17be6bc5c13d11cc9a7822fdebfc2b"
-    },
-    {
-      "id": "road--5--5",
-      "url": "/content/world/chunks/road--5--5.json",
-      "kind": "data",
-      "bytes": 337,
-      "sha256": "f186033709eb762e016771daa1f4bfefea3b2ac1fbc3a940a89008aed86d9ac5"
-    },
-    {
-      "id": "road--5--4",
-      "url": "/content/world/chunks/road--5--4.json",
-      "kind": "data",
-      "bytes": 434,
-      "sha256": "4f9f89ebabb0db8b77fcb0feac567c0650a20992021a67245b05bdb5a7da33f8"
-    },
-    {
-      "id": "road--5--3",
-      "url": "/content/world/chunks/road--5--3.json",
-      "kind": "data",
-      "bytes": 516,
-      "sha256": "fb74b936e419c43957eed045c039c27d946142570411a0ff0451b0543207b254"
-    },
-    {
-      "id": "road--5--2",
-      "url": "/content/world/chunks/road--5--2.json",
-      "kind": "data",
-      "bytes": 332,
-      "sha256": "e256aa795fb83ffb02185160560d40df465433173d3d14e07ca17795e6cd6b98"
-    },
-    {
-      "id": "road--5--1",
-      "url": "/content/world/chunks/road--5--1.json",
-      "kind": "data",
-      "bytes": 330,
-      "sha256": "cc9f2b1644a9bacb581a7d503da3f505a3ebdeba4673b23b93f913db0e55a884"
-    },
-    {
-      "id": "road--5-1",
-      "url": "/content/world/chunks/road--5-1.json",
-      "kind": "data",
-      "bytes": 325,
-      "sha256": "ec2358d74a2cf7627e4eeda4f39ff92e56a4866e86d2000aa2744606996aed23"
-    },
-    {
-      "id": "road--5-2",
-      "url": "/content/world/chunks/road--5-2.json",
-      "kind": "data",
-      "bytes": 325,
-      "sha256": "9ebfd525e333a803ac31563c6139e41799b8db2396ad9e05ba3d14d9339757c1"
-    },
-    {
-      "id": "road--5-3",
-      "url": "/content/world/chunks/road--5-3.json",
-      "kind": "data",
-      "bytes": 325,
-      "sha256": "9565138cf6e8a7807e0b940933c7311faa92c3eb7cab6badfed5d68aadd66975"
-    },
-    {
-      "id": "road--5-4",
-      "url": "/content/world/chunks/road--5-4.json",
-      "kind": "data",
-      "bytes": 426,
-      "sha256": "44d939a27b55e739221e153b0c657a9e2130c348d8a3607bb0d963dc4ea92dc5"
-    },
-    {
-      "id": "road--5-5",
-      "url": "/content/world/chunks/road--5-5.json",
-      "kind": "data",
-      "bytes": 333,
-      "sha256": "1368319648f60798479cef539964c4345940ca534f32ebf2a9877ab1bf5229e2"
-    },
-    {
-      "id": "road--5-6",
-      "url": "/content/world/chunks/road--5-6.json",
-      "kind": "data",
-      "bytes": 813,
-      "sha256": "1687ab6e53f93c7276e3b86ab0ff4c939fbd3aae9a84372c83552516d2961065"
-    },
-    {
-      "id": "road--5-7",
-      "url": "/content/world/chunks/road--5-7.json",
-      "kind": "data",
-      "bytes": 413,
-      "sha256": "59d12d165e0cd93028890aa87492447efc6a5376a4f7f32bff29dfba5c03a606"
-    },
-    {
-      "id": "road--5-8",
-      "url": "/content/world/chunks/road--5-8.json",
-      "kind": "data",
-      "bytes": 331,
-      "sha256": "6a57517c9fa8a5a05771634e757efb06f1eea762d16c417183002c8ef6af8354"
-    },
-    {
-      "id": "road--8--5",
-      "url": "/content/world/chunks/road--8--5.json",
-      "kind": "data",
-      "bytes": 425,
-      "sha256": "17a0d921aa198497d885394d10427fabfe745804261d4f615c254fc8b72a426b"
-    },
-    {
-      "id": "road--8--4",
-      "url": "/content/world/chunks/road--8--4.json",
-      "kind": "data",
-      "bytes": 333,
-      "sha256": "b053d64cf8aeb706dd085c30acfcd062fa671ce58dd14d42d7fb51861518b001"
-    },
-    {
-      "id": "road--8--3",
-      "url": "/content/world/chunks/road--8--3.json",
-      "kind": "data",
-      "bytes": 333,
-      "sha256": "e5b954b59d24ac340198f3393a993240d3d55d77d722ac4ed8e32840f80e023a"
-    },
-    {
-      "id": "road--8--2",
-      "url": "/content/world/chunks/road--8--2.json",
-      "kind": "data",
-      "bytes": 333,
-      "sha256": "a2f493ca5135a730e86162d7469ceccf5999ef1fd1ee5bc92155d26474bea5ac"
-    },
-    {
-      "id": "road--8--1",
-      "url": "/content/world/chunks/road--8--1.json",
-      "kind": "data",
-      "bytes": 331,
-      "sha256": "e525155a66d613a72a1efe5e964668f774b556001a73a0212bc1c38efb684559"
-    },
-    {
-      "id": "road--8-1",
-      "url": "/content/world/chunks/road--8-1.json",
-      "kind": "data",
-      "bytes": 326,
-      "sha256": "b637d6e94b5abdc98e63f6d7c35c4d0bb033b46e667b222b67196d1d76ca26c5"
-    },
-    {
-      "id": "road--8-2",
-      "url": "/content/world/chunks/road--8-2.json",
-      "kind": "data",
-      "bytes": 326,
-      "sha256": "18f3956659876b4014a8d59cb789016d814b8be81524be53b7866b7536062110"
-    },
-    {
-      "id": "road--8-3",
-      "url": "/content/world/chunks/road--8-3.json",
-      "kind": "data",
-      "bytes": 326,
-      "sha256": "e9e5c4914014b8ca8b24b612f75fd6a6eeb44c502b8965e92473752e0883b92e"
-    },
-    {
-      "id": "road--8-4",
-      "url": "/content/world/chunks/road--8-4.json",
-      "kind": "data",
-      "bytes": 327,
-      "sha256": "7a825d7e42f3bf9cc440edaa12a1f96df60acb769f463ee96de6d429e2242a2e"
-    },
-    {
-      "id": "road--8-5",
-      "url": "/content/world/chunks/road--8-5.json",
-      "kind": "data",
-      "bytes": 318,
-      "sha256": "97201fcea19a5c48dcecc434d77d1dd568ad157e40b644f2484ba43b4213706b"
-    },
-    {
-      "id": "road--9--5",
-      "url": "/content/world/chunks/road--9--5.json",
-      "kind": "data",
-      "bytes": 304,
-      "sha256": "f18ab38b7745b4cd636982060b819408a96c17ed7900c21ebaf5b986046982d3"
-    },
-    {
-      "id": "road--7--5",
-      "url": "/content/world/chunks/road--7--5.json",
-      "kind": "data",
-      "bytes": 304,
-      "sha256": "2cd4db71087a9f976533dcdaa99c90f63922e7282a811e44501202901ab85875"
-    },
-    {
-      "id": "road--6--5",
-      "url": "/content/world/chunks/road--6--5.json",
-      "kind": "data",
-      "bytes": 304,
-      "sha256": "c84c06ceac173ffcd93948c52a772f3cb6335b8359e9fe3691c817cce4e92176"
-    },
-    {
-      "id": "road--9-5",
-      "url": "/content/world/chunks/road--9-5.json",
-      "kind": "data",
-      "bytes": 298,
-      "sha256": "70e4a72c11d8ae20fc5378cc7db84286d8350df2f4069a2a296933942e737901"
-    },
-    {
-      "id": "road--7-5",
-      "url": "/content/world/chunks/road--7-5.json",
-      "kind": "data",
-      "bytes": 298,
-      "sha256": "0c5209e519ab56d13be0027ae0bd59a8a44e98e1cb58fe1f2f3cacd96c2ab188"
-    },
-    {
-      "id": "road--6-5",
-      "url": "/content/world/chunks/road--6-5.json",
-      "kind": "data",
-      "bytes": 399,
-      "sha256": "310de053f68a6e6116b690689c84fd454e5d3f9bee571c2c1c17872370428214"
-    },
-    {
-      "id": "road--4--4",
-      "url": "/content/world/chunks/road--4--4.json",
-      "kind": "data",
-      "bytes": 293,
-      "sha256": "bcefe461c12ac186db501f339d77ec06910804e8d8f61e5a6fa57c5b63b285e6"
-    },
-    {
-      "id": "road--3--4",
-      "url": "/content/world/chunks/road--3--4.json",
-      "kind": "data",
-      "bytes": 293,
-      "sha256": "79721fd3c780f6b459130dbb08f1c125bbf482ca3c8605266e8041ceb4977f3e"
-    },
-    {
-      "id": "road--2--4",
-      "url": "/content/world/chunks/road--2--4.json",
-      "kind": "data",
-      "bytes": 412,
-      "sha256": "76b8988df317afe1972fe43540e33776baf59c9954d6e2212f03725b85ff38bd"
-    },
-    {
-      "id": "road--1--4",
-      "url": "/content/world/chunks/road--1--4.json",
-      "kind": "data",
-      "bytes": 291,
-      "sha256": "42cd9c6acee13b73d17f1cd8f508795041881c76715ac99c0a1ca22bd1b2c4cf"
-    },
-    {
-      "id": "road--4-4",
-      "url": "/content/world/chunks/road--4-4.json",
-      "kind": "data",
-      "bytes": 287,
-      "sha256": "7e8432490257dcc297c8acc1673261436e7fc2aa6f9b90af502e99dcff2ff67e"
-    },
-    {
-      "id": "road--3-4",
-      "url": "/content/world/chunks/road--3-4.json",
-      "kind": "data",
-      "bytes": 287,
-      "sha256": "96db8ce002d38c3c7835bcf371ec025e5d249c9d367ae0812750248284c06dbc"
-    },
-    {
-      "id": "road--2-4",
-      "url": "/content/world/chunks/road--2-4.json",
-      "kind": "data",
-      "bytes": 307,
-      "sha256": "cfc760c9c3bee2ed7922a1a406a42766f010e368ffdef91332c107e3ee2f8f04"
-    },
-    {
-      "id": "road--1-4",
-      "url": "/content/world/chunks/road--1-4.json",
-      "kind": "data",
-      "bytes": 285,
-      "sha256": "cb64a8bd302494036191fe0b36ea47640a56037fdc472a50e100170a01b9a214"
-    },
-    {
-      "id": "road--2--3",
-      "url": "/content/world/chunks/road--2--3.json",
-      "kind": "data",
-      "bytes": 327,
-      "sha256": "54601ec4c6e967548667f6174d7b2a5a4f3bb6907c6c805f1963d35b35e7510d"
-    },
-    {
-      "id": "road--2--2",
-      "url": "/content/world/chunks/road--2--2.json",
-      "kind": "data",
-      "bytes": 327,
-      "sha256": "1c9d2feea067584f3ef50eace9605680c382ccd8538ceb8f25f50be37c4080d2"
-    },
-    {
-      "id": "road--2--1",
-      "url": "/content/world/chunks/road--2--1.json",
-      "kind": "data",
-      "bytes": 325,
-      "sha256": "f3fd995a0ac0f73662981f35187b03764184060ad4e4195764727a58290f52b9"
-    },
-    {
-      "id": "road--2-1",
-      "url": "/content/world/chunks/road--2-1.json",
-      "kind": "data",
-      "bytes": 320,
-      "sha256": "a2b583957578bf6edecb988f680e2b86c81848f4d98cc59e26c0cbfc8ef19703"
-    },
-    {
-      "id": "road--2-2",
-      "url": "/content/world/chunks/road--2-2.json",
-      "kind": "data",
-      "bytes": 320,
-      "sha256": "7149c221c51c32c2caf358d3444b697520e045c520707f25f17a785ebef0d6de"
-    },
-    {
-      "id": "road--2-3",
-      "url": "/content/world/chunks/road--2-3.json",
-      "kind": "data",
-      "bytes": 320,
-      "sha256": "52c720c1ae5de36ff69e8766607ac7707e8e197b0502675528a3ab47152f005a"
-    },
-    {
-      "id": "road-5--8",
-      "url": "/content/world/chunks/road-5--8.json",
-      "kind": "data",
-      "bytes": 332,
-      "sha256": "4e128f99b1231ce642f4eb8e997aa81714d264ee83656e23d8532b71214bf997"
-    },
-    {
-      "id": "road-5--7",
-      "url": "/content/world/chunks/road-5--7.json",
-      "kind": "data",
-      "bytes": 416,
-      "sha256": "c6c440fd2cd5c937cb58855bd4375a49b3cd915dab20600282336fe2f04bec62"
-    },
-    {
-      "id": "road-5--6",
-      "url": "/content/world/chunks/road-5--6.json",
-      "kind": "data",
-      "bytes": 332,
-      "sha256": "eb1e57dac74a844b8854777e4f5ddbe9a8d3da7b57461002df4c8ae94ad157b2"
-    },
-    {
-      "id": "road-5--5",
-      "url": "/content/world/chunks/road-5--5.json",
-      "kind": "data",
-      "bytes": 433,
-      "sha256": "7ae3c05339a837c2daf7f3d3a3292e6d55f545ee07fcaeb2bbfc632006112f65"
-    },
-    {
-      "id": "road-5--4",
-      "url": "/content/world/chunks/road-5--4.json",
-      "kind": "data",
-      "bytes": 328,
-      "sha256": "a3eba2d4193b645fdcb4aeb759f6ee99f14b4f7f8abdd068c753b7fb826fe84c"
-    },
-    {
-      "id": "road-5--3",
-      "url": "/content/world/chunks/road-5--3.json",
-      "kind": "data",
-      "bytes": 326,
-      "sha256": "fff78ff0775c3156b57dd71ff7f8de6e92145535b5cab7c4fea7efc96a3a495d"
-    },
-    {
-      "id": "road-5--2",
-      "url": "/content/world/chunks/road-5--2.json",
-      "kind": "data",
-      "bytes": 326,
-      "sha256": "126de51c5ba2b308067e194d987c6ad665ee41e1943a0ff816f4758bd3247e7f"
-    },
-    {
-      "id": "road-5--1",
-      "url": "/content/world/chunks/road-5--1.json",
-      "kind": "data",
-      "bytes": 324,
-      "sha256": "9b60c3730e258ed3bc1d608c30b26505bcde6c0ba984ab964fbb32c6ec165466"
-    },
-    {
-      "id": "road-5-1",
-      "url": "/content/world/chunks/road-5-1.json",
-      "kind": "data",
-      "bytes": 319,
-      "sha256": "dcdc0f80b78fda50b2988e0a32f247fc356e0222223c9a219b461986866ad74a"
-    },
-    {
-      "id": "road-5-2",
-      "url": "/content/world/chunks/road-5-2.json",
-      "kind": "data",
-      "bytes": 319,
-      "sha256": "da7ac2a2c635dcdad1a5a44a1cc177769b2454bcbfe46a9c9763fddeebf65dde"
-    },
-    {
-      "id": "road-5-3",
-      "url": "/content/world/chunks/road-5-3.json",
-      "kind": "data",
-      "bytes": 319,
-      "sha256": "ed7ef639da2da5513a4a381be9fe1c70167750267b97ea60afe5ce4323b4915f"
-    },
-    {
-      "id": "road-5-4",
-      "url": "/content/world/chunks/road-5-4.json",
-      "kind": "data",
-      "bytes": 322,
-      "sha256": "a7a82cc48dd209e195cd9698a33731f12d010e2af640e15c75c88263831f91e2"
-    },
-    {
-      "id": "road-5-5",
-      "url": "/content/world/chunks/road-5-5.json",
-      "kind": "data",
-      "bytes": 427,
-      "sha256": "28d9167538d4b6fdc465030908e23fd1168e4054a1e9990116947511430dfcf4"
-    },
-    {
-      "id": "road-5-6",
-      "url": "/content/world/chunks/road-5-6.json",
-      "kind": "data",
-      "bytes": 804,
-      "sha256": "7b4be78aeaa0454a30aba8b2b0d22489b61b045bdba4efc336a3e0fce6da187e"
-    },
-    {
-      "id": "road-5-7",
-      "url": "/content/world/chunks/road-5-7.json",
-      "kind": "data",
-      "bytes": 407,
-      "sha256": "a5b9a021aab067918f8167d3a0474ffadc92c7503380d6cfad0d189985932aca"
-    },
-    {
-      "id": "road-5-8",
-      "url": "/content/world/chunks/road-5-8.json",
-      "kind": "data",
-      "bytes": 325,
-      "sha256": "f29684ddf2ba5097163b921d8e633836607094b892b635322ee3c00d75b0f5cf"
-    },
-    {
-      "id": "road-7--5",
-      "url": "/content/world/chunks/road-7--5.json",
-      "kind": "data",
-      "bytes": 416,
-      "sha256": "4c471586ba6b0cc0082f022f300507e2b106190cf3339654a09cbb1d94f86089"
-    },
-    {
-      "id": "road-7--4",
-      "url": "/content/world/chunks/road-7--4.json",
-      "kind": "data",
-      "bytes": 326,
-      "sha256": "1f1cf60bb6fa0f851ff664231d8b16f2b234122c9aa5c8678bd407ca8eaad162"
-    },
-    {
-      "id": "road-7--3",
-      "url": "/content/world/chunks/road-7--3.json",
-      "kind": "data",
-      "bytes": 326,
-      "sha256": "ec7f55a64e0732b00a99aa04b30341050b320bfc4bc2c249385d4231e37b3128"
-    },
-    {
-      "id": "road-7--2",
-      "url": "/content/world/chunks/road-7--2.json",
-      "kind": "data",
-      "bytes": 326,
-      "sha256": "c1a83b75191bcd820823043a99e1d00ad940961a084955010e11d3dde4622ac3"
-    },
-    {
-      "id": "road-7--1",
-      "url": "/content/world/chunks/road-7--1.json",
-      "kind": "data",
-      "bytes": 324,
-      "sha256": "e63aaa5a8430f76792fcb2f5655ee2f118544856f626c8dc8d4cffa5abde9491"
-    },
-    {
-      "id": "road-7-1",
-      "url": "/content/world/chunks/road-7-1.json",
-      "kind": "data",
-      "bytes": 319,
-      "sha256": "967f643d6cfb660136f849717cdeb6941db2b02051e602990a96e9f7b7adb726"
-    },
-    {
-      "id": "road-7-2",
-      "url": "/content/world/chunks/road-7-2.json",
-      "kind": "data",
-      "bytes": 319,
-      "sha256": "a284a4a80f3554a1cbae0db60cc362b9b56a5630830dfaa4b983399e4a561a19"
-    },
-    {
-      "id": "road-7-3",
-      "url": "/content/world/chunks/road-7-3.json",
-      "kind": "data",
-      "bytes": 319,
-      "sha256": "bfa3f8cffa721858cce15a9999ef394146509983088b49515fad5ab8b3cdda84"
-    },
-    {
-      "id": "road-7-4",
-      "url": "/content/world/chunks/road-7-4.json",
-      "kind": "data",
-      "bytes": 320,
-      "sha256": "1b4ddd7fce2bf14afd4e49004958b493566884a471a3fef1d50d59da26088d25"
-    },
-    {
-      "id": "road-7-5",
-      "url": "/content/world/chunks/road-7-5.json",
-      "kind": "data",
-      "bytes": 311,
-      "sha256": "a4de39092b9b39c2f821f0ae601c3a6d781176ca50b7a464087d1efdc5745f20"
-    },
-    {
-      "id": "road-9--5",
-      "url": "/content/world/chunks/road-9--5.json",
-      "kind": "data",
-      "bytes": 297,
-      "sha256": "558b3daadddc15f29ca173d404d12235dfe1f768f14f70575bda1b126c511787"
-    },
-    {
-      "id": "road-8--5",
-      "url": "/content/world/chunks/road-8--5.json",
-      "kind": "data",
-      "bytes": 297,
-      "sha256": "9bf3843353e16cd9d9fad8eaae8d17313b0f764384410af6e1f33142e7d30aeb"
-    },
-    {
-      "id": "road-6--5",
-      "url": "/content/world/chunks/road-6--5.json",
-      "kind": "data",
-      "bytes": 297,
-      "sha256": "ac8764b5d4c5a2d9c3435ee69c8545ce68d93157b12ee3973509381e99721e25"
-    },
-    {
-      "id": "road-9-5",
-      "url": "/content/world/chunks/road-9-5.json",
-      "kind": "data",
-      "bytes": 390,
-      "sha256": "3d0caacde6df102082917da9e0e127829caf7922730762924d1dfa8f54015bbb"
-    },
-    {
-      "id": "road-8-5",
-      "url": "/content/world/chunks/road-8-5.json",
-      "kind": "data",
-      "bytes": 291,
-      "sha256": "8aaeaa61596b3766afec4ddf24c3f632e346bcda987e52a8cbbba0c1a0fa672c"
-    },
-    {
-      "id": "road-6-5",
-      "url": "/content/world/chunks/road-6-5.json",
-      "kind": "data",
-      "bytes": 291,
-      "sha256": "13ec48656e8bffbba304f70236f70de580f51ad6c2fd9a0cbfda25cad8a50371"
-    },
-    {
-      "id": "road-4--4",
-      "url": "/content/world/chunks/road-4--4.json",
-      "kind": "data",
-      "bytes": 287,
-      "sha256": "4af4efa43cae0262aa1065aa05df61c89d0f32266ee65f6fa05ba920d9921b04"
-    },
-    {
-      "id": "road-3--4",
-      "url": "/content/world/chunks/road-3--4.json",
-      "kind": "data",
-      "bytes": 286,
-      "sha256": "7b1ab139a5c66082c4474f116b2c3b8a6cbb2aeef64ba9b09bc7f73bf5ca362b"
-    },
-    {
-      "id": "road-2--4",
-      "url": "/content/world/chunks/road-2--4.json",
-      "kind": "data",
-      "bytes": 403,
-      "sha256": "01a26eb915c0ebc32b423e781d3570e500ba00302101394d4dc2d2db0fe2688b"
-    },
-    {
-      "id": "road-1--4",
-      "url": "/content/world/chunks/road-1--4.json",
-      "kind": "data",
-      "bytes": 286,
-      "sha256": "4638cf66285622632bd79632f06d53e7b8f581cacf20fa9e4ad534676334cb6f"
-    },
-    {
-      "id": "road-4-4",
-      "url": "/content/world/chunks/road-4-4.json",
-      "kind": "data",
-      "bytes": 281,
-      "sha256": "c855c2224b27a85d586fdc8e6e54cd9c21fe09a26579e2c643cfc5d860d8e21a"
-    },
-    {
-      "id": "road-3-4",
-      "url": "/content/world/chunks/road-3-4.json",
-      "kind": "data",
-      "bytes": 280,
-      "sha256": "60ec283ac5ddca3838011e28d44e6eb0b73e0d53cb60a6e262a847bbcd3698dc"
-    },
-    {
-      "id": "road-2-4",
-      "url": "/content/world/chunks/road-2-4.json",
-      "kind": "data",
-      "bytes": 300,
-      "sha256": "e40a492a48f9d43fefbf5db8ff6d2c03cea0f56b31258e948b72630738c32bce"
-    },
-    {
-      "id": "road-1-4",
-      "url": "/content/world/chunks/road-1-4.json",
-      "kind": "data",
-      "bytes": 280,
-      "sha256": "a556f593a7031b8d9fa5eed4c4ff0521b5519571085cf82e0c825051f3f1aa08"
-    },
-    {
-      "id": "road-2--3",
-      "url": "/content/world/chunks/road-2--3.json",
-      "kind": "data",
-      "bytes": 320,
-      "sha256": "b6833f7e465032a59b235b5643c6810eaf537d1d3bfc4296576dd95f1fa26cb9"
-    },
-    {
-      "id": "road-2--2",
-      "url": "/content/world/chunks/road-2--2.json",
-      "kind": "data",
-      "bytes": 320,
-      "sha256": "32cb397a1d46da95b0b16c32708ab72195781537993878efa01c19b6b70e769f"
-    },
-    {
-      "id": "road-2--1",
-      "url": "/content/world/chunks/road-2--1.json",
-      "kind": "data",
-      "bytes": 318,
-      "sha256": "f4d565ef7425ad7bc012fd965da7a93cd3360399ea492523a5589d273210be31"
-    },
-    {
-      "id": "road-2-1",
-      "url": "/content/world/chunks/road-2-1.json",
-      "kind": "data",
-      "bytes": 313,
-      "sha256": "e758e45985626e16171cb4c99d098e96bf79fb1238979ae8930e55019fa9e044"
-    },
-    {
-      "id": "road-2-2",
-      "url": "/content/world/chunks/road-2-2.json",
-      "kind": "data",
-      "bytes": 313,
-      "sha256": "618b14da6cabaa54de83f21cbaaa76cc706504af8d5e9dfe33bac0a560318dff"
-    },
-    {
-      "id": "road-2-3",
-      "url": "/content/world/chunks/road-2-3.json",
-      "kind": "data",
-      "bytes": 313,
-      "sha256": "796491598510307d24b11421b8da01b7df62aaf1c6b1a42b1625fd941245ba63"
-    },
-    {
-      "id": "road--9--7",
-      "url": "/content/world/chunks/road--9--7.json",
-      "kind": "data",
-      "bytes": 305,
-      "sha256": "238216e856b38f5b679de0602c1073481bbc052b6c4564138065b8ebc4f72c13"
-    },
-    {
-      "id": "road--8--7",
-      "url": "/content/world/chunks/road--8--7.json",
-      "kind": "data",
-      "bytes": 305,
-      "sha256": "ed0bf7ee0c2e1479fd7075f7f74f508d4a9cd32de345712462d9ea3dcfc2fe1d"
-    },
-    {
-      "id": "road--7--7",
-      "url": "/content/world/chunks/road--7--7.json",
-      "kind": "data",
-      "bytes": 305,
-      "sha256": "0273c2763713eb29d6c754a376cf267042ba6e943672c4d299e8cb84658ce311"
-    },
-    {
-      "id": "road--6--7",
-      "url": "/content/world/chunks/road--6--7.json",
-      "kind": "data",
-      "bytes": 305,
-      "sha256": "449650449cd1b342bfaa31e2ce1d9af1e65dff9cff213c85c89fff03afc86f3c"
-    },
-    {
-      "id": "road--4--7",
-      "url": "/content/world/chunks/road--4--7.json",
-      "kind": "data",
-      "bytes": 299,
-      "sha256": "563d886fb83b3bcdbcca1b26a4a9d056e9d0c0f7d62c7fc351f4a83ebeaf9a99"
-    },
-    {
-      "id": "road--3--7",
-      "url": "/content/world/chunks/road--3--7.json",
-      "kind": "data",
-      "bytes": 299,
-      "sha256": "22f4f05c84fa3220f452523aa2d6904a86e359ef854b32e1e4cdbdd0c2665c42"
-    },
-    {
-      "id": "road--2--7",
-      "url": "/content/world/chunks/road--2--7.json",
-      "kind": "data",
-      "bytes": 299,
-      "sha256": "a367a1289a32c599e48e02c100497d06abecf4697cf6e902567d772234707011"
-    },
-    {
-      "id": "road--1--7",
-      "url": "/content/world/chunks/road--1--7.json",
-      "kind": "data",
-      "bytes": 297,
-      "sha256": "bdbafe1e6b5e4df7011063f6643f7fc907b630c47d9c7a472a7ef2ef9b49ff3e"
-    },
-    {
-      "id": "road-1--7",
-      "url": "/content/world/chunks/road-1--7.json",
-      "kind": "data",
-      "bytes": 292,
-      "sha256": "debf529376274bc27ca4c0c4219b596c3b18912115bd3e5f9b6b6a0faaa36247"
-    },
-    {
-      "id": "road-2--7",
-      "url": "/content/world/chunks/road-2--7.json",
-      "kind": "data",
-      "bytes": 292,
-      "sha256": "46cd543a36727a168f508eab98b96fb37a33b11d72d3771a52e562af45d66958"
-    },
-    {
-      "id": "road-3--7",
-      "url": "/content/world/chunks/road-3--7.json",
-      "kind": "data",
-      "bytes": 292,
-      "sha256": "8bd716b33762bf00ca6519f6fe5d10e213cf47196571fac1537456c1d46a52be"
-    },
-    {
-      "id": "road-4--7",
-      "url": "/content/world/chunks/road-4--7.json",
-      "kind": "data",
-      "bytes": 293,
-      "sha256": "db6a13c2d2db875757aa082188afd20a51288a8feb64940470fe2e57b960209f"
-    },
-    {
-      "id": "road-6--7",
-      "url": "/content/world/chunks/road-6--7.json",
-      "kind": "data",
-      "bytes": 298,
-      "sha256": "3964d255b643728de3572725ebde9a2ac567eeac2e551b4316f68126d6bcb9a3"
-    },
-    {
-      "id": "road-7--7",
-      "url": "/content/world/chunks/road-7--7.json",
-      "kind": "data",
-      "bytes": 298,
-      "sha256": "95a808658234302fa9ae9e82917db1d97b2b28768386fde6c44cfcd15d48e3e0"
-    },
-    {
-      "id": "road-8--7",
-      "url": "/content/world/chunks/road-8--7.json",
-      "kind": "data",
-      "bytes": 298,
-      "sha256": "a4770083ff5219b10632abbccae991a4adfa07e32bf09b3b003154be9bdcf19a"
-    },
-    {
-      "id": "road-9--7",
-      "url": "/content/world/chunks/road-9--7.json",
-      "kind": "data",
-      "bytes": 298,
-      "sha256": "a4cda0e79033598f5b2f7dd72f38053b65b52c420f85d3db5520ac5a3d5b6bb6"
-    },
-    {
-      "id": "road--9-7",
-      "url": "/content/world/chunks/road--9-7.json",
-      "kind": "data",
-      "bytes": 298,
-      "sha256": "4404582244babe5ea3900029c887f3ff24c3e3cdc23553c6eee3ac6aa87d82e9"
-    },
-    {
-      "id": "road--8-7",
-      "url": "/content/world/chunks/road--8-7.json",
-      "kind": "data",
-      "bytes": 298,
-      "sha256": "aa934f500d5060e0938be10ddf447c5a8727951845833c23db8f3ebda92a1773"
-    },
-    {
-      "id": "road--7-7",
-      "url": "/content/world/chunks/road--7-7.json",
-      "kind": "data",
-      "bytes": 298,
-      "sha256": "5a58ee678a3aba0df69ddc8e1f21bb7d73dc3eef928526f066b699543c147710"
-    },
-    {
-      "id": "road--6-7",
-      "url": "/content/world/chunks/road--6-7.json",
-      "kind": "data",
-      "bytes": 298,
-      "sha256": "6390ecf6f9c24d65f5321c69ed8ad01c7c181e281e5747cd50e0913904830e53"
-    },
-    {
-      "id": "road--4-7",
-      "url": "/content/world/chunks/road--4-7.json",
-      "kind": "data",
-      "bytes": 292,
-      "sha256": "aa279265e0ef78a8eb6afdd289bcefce8dda8ca78419c80cce4ba532cd0b872a"
-    },
-    {
-      "id": "road--3-7",
-      "url": "/content/world/chunks/road--3-7.json",
-      "kind": "data",
-      "bytes": 292,
-      "sha256": "a0a6ca183fcb1bbb03a1bd605d4117ceafb1e6e8590c4f97c3fb2c67b7146a5a"
-    },
-    {
-      "id": "road--2-7",
-      "url": "/content/world/chunks/road--2-7.json",
-      "kind": "data",
-      "bytes": 292,
-      "sha256": "6a1a100d6d472cc316371092bc7083b8a780b4859810617a572558cb0677d8a7"
-    },
-    {
-      "id": "road--1-7",
-      "url": "/content/world/chunks/road--1-7.json",
-      "kind": "data",
-      "bytes": 290,
-      "sha256": "7392189dbafd8cae44b8cc7342de5dbecfecf7ef960031f250ad61d0658493ee"
-    },
-    {
-      "id": "road-1-7",
-      "url": "/content/world/chunks/road-1-7.json",
-      "kind": "data",
-      "bytes": 285,
-      "sha256": "fad5a0741cc5635795e5ffc7742cefda32a224f19a7e3c3be2a73c7081227a4d"
-    },
-    {
-      "id": "road-2-7",
-      "url": "/content/world/chunks/road-2-7.json",
-      "kind": "data",
-      "bytes": 285,
-      "sha256": "d0de71f8cbce621e1ef8740c2434496b284138c345c91bc74d5710c0c0fc531b"
-    },
-    {
-      "id": "road-3-7",
-      "url": "/content/world/chunks/road-3-7.json",
-      "kind": "data",
-      "bytes": 285,
-      "sha256": "47225dd1b1a29cbcdb1e10a88acf82eb3187d6af5d7b9a005a6b37a579222c58"
-    },
-    {
-      "id": "road-4-7",
-      "url": "/content/world/chunks/road-4-7.json",
-      "kind": "data",
-      "bytes": 286,
-      "sha256": "c036a4735a0aec2290bbe183fffd233259007ff8103c0a37db83695122755af2"
-    },
-    {
-      "id": "road-6-7",
-      "url": "/content/world/chunks/road-6-7.json",
-      "kind": "data",
-      "bytes": 291,
-      "sha256": "8bc391808f408bb39f34523e19e76db7e1447e6ae4aa4763543180012d7350fb"
-    },
-    {
-      "id": "road-7-7",
-      "url": "/content/world/chunks/road-7-7.json",
-      "kind": "data",
-      "bytes": 291,
-      "sha256": "0d1cb3f75c031e8e1b0d2dd49301fe1036ce92b7577e4b31d9c0b3f72ddabed3"
-    },
-    {
-      "id": "road-8-7",
-      "url": "/content/world/chunks/road-8-7.json",
-      "kind": "data",
-      "bytes": 291,
-      "sha256": "97d362be5624b3ad06f5696bb7206c7658fc34707c52ece270cb32cf105ce8b2"
-    },
-    {
-      "id": "road-9-7",
-      "url": "/content/world/chunks/road-9-7.json",
-      "kind": "data",
-      "bytes": 291,
-      "sha256": "c074b8df7a8379ae89e5ae4f6b92964f11b415a026b3747db0425d3683a83f92"
-    },
-    {
-      "id": "road--1--1",
-      "url": "/content/world/chunks/road--1--1.json",
-      "kind": "data",
-      "bytes": 200,
-      "sha256": "817eed705495ffe5028bbeb111eb9ed43acc8d156cfa43414a1012f602789526"
-    },
-    {
-      "id": "road-9--2",
-      "url": "/content/world/chunks/road-9--2.json",
-      "kind": "data",
-      "bytes": 195,
-      "sha256": "f7bbad4f8aadd4d2a52fcc0e71ce45b420024134ca1300c82a6b889b36a575dd"
-    },
-    {
-      "id": "road--14-6",
-      "url": "/content/world/chunks/road--14-6.json",
-      "kind": "data",
-      "bytes": 355,
-      "sha256": "d009b304787fc3d32d697bb2edca14a6704648d8d220d5464adb39a33543a4ee"
-    },
-    {
-      "id": "road--13-6",
-      "url": "/content/world/chunks/road--13-6.json",
-      "kind": "data",
-      "bytes": 483,
-      "sha256": "e1624c85fb3d3ddb26e7cd6b43e03460709bb64b20bce18827fd7ec34df42386"
-    },
-    {
-      "id": "road--12-6",
-      "url": "/content/world/chunks/road--12-6.json",
-      "kind": "data",
-      "bytes": 355,
-      "sha256": "658f1c263d9388fecad1ba19b1523bf8de2aa62fd596bfce07d55f930894ec82"
-    },
-    {
-      "id": "road--11-6",
-      "url": "/content/world/chunks/road--11-6.json",
-      "kind": "data",
-      "bytes": 488,
-      "sha256": "bf6fd57c2ee8ce046280fee8825e96d5a3a7f13e73742ecf9fedd1d8707d5507"
-    },
-    {
-      "id": "road--9-6",
-      "url": "/content/world/chunks/road--9-6.json",
-      "kind": "data",
-      "bytes": 482,
-      "sha256": "aff8be117e3d00a598f35c0fa7af5aa4851e1f58fb651f963a8cc95c737988cc"
-    },
-    {
-      "id": "road--8-6",
-      "url": "/content/world/chunks/road--8-6.json",
-      "kind": "data",
-      "bytes": 354,
-      "sha256": "d2c39a2a3fe3eeefd02d7a70804e79bc4b0f82fdcfeaad47f2b1bb061bc51222"
-    },
-    {
-      "id": "road--7-6",
-      "url": "/content/world/chunks/road--7-6.json",
-      "kind": "data",
-      "bytes": 482,
-      "sha256": "b2476596c0e4a66d8e696eb9bacd3d250de29ed3712e8bd001955d2587330978"
-    },
-    {
-      "id": "road--6-6",
-      "url": "/content/world/chunks/road--6-6.json",
-      "kind": "data",
-      "bytes": 359,
-      "sha256": "d851662f6a575de1ea9ca3ad67a6146ebbbe479548de54092c59ed6caabdc8df"
-    },
-    {
-      "id": "road--4-6",
-      "url": "/content/world/chunks/road--4-6.json",
-      "kind": "data",
-      "bytes": 346,
-      "sha256": "6b7626dbdabeebddab51bba3308716b65f2d0c074459e4d64cf8ff7c57d2e47c"
-    },
-    {
-      "id": "road--3-6",
-      "url": "/content/world/chunks/road--3-6.json",
-      "kind": "data",
-      "bytes": 471,
-      "sha256": "710e860347742b229d66b67b8609a52a39442e0075fdad5ebe49315e3d867d80"
-    },
-    {
-      "id": "road--2-6",
-      "url": "/content/world/chunks/road--2-6.json",
-      "kind": "data",
-      "bytes": 346,
-      "sha256": "8ee6d1c5047af085a4578efe07cfceb55e77539537ad5cc9c3e95714ef5e1dda"
-    },
-    {
-      "id": "road--1-6",
-      "url": "/content/world/chunks/road--1-6.json",
-      "kind": "data",
-      "bytes": 470,
-      "sha256": "d485b15c81b99bd2b943260bbdfb289175d49824baf0c5adb1052c0162ec8b3e"
-    },
-    {
-      "id": "road-1-6",
-      "url": "/content/world/chunks/road-1-6.json",
-      "kind": "data",
-      "bytes": 459,
-      "sha256": "210be9c803ba7440860fab62e399ec5fc1f17137fd234352769ead75d2aa01b8"
-    },
-    {
-      "id": "road-2-6",
-      "url": "/content/world/chunks/road-2-6.json",
-      "kind": "data",
-      "bytes": 337,
-      "sha256": "e2acfb2107a9029ac6355a53420c67acab6aaa93fdaa7296fc794404d5e992d0"
-    },
-    {
-      "id": "road-3-6",
-      "url": "/content/world/chunks/road-3-6.json",
-      "kind": "data",
-      "bytes": 459,
-      "sha256": "e3bbf98cde70a31a4c0152d71bb2dd086dc424a99c2e6d9746394e80a251bec3"
-    },
-    {
-      "id": "road-4-6",
-      "url": "/content/world/chunks/road-4-6.json",
-      "kind": "data",
-      "bytes": 343,
-      "sha256": "0865586a18e5c7f212a9aa753041f3c3c3cc7556e036bbce7801c7894634b5ee"
-    },
-    {
-      "id": "road-6-6",
-      "url": "/content/world/chunks/road-6-6.json",
-      "kind": "data",
-      "bytes": 345,
-      "sha256": "4c1910d22545f424413f6b66f8ed289a7c61b9ea0a1cc0594fefd04c25b71b93"
-    },
-    {
-      "id": "road-7-6",
-      "url": "/content/world/chunks/road-7-6.json",
-      "kind": "data",
-      "bytes": 470,
-      "sha256": "7fe8ffb29ea24014d1eaf94c8ccd2d90a85bf01693ad77044221df868b1defa6"
-    },
-    {
-      "id": "road-8-6",
-      "url": "/content/world/chunks/road-8-6.json",
-      "kind": "data",
-      "bytes": 345,
-      "sha256": "d17e846711c056ff60bdb276cf5991c33e59195ff1f365329df94d482e28b36d"
-    },
-    {
-      "id": "road-9-6",
-      "url": "/content/world/chunks/road-9-6.json",
-      "kind": "data",
-      "bytes": 475,
-      "sha256": "2648b24df08e0a63731b75f3c40e4eb5f4c0dbc2e30ea0e655f12e4b608f2787"
-    },
-    {
-      "id": "road-11-6",
-      "url": "/content/world/chunks/road-11-6.json",
-      "kind": "data",
-      "bytes": 471,
-      "sha256": "5a8de86ad35401aab089efc25b2c5d110a26dc0e085ee13eb11f4938d1c20065"
-    },
-    {
-      "id": "road-12-6",
-      "url": "/content/world/chunks/road-12-6.json",
-      "kind": "data",
-      "bytes": 346,
-      "sha256": "a4449a2dcc5be7ca2955c5774ef039b74304974348b419c4e13f144245e2bfa9"
-    },
-    {
-      "id": "road-13-6",
-      "url": "/content/world/chunks/road-13-6.json",
-      "kind": "data",
-      "bytes": 471,
-      "sha256": "9d4437485cba2fa0754c4a5b7fba48b85e7c35d197beb65c1c23a3f7bb4882b5"
-    },
-    {
-      "id": "road--11-5",
-      "url": "/content/world/chunks/road--11-5.json",
-      "kind": "data",
-      "bytes": 200,
-      "sha256": "36f4f704a7d3eb669e952f46f42bad13c08232dd3f77ec4484e6b6f831c28fa0"
-    },
-    {
-      "id": "road--1-5",
-      "url": "/content/world/chunks/road--1-5.json",
-      "kind": "data",
-      "bytes": 190,
-      "sha256": "59a6be10f200d2bc1342e44fb541c7c9e1b5ef5dc8c6636065566a555abc520c"
-    },
-    {
-      "id": "road-4-5",
-      "url": "/content/world/chunks/road-4-5.json",
-      "kind": "data",
-      "bytes": 192,
-      "sha256": "accda84df80e6bf7654b8e50414cd92d0eb146947e5f29fab5bd29d00a4f3fff"
+      "bytes": 4538,
+      "sha256": "b00661bfcb6b6ced6fb7dbeeb2443907d5d802e89eff7e88010a0171c2fe9f4b",
+      "encoding": "gzip",
+      "label": "Deck - U02 - U TURN WEST HALF"
+    },
+    {
+      "id": "map-4fdb7de51d9faf4c",
+      "url": "/content/assets/imported/map-4fdb7de51d9faf4c.glb.bin",
+      "kind": "model",
+      "bytes": 4534,
+      "sha256": "6f16ef10115cf0db30a00dc2aae9892edf4b123f80b0c24a4a0af21fbcf1a5b1",
+      "encoding": "gzip",
+      "label": "Deck - U03 - U TURN EAST HALF"
+    },
+    {
+      "id": "map-130da6ffc51d8d13",
+      "url": "/content/assets/imported/map-130da6ffc51d8d13.glb.bin",
+      "kind": "model",
+      "bytes": 2917,
+      "sha256": "ac1b24129ad51760bb008245725d3a8dd39b6d4131d1bedddf79c742a6843ad7",
+      "encoding": "gzip",
+      "label": "Lamp_00 - curb / inward"
+    },
+    {
+      "id": "map-d8fe3b88f5aa4e92",
+      "url": "/content/assets/imported/map-d8fe3b88f5aa4e92.glb.bin",
+      "kind": "model",
+      "bytes": 1985,
+      "sha256": "e85640f03e80f2d1a95a32af1803fa63b38e762471e6af3ff6cda80e4156fdb6",
+      "encoding": "gzip",
+      "label": "Lens Lamp_00 - curb / inward"
+    },
+    {
+      "id": "map-0e464e3b5566cc2c",
+      "url": "/content/assets/imported/map-0e464e3b5566cc2c.glb.bin",
+      "kind": "model",
+      "bytes": 3884,
+      "sha256": "bbbb5be1f2b5eaaf7c3060c5e15a9ac87bf0858215d513fd2cbca2b8c7ac5f15",
+      "encoding": "gzip",
+      "label": "Signal_00"
+    },
+    {
+      "id": "map-1ad5ba7e002b286a",
+      "url": "/content/assets/imported/map-1ad5ba7e002b286a.glb.bin",
+      "kind": "model",
+      "bytes": 3507,
+      "sha256": "0ee403a6f7050b6fe1d40d3d287201b994bf693aeefa83b4172e306a61ced399",
+      "encoding": "gzip",
+      "label": "Highway sign - S06 - HORIZONTAL UPPER STRAIGHT"
     },
     {
       "id": "road-navigation",
       "url": "/content/world/navigation.json",
       "kind": "data",
-      "bytes": 294984,
-      "sha256": "b63455fae3cd5dc751c787e32d2e347da42ad3ed636033ee2563c3b6820f5551"
+      "bytes": 1240238,
+      "sha256": "f62d3d9e9f60c0f96eb61d5ae4744d76690722c42ef0da5a980a5c9b7b6f5127"
     },
     {
       "id": "road-overview",
       "url": "/content/world/overview.json",
       "kind": "data",
-      "bytes": 2752,
-      "sha256": "6f741bc1f5f9189b7cfa9ef3008ddc787448ee8f0ca744a897f566dd558a646d"
+      "bytes": 3845,
+      "sha256": "17bf718fb1f7e2ea8fb52c25a266c205327bd960bccc8df6f59b3d34a90a25e5"
+    },
+    {
+      "id": "road-3-2",
+      "url": "/content/world/chunks/road-3-2.json.bin",
+      "kind": "data",
+      "bytes": 416,
+      "sha256": "88dcc4f526bac77f2c17c82483282a9ac95ebe7dedc090e033dfac9b31124110",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road-3-1",
+      "url": "/content/world/chunks/road-3-1.json.bin",
+      "kind": "data",
+      "bytes": 262,
+      "sha256": "24bf0b44097955b987603bd8c9f538ba87bc51adf6b7a2802eaf38d8c98ed55e",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road-3-0",
+      "url": "/content/world/chunks/road-3-0.json.bin",
+      "kind": "data",
+      "bytes": 382,
+      "sha256": "1c7a566386031fc2318a07207a98c6f84fcc2648fe10b0e03c2f04b4f448cc7c",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road-3--1",
+      "url": "/content/world/chunks/road-3--1.json.bin",
+      "kind": "data",
+      "bytes": 468,
+      "sha256": "64ecc2ba80efb461ce884a4425146211e49b07f354aaa8eb32368a163b141040",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road-3--2",
+      "url": "/content/world/chunks/road-3--2.json.bin",
+      "kind": "data",
+      "bytes": 265,
+      "sha256": "4413ac33f80676da353e2231e85ed4cef8abfa1aca282b4aeb8c7afab51cb26e",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road-3--3",
+      "url": "/content/world/chunks/road-3--3.json.bin",
+      "kind": "data",
+      "bytes": 398,
+      "sha256": "a7eb0653a44b750a43125309b514a88cc5b7cfd3e0c76a60a7b14ebca6330527",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road-3--4",
+      "url": "/content/world/chunks/road-3--4.json.bin",
+      "kind": "data",
+      "bytes": 211,
+      "sha256": "9d772b1a8c820b97190de8fbd7126492bc30017e4487e1e97c6cb5ec5dc264cf",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road-2-2",
+      "url": "/content/world/chunks/road-2-2.json.bin",
+      "kind": "data",
+      "bytes": 414,
+      "sha256": "fe147ede757edd33fa6263ce2ce1853cc683a1d8b7e1133008e85addd92a2a82",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road-2--1",
+      "url": "/content/world/chunks/road-2--1.json.bin",
+      "kind": "data",
+      "bytes": 458,
+      "sha256": "de1a45e16656f7a09f57e057f4a99408fd13aa4b817c19e56b85611bac1fc8ee",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road-2--2",
+      "url": "/content/world/chunks/road-2--2.json.bin",
+      "kind": "data",
+      "bytes": 427,
+      "sha256": "ae04e4e7769c4b96b8ae0d879b970340b12bc7ad382aa54aeeb78d7adcb5f1d2",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road-2--4",
+      "url": "/content/world/chunks/road-2--4.json.bin",
+      "kind": "data",
+      "bytes": 585,
+      "sha256": "87518851e5dbe2f85abcfca762cc2ef8215a0ed55266fc6d4acd60ada63c5f9d",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road-1-2",
+      "url": "/content/world/chunks/road-1-2.json.bin",
+      "kind": "data",
+      "bytes": 533,
+      "sha256": "bb02338a712753b64808d9e89bcd1d20c38a5a4e24dd98fa946c937ef6c02069",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road-1-1",
+      "url": "/content/world/chunks/road-1-1.json.bin",
+      "kind": "data",
+      "bytes": 573,
+      "sha256": "e110d1350b34fc211292992787aca04cce9f05fde33f6e57535cc9e92c4ee2d5",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road-1-0",
+      "url": "/content/world/chunks/road-1-0.json.bin",
+      "kind": "data",
+      "bytes": 745,
+      "sha256": "9091d1f3489dd7e0b8f6f6a4da884787a67e0b6ee9417a70074717c99716f443",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road-1--1",
+      "url": "/content/world/chunks/road-1--1.json.bin",
+      "kind": "data",
+      "bytes": 434,
+      "sha256": "6000a442719c15fae2a3a474eec10dc4e65e9dfa9a9ae8e41cae16defc630be3",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road-1--2",
+      "url": "/content/world/chunks/road-1--2.json.bin",
+      "kind": "data",
+      "bytes": 529,
+      "sha256": "6033ef85a3738de19e8b10dd123f6e8c863d2aba77775dc2a0d249663df4ed15",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road-1--3",
+      "url": "/content/world/chunks/road-1--3.json.bin",
+      "kind": "data",
+      "bytes": 598,
+      "sha256": "4ae4a249498a4cb2612cc1bc551de2380627c0cf8340f780eeaa1b252b1b296b",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road-1--4",
+      "url": "/content/world/chunks/road-1--4.json.bin",
+      "kind": "data",
+      "bytes": 529,
+      "sha256": "037f95f01a96996fe24dc84e4ff54a9364c4ee76a60ee18618266938e8151fe2",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road-0-2",
+      "url": "/content/world/chunks/road-0-2.json.bin",
+      "kind": "data",
+      "bytes": 442,
+      "sha256": "cd369bf7f0ebcb486149055943e017933f107d6b721158f4ac41e50d004f1b2f",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road-0-1",
+      "url": "/content/world/chunks/road-0-1.json.bin",
+      "kind": "data",
+      "bytes": 550,
+      "sha256": "421337452826ff50e7fc9028666e89257499fbe549152ee5398b6c4c3c3d6a45",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road-0--1",
+      "url": "/content/world/chunks/road-0--1.json.bin",
+      "kind": "data",
+      "bytes": 741,
+      "sha256": "35efa37ad9677be013f3a9fd4b125c1111ed8e2830e5ed80bdefd343e93f6167",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road-0--4",
+      "url": "/content/world/chunks/road-0--4.json.bin",
+      "kind": "data",
+      "bytes": 383,
+      "sha256": "7a3701b92bbb1048b713f15af2812e2ff4ef5aa0eb8dbb352e3b6b4c8b8c149d",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road-0-0",
+      "url": "/content/world/chunks/road-0-0.json.bin",
+      "kind": "data",
+      "bytes": 794,
+      "sha256": "3b1b9b46d1a671baa347da32416e4a686399e91101d07b98bc6253af38c1dac8",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road-0--3",
+      "url": "/content/world/chunks/road-0--3.json.bin",
+      "kind": "data",
+      "bytes": 412,
+      "sha256": "a1bac1be9bb3b16acdd6cf8b6636d483095721cd7fd59687adccdc15e7ac3222",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road--1-2",
+      "url": "/content/world/chunks/road--1-2.json.bin",
+      "kind": "data",
+      "bytes": 578,
+      "sha256": "3ee5073bb9622e8457df114e118979ed05f31453d32cdc014621f62be46ba026",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road--1-1",
+      "url": "/content/world/chunks/road--1-1.json.bin",
+      "kind": "data",
+      "bytes": 358,
+      "sha256": "7c74b1de5e4333498fbc528569bd182674418a17fc975968c7b9e4d2e94e6403",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road--1--1",
+      "url": "/content/world/chunks/road--1--1.json.bin",
+      "kind": "data",
+      "bytes": 651,
+      "sha256": "3b8ae64416d750e6736af8efa0e88b0d2257242737e7f804f78f21b50327cec4",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road--1--4",
+      "url": "/content/world/chunks/road--1--4.json.bin",
+      "kind": "data",
+      "bytes": 395,
+      "sha256": "757c9acbb3a1b533b564482c08594c11fbdbff9589e880a64cf70e25801a2ede",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road--1--2",
+      "url": "/content/world/chunks/road--1--2.json.bin",
+      "kind": "data",
+      "bytes": 538,
+      "sha256": "79d254076dc9c0cdd22b4522faf5a96b1548c37044cd48b3072458d87e059306",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road--2-2",
+      "url": "/content/world/chunks/road--2-2.json.bin",
+      "kind": "data",
+      "bytes": 539,
+      "sha256": "eca03a9db0f90a16964ecc476de65ab62e1ecb41846e1fdf1bb20d0ccfa601ff",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road--2-1",
+      "url": "/content/world/chunks/road--2-1.json.bin",
+      "kind": "data",
+      "bytes": 507,
+      "sha256": "dd7f848f5da7ceed68925a8e99ebc7caedb9ebcb99664ac53d2c9ef9b570ea05",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road--2-0",
+      "url": "/content/world/chunks/road--2-0.json.bin",
+      "kind": "data",
+      "bytes": 636,
+      "sha256": "352bd8d97fc706ad2d317013a51be2307e7038ade760a9692b2f58629172b706",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road--2--1",
+      "url": "/content/world/chunks/road--2--1.json.bin",
+      "kind": "data",
+      "bytes": 501,
+      "sha256": "858440b63cca257eba96b5a0a6036c9dd70fd2ced182be2f788553aed4b6852a",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road--2--2",
+      "url": "/content/world/chunks/road--2--2.json.bin",
+      "kind": "data",
+      "bytes": 488,
+      "sha256": "e1e00fb201b79bfd4ffa66c2f40630ca6a56e8e815fb9e35afc32a5d3a6523f1",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road--2--3",
+      "url": "/content/world/chunks/road--2--3.json.bin",
+      "kind": "data",
+      "bytes": 627,
+      "sha256": "4b02c7a1631bc31d4da6ff96a931add473e3f919e9253a7fd70125e73bbfb922",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road--2--4",
+      "url": "/content/world/chunks/road--2--4.json.bin",
+      "kind": "data",
+      "bytes": 387,
+      "sha256": "2b0a8adacfdef36ce24d8e1ff3fba7dd6d5e750934708c632b2d243a5bb35cb8",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road--3-2",
+      "url": "/content/world/chunks/road--3-2.json.bin",
+      "kind": "data",
+      "bytes": 525,
+      "sha256": "a5f186cdbed40c913489a871b3040db61656eefc55eb6a3c173037a50426ee95",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road--3-1",
+      "url": "/content/world/chunks/road--3-1.json.bin",
+      "kind": "data",
+      "bytes": 433,
+      "sha256": "1c43f7863d36ff3ad082473d4f70332d04c489ab934053a7dfa9aa47235a3c7a",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road--3--1",
+      "url": "/content/world/chunks/road--3--1.json.bin",
+      "kind": "data",
+      "bytes": 587,
+      "sha256": "64299919f94132296bfc2e14d295f8a4dcc07116f84283a5a9307543d7abe309",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road--3--2",
+      "url": "/content/world/chunks/road--3--2.json.bin",
+      "kind": "data",
+      "bytes": 436,
+      "sha256": "ac2a7e613b3c2823401b8fa956531be487eee2ec2202e229e59445ad9219535a",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road--3--4",
+      "url": "/content/world/chunks/road--3--4.json.bin",
+      "kind": "data",
+      "bytes": 406,
+      "sha256": "b75a6e987fcc215ec526304cd6547457d055b7af1e1710ac05c470edf32fbf58",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road--3-0",
+      "url": "/content/world/chunks/road--3-0.json.bin",
+      "kind": "data",
+      "bytes": 385,
+      "sha256": "94155f2f52d36195ff43712658d4cdb0351e3faca2bc94acefaa75c3ebb7bba4",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road--3--3",
+      "url": "/content/world/chunks/road--3--3.json.bin",
+      "kind": "data",
+      "bytes": 385,
+      "sha256": "5a64eb168498d23e26564bfc1b8a79526de07b4be132d7bb9384580958f3df87",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road-0--2",
+      "url": "/content/world/chunks/road-0--2.json.bin",
+      "kind": "data",
+      "bytes": 490,
+      "sha256": "81c9543285814697b4c41da3d64de8d13521d5fad9705f48918ff732977631e6",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road-2-1",
+      "url": "/content/world/chunks/road-2-1.json.bin",
+      "kind": "data",
+      "bytes": 388,
+      "sha256": "3136fbbd0433fac8b61799f1a9de0b686ab9c584a1da8cfba844c71b08ef2971",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road-2--3",
+      "url": "/content/world/chunks/road-2--3.json.bin",
+      "kind": "data",
+      "bytes": 566,
+      "sha256": "97ae0fc7b3679696da098fa7fc5d28b2c3f9ae4063c344c216a9a45774d71f29",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road-2--5",
+      "url": "/content/world/chunks/road-2--5.json.bin",
+      "kind": "data",
+      "bytes": 221,
+      "sha256": "e82599e150d44b7f13c546f246477ee2dd904f40ab315c0399c54dbbb44d6f9e",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road-1--5",
+      "url": "/content/world/chunks/road-1--5.json.bin",
+      "kind": "data",
+      "bytes": 226,
+      "sha256": "7b4059f9573cc239563e5fd5af3ed94f5ab16e71b8fb170acbb216c897752875",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road-2-0",
+      "url": "/content/world/chunks/road-2-0.json.bin",
+      "kind": "data",
+      "bytes": 312,
+      "sha256": "c86d88a186df833105a33f0dfacc2979d90f7ffadc58f9f7cc239a65f3325b80",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road--1-0",
+      "url": "/content/world/chunks/road--1-0.json.bin",
+      "kind": "data",
+      "bytes": 469,
+      "sha256": "7d194fbd901c967fdd43f2c8950dda8fa38667c1237997b22735dc31ac868b64",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road--1--3",
+      "url": "/content/world/chunks/road--1--3.json.bin",
+      "kind": "data",
+      "bytes": 535,
+      "sha256": "001e6085d121750372d182e958a0472cc4999c4bbd115a97c7fe6ce6c878b61e",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road--4-1",
+      "url": "/content/world/chunks/road--4-1.json.bin",
+      "kind": "data",
+      "bytes": 306,
+      "sha256": "494fc672c33c59ba4b173e03e87e6c1a3f74feab8c715ce7fbcb0ea2dbaf624b",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road--4-0",
+      "url": "/content/world/chunks/road--4-0.json.bin",
+      "kind": "data",
+      "bytes": 306,
+      "sha256": "f3b2faef1b3479a22590939eaa0fc65b4121ff2940ebc0355b10187d830d36c2",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road--4--2",
+      "url": "/content/world/chunks/road--4--2.json.bin",
+      "kind": "data",
+      "bytes": 318,
+      "sha256": "3d30513aa91c4146f49c3ba0c1835fc0dd00e6a467294e6717c34e207e3e3164",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road--4--3",
+      "url": "/content/world/chunks/road--4--3.json.bin",
+      "kind": "data",
+      "bytes": 321,
+      "sha256": "12b53a755ecf8cfec0ef33f5daa3385e442e3bc6204973228314552485f00504",
+      "encoding": "gzip"
+    },
+    {
+      "id": "road--4--1",
+      "url": "/content/world/chunks/road--4--1.json.bin",
+      "kind": "data",
+      "bytes": 216,
+      "sha256": "ab71f2926139bd12b3eab07c1356cadba68ece48bc022869c31da23a40cd58bc",
+      "encoding": "gzip"
     }
   ],
   "chunks": [
     {
-      "id": "road-0--9",
+      "id": "road-3-2",
       "bounds": {
-        "minX": 0,
-        "maxX": 20,
-        "minZ": -180,
-        "maxZ": -160
+        "minX": 55.0,
+        "maxX": 80,
+        "minZ": 35.0,
+        "maxZ": 60
       },
-      "resourceId": "road-0--9",
+      "resourceId": "road-3-2",
       "assetIds": [
-        "road-intersection",
-        "road-straight"
+        "map-130da6ffc51d8d13",
+        "map-742ac4b402f41e28",
+        "map-a80edbf0901d9ea1",
+        "map-d8fe3b88f5aa4e92"
       ]
     },
     {
-      "id": "road-0--8",
+      "id": "road-3-1",
       "bounds": {
-        "minX": 0,
-        "maxX": 20,
-        "minZ": -160,
-        "maxZ": -140
+        "minX": 55.0,
+        "maxX": 80,
+        "minZ": 15.0,
+        "maxZ": 40
       },
-      "resourceId": "road-0--8",
+      "resourceId": "road-3-1",
       "assetIds": [
-        "road-straight"
+        "map-a80edbf0901d9ea1",
+        "map-d1ae55fb9bb06b2e"
       ]
     },
     {
-      "id": "road-0--7",
+      "id": "road-3-0",
       "bounds": {
-        "minX": 0,
-        "maxX": 20,
-        "minZ": -140,
-        "maxZ": -120
+        "minX": 55.0,
+        "maxX": 80,
+        "minZ": -5.0,
+        "maxZ": 20
       },
-      "resourceId": "road-0--7",
+      "resourceId": "road-3-0",
       "assetIds": [
-        "road-crossroad",
-        "road-straight"
+        "map-130da6ffc51d8d13",
+        "map-a80edbf0901d9ea1",
+        "map-d8fe3b88f5aa4e92"
       ]
     },
     {
-      "id": "road-0--6",
+      "id": "road-3--1",
       "bounds": {
-        "minX": 0,
-        "maxX": 20,
-        "minZ": -120,
-        "maxZ": -100
+        "minX": 55.0,
+        "maxX": 80,
+        "minZ": -25.0,
+        "maxZ": 0
       },
-      "resourceId": "road-0--6",
+      "resourceId": "road-3--1",
       "assetIds": [
-        "road-straight"
+        "map-0e464e3b5566cc2c",
+        "map-130da6ffc51d8d13",
+        "map-a80edbf0901d9ea1",
+        "map-d1ae55fb9bb06b2e",
+        "map-d8fe3b88f5aa4e92"
       ]
     },
     {
-      "id": "road-0--5",
+      "id": "road-3--2",
       "bounds": {
-        "minX": 0,
-        "maxX": 20,
-        "minZ": -100,
-        "maxZ": -80
+        "minX": 55.0,
+        "maxX": 80,
+        "minZ": -45.0,
+        "maxZ": -20
       },
-      "resourceId": "road-0--5",
+      "resourceId": "road-3--2",
       "assetIds": [
-        "road-straight"
+        "map-a80edbf0901d9ea1",
+        "map-d1ae55fb9bb06b2e"
+      ]
+    },
+    {
+      "id": "road-3--3",
+      "bounds": {
+        "minX": 55.0,
+        "maxX": 80,
+        "minZ": -65.0,
+        "maxZ": -40
+      },
+      "resourceId": "road-3--3",
+      "assetIds": [
+        "map-130da6ffc51d8d13",
+        "map-a80edbf0901d9ea1",
+        "map-d8fe3b88f5aa4e92"
+      ]
+    },
+    {
+      "id": "road-3--4",
+      "bounds": {
+        "minX": 55.0,
+        "maxX": 80,
+        "minZ": -80,
+        "maxZ": -60
+      },
+      "resourceId": "road-3--4",
+      "assetIds": [
+        "map-742ac4b402f41e28"
+      ]
+    },
+    {
+      "id": "road-2-2",
+      "bounds": {
+        "minX": 35.0,
+        "maxX": 60,
+        "minZ": 40,
+        "maxZ": 60
+      },
+      "resourceId": "road-2-2",
+      "assetIds": [
+        "map-130da6ffc51d8d13",
+        "map-a80edbf0901d9ea1",
+        "map-d8fe3b88f5aa4e92"
+      ]
+    },
+    {
+      "id": "road-2--1",
+      "bounds": {
+        "minX": 35.0,
+        "maxX": 60,
+        "minZ": -20,
+        "maxZ": 0
+      },
+      "resourceId": "road-2--1",
+      "assetIds": [
+        "map-0e464e3b5566cc2c",
+        "map-130da6ffc51d8d13",
+        "map-a80edbf0901d9ea1",
+        "map-d8fe3b88f5aa4e92"
+      ]
+    },
+    {
+      "id": "road-2--2",
+      "bounds": {
+        "minX": 35.0,
+        "maxX": 60,
+        "minZ": -45.0,
+        "maxZ": -20
+      },
+      "resourceId": "road-2--2",
+      "assetIds": [
+        "map-130da6ffc51d8d13",
+        "map-a80edbf0901d9ea1",
+        "map-d1ae55fb9bb06b2e",
+        "map-d8fe3b88f5aa4e92"
+      ]
+    },
+    {
+      "id": "road-2--4",
+      "bounds": {
+        "minX": 35.0,
+        "maxX": 60,
+        "minZ": -85.0,
+        "maxZ": -60
+      },
+      "resourceId": "road-2--4",
+      "assetIds": [
+        "map-130da6ffc51d8d13",
+        "map-7bf3e5b72548225a",
+        "map-a80edbf0901d9ea1",
+        "map-d8fe3b88f5aa4e92"
+      ]
+    },
+    {
+      "id": "road-1-2",
+      "bounds": {
+        "minX": 15.0,
+        "maxX": 40,
+        "minZ": 35.0,
+        "maxZ": 60
+      },
+      "resourceId": "road-1-2",
+      "assetIds": [
+        "map-130da6ffc51d8d13",
+        "map-a80edbf0901d9ea1",
+        "map-d1ae55fb9bb06b2e",
+        "map-d8fe3b88f5aa4e92"
+      ]
+    },
+    {
+      "id": "road-1-1",
+      "bounds": {
+        "minX": 15.0,
+        "maxX": 40,
+        "minZ": 15.0,
+        "maxZ": 40
+      },
+      "resourceId": "road-1-1",
+      "assetIds": [
+        "map-0e464e3b5566cc2c",
+        "map-130da6ffc51d8d13",
+        "map-a80edbf0901d9ea1",
+        "map-d1ae55fb9bb06b2e",
+        "map-d8fe3b88f5aa4e92"
+      ]
+    },
+    {
+      "id": "road-1-0",
+      "bounds": {
+        "minX": 15.0,
+        "maxX": 40,
+        "minZ": -5.0,
+        "maxZ": 25.0
+      },
+      "resourceId": "road-1-0",
+      "assetIds": [
+        "map-130da6ffc51d8d13",
+        "map-7bf3e5b72548225a",
+        "map-a80edbf0901d9ea1",
+        "map-d8fe3b88f5aa4e92"
+      ]
+    },
+    {
+      "id": "road-1--1",
+      "bounds": {
+        "minX": 15.0,
+        "maxX": 40,
+        "minZ": -25.0,
+        "maxZ": 0
+      },
+      "resourceId": "road-1--1",
+      "assetIds": [
+        "map-130da6ffc51d8d13",
+        "map-a80edbf0901d9ea1",
+        "map-ce6b36321726e251",
+        "map-d8fe3b88f5aa4e92"
+      ]
+    },
+    {
+      "id": "road-1--2",
+      "bounds": {
+        "minX": 15.0,
+        "maxX": 40,
+        "minZ": -45.0,
+        "maxZ": -20
+      },
+      "resourceId": "road-1--2",
+      "assetIds": [
+        "map-0e464e3b5566cc2c",
+        "map-130da6ffc51d8d13",
+        "map-a80edbf0901d9ea1",
+        "map-ce6b36321726e251",
+        "map-d1ae55fb9bb06b2e",
+        "map-d8fe3b88f5aa4e92"
+      ]
+    },
+    {
+      "id": "road-1--3",
+      "bounds": {
+        "minX": 15.0,
+        "maxX": 40,
+        "minZ": -65.0,
+        "maxZ": -40
+      },
+      "resourceId": "road-1--3",
+      "assetIds": [
+        "map-0e464e3b5566cc2c",
+        "map-130da6ffc51d8d13",
+        "map-241ce766ed87517d",
+        "map-a80edbf0901d9ea1",
+        "map-d8fe3b88f5aa4e92"
+      ]
+    },
+    {
+      "id": "road-1--4",
+      "bounds": {
+        "minX": 15.0,
+        "maxX": 40,
+        "minZ": -85.0,
+        "maxZ": -60
+      },
+      "resourceId": "road-1--4",
+      "assetIds": [
+        "map-130da6ffc51d8d13",
+        "map-7bf3e5b72548225a",
+        "map-a80edbf0901d9ea1",
+        "map-d1ae55fb9bb06b2e",
+        "map-d8fe3b88f5aa4e92"
+      ]
+    },
+    {
+      "id": "road-0-2",
+      "bounds": {
+        "minX": -5.0,
+        "maxX": 20,
+        "minZ": 35.0,
+        "maxZ": 60
+      },
+      "resourceId": "road-0-2",
+      "assetIds": [
+        "map-130da6ffc51d8d13",
+        "map-a80edbf0901d9ea1",
+        "map-d1ae55fb9bb06b2e",
+        "map-d8fe3b88f5aa4e92"
+      ]
+    },
+    {
+      "id": "road-0-1",
+      "bounds": {
+        "minX": -5.0,
+        "maxX": 20,
+        "minZ": 15.0,
+        "maxZ": 40
+      },
+      "resourceId": "road-0-1",
+      "assetIds": [
+        "map-0e464e3b5566cc2c",
+        "map-130da6ffc51d8d13",
+        "map-a80edbf0901d9ea1",
+        "map-ce6b36321726e251",
+        "map-d8fe3b88f5aa4e92"
+      ]
+    },
+    {
+      "id": "road-0--1",
+      "bounds": {
+        "minX": -5.0,
+        "maxX": 25.0,
+        "minZ": -25.0,
+        "maxZ": 0
+      },
+      "resourceId": "road-0--1",
+      "assetIds": [
+        "map-130da6ffc51d8d13",
+        "map-7bf3e5b72548225a",
+        "map-888737959321a386",
+        "map-a80edbf0901d9ea1",
+        "map-ce6b36321726e251",
+        "map-d8fe3b88f5aa4e92",
+        "map-ef898603ae3e9ddd"
       ]
     },
     {
       "id": "road-0--4",
       "bounds": {
-        "minX": 0,
+        "minX": -5.0,
         "maxX": 20,
         "minZ": -80,
         "maxZ": -60
       },
       "resourceId": "road-0--4",
       "assetIds": [
-        "road-crossroad",
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-0--3",
-      "bounds": {
-        "minX": 0,
-        "maxX": 20,
-        "minZ": -60,
-        "maxZ": -40
-      },
-      "resourceId": "road-0--3",
-      "assetIds": [
-        "road-ramp"
-      ]
-    },
-    {
-      "id": "road-0--2",
-      "bounds": {
-        "minX": 0,
-        "maxX": 20,
-        "minZ": -40,
-        "maxZ": -20
-      },
-      "resourceId": "road-0--2",
-      "assetIds": [
-        "road-ramp"
-      ]
-    },
-    {
-      "id": "road-0--1",
-      "bounds": {
-        "minX": 0,
-        "maxX": 20,
-        "minZ": -20,
-        "maxZ": 0
-      },
-      "resourceId": "road-0--1",
-      "assetIds": [
-        "road-ramp",
-        "road-straight",
-        "bridge-pillar"
+        "map-130da6ffc51d8d13",
+        "map-a80edbf0901d9ea1",
+        "map-d1ae55fb9bb06b2e",
+        "map-d8fe3b88f5aa4e92"
       ]
     },
     {
       "id": "road-0-0",
       "bounds": {
-        "minX": 0,
-        "maxX": 20,
-        "minZ": 0,
-        "maxZ": 20
+        "minX": -15.0,
+        "maxX": 55.0,
+        "minZ": -85.0,
+        "maxZ": 25.0
       },
       "resourceId": "road-0-0",
       "assetIds": [
-        "road-straight",
-        "bridge-pillar"
+        "map-0db7c8dfbe7b5215",
+        "map-130da6ffc51d8d13",
+        "map-3fe33aa18d56eda4",
+        "map-4bdc8824db7ca95e",
+        "map-4fdb7de51d9faf4c",
+        "map-a0eeac40ecf64d0d",
+        "map-a80edbf0901d9ea1",
+        "map-d8fe3b88f5aa4e92",
+        "map-eea5c549e3afcc87",
+        "map-ef898603ae3e9ddd"
       ]
     },
     {
-      "id": "road-0-1",
+      "id": "road-0--3",
       "bounds": {
-        "minX": 0,
+        "minX": -5.0,
         "maxX": 20,
-        "minZ": 20,
-        "maxZ": 40
+        "minZ": -65.0,
+        "maxZ": -40
       },
-      "resourceId": "road-0-1",
+      "resourceId": "road-0--3",
       "assetIds": [
-        "road-ramp"
+        "map-130da6ffc51d8d13",
+        "map-a80edbf0901d9ea1",
+        "map-d8fe3b88f5aa4e92"
       ]
     },
     {
-      "id": "road-0-2",
+      "id": "road--1-2",
       "bounds": {
-        "minX": 0,
-        "maxX": 20,
-        "minZ": 40,
+        "minX": -25.0,
+        "maxX": 0,
+        "minZ": 35.0,
         "maxZ": 60
       },
-      "resourceId": "road-0-2",
+      "resourceId": "road--1-2",
       "assetIds": [
-        "road-ramp"
+        "map-0e464e3b5566cc2c",
+        "map-130da6ffc51d8d13",
+        "map-742ac4b402f41e28",
+        "map-d1ae55fb9bb06b2e",
+        "map-d8fe3b88f5aa4e92"
       ]
     },
     {
-      "id": "road-0-3",
+      "id": "road--1-1",
       "bounds": {
-        "minX": 0,
-        "maxX": 20,
-        "minZ": 60,
-        "maxZ": 80
+        "minX": -25.0,
+        "maxX": 0,
+        "minZ": 15.0,
+        "maxZ": 40
       },
-      "resourceId": "road-0-3",
+      "resourceId": "road--1-1",
       "assetIds": [
-        "road-ramp",
-        "road-straight"
+        "map-130da6ffc51d8d13",
+        "map-a80edbf0901d9ea1",
+        "map-d8fe3b88f5aa4e92"
       ]
     },
     {
-      "id": "road-0-4",
+      "id": "road--1--1",
       "bounds": {
-        "minX": 0,
-        "maxX": 20,
-        "minZ": 80,
-        "maxZ": 100
+        "minX": -25.0,
+        "maxX": 0,
+        "minZ": -25.0,
+        "maxZ": 0
       },
-      "resourceId": "road-0-4",
+      "resourceId": "road--1--1",
       "assetIds": [
-        "road-crossroad",
-        "road-straight"
+        "map-130da6ffc51d8d13",
+        "map-1ad5ba7e002b286a",
+        "map-a80edbf0901d9ea1",
+        "map-d8fe3b88f5aa4e92",
+        "map-ef898603ae3e9ddd"
       ]
     },
     {
-      "id": "road-0-5",
+      "id": "road--1--4",
       "bounds": {
-        "minX": 0,
-        "maxX": 20,
-        "minZ": 100,
-        "maxZ": 120
+        "minX": -25.0,
+        "maxX": 0,
+        "minZ": -80,
+        "maxZ": -60
       },
-      "resourceId": "road-0-5",
+      "resourceId": "road--1--4",
       "assetIds": [
-        "road-straight"
+        "map-130da6ffc51d8d13",
+        "map-a80edbf0901d9ea1",
+        "map-d8fe3b88f5aa4e92"
       ]
     },
     {
-      "id": "road-0-6",
+      "id": "road--1--2",
       "bounds": {
-        "minX": 0,
-        "maxX": 20,
-        "minZ": 120,
-        "maxZ": 140
+        "minX": -25.0,
+        "maxX": 0,
+        "minZ": -45.0,
+        "maxZ": -20
       },
-      "resourceId": "road-0-6",
+      "resourceId": "road--1--2",
       "assetIds": [
-        "road-level-crossing",
-        "road-straight",
-        "railroad-straight",
-        "railroad-crossing",
-        "rail-crossing-sign"
+        "map-130da6ffc51d8d13",
+        "map-a80edbf0901d9ea1",
+        "map-d8fe3b88f5aa4e92"
       ]
     },
     {
-      "id": "road-0-7",
+      "id": "road--2-2",
       "bounds": {
-        "minX": 0,
-        "maxX": 20,
-        "minZ": 140,
-        "maxZ": 160
+        "minX": -45.0,
+        "maxX": -20,
+        "minZ": 35.0,
+        "maxZ": 60
       },
-      "resourceId": "road-0-7",
+      "resourceId": "road--2-2",
       "assetIds": [
-        "road-crossroad",
-        "road-straight"
+        "map-130da6ffc51d8d13",
+        "map-a80edbf0901d9ea1",
+        "map-d1ae55fb9bb06b2e",
+        "map-d8fe3b88f5aa4e92"
       ]
     },
     {
-      "id": "road-0-8",
+      "id": "road--2-1",
       "bounds": {
-        "minX": 0,
-        "maxX": 20,
-        "minZ": 160,
-        "maxZ": 180
+        "minX": -45.0,
+        "maxX": -20,
+        "minZ": 15.0,
+        "maxZ": 40
       },
-      "resourceId": "road-0-8",
+      "resourceId": "road--2-1",
       "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-0-9",
-      "bounds": {
-        "minX": 0,
-        "maxX": 20,
-        "minZ": 180,
-        "maxZ": 200
-      },
-      "resourceId": "road-0-9",
-      "assetIds": [
-        "road-intersection",
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--10-0",
-      "bounds": {
-        "minX": -200,
-        "maxX": -180,
-        "minZ": 0,
-        "maxZ": 20
-      },
-      "resourceId": "road--10-0",
-      "assetIds": [
-        "road-intersection",
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--9-0",
-      "bounds": {
-        "minX": -180,
-        "maxX": -160,
-        "minZ": 0,
-        "maxZ": 20
-      },
-      "resourceId": "road--9-0",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--8-0",
-      "bounds": {
-        "minX": -160,
-        "maxX": -140,
-        "minZ": 0,
-        "maxZ": 20
-      },
-      "resourceId": "road--8-0",
-      "assetIds": [
-        "road-straight",
-        "road-crossroad"
-      ]
-    },
-    {
-      "id": "road--7-0",
-      "bounds": {
-        "minX": -140,
-        "maxX": -120,
-        "minZ": 0,
-        "maxZ": 20
-      },
-      "resourceId": "road--7-0",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--6-0",
-      "bounds": {
-        "minX": -120,
-        "maxX": -100,
-        "minZ": 0,
-        "maxZ": 20
-      },
-      "resourceId": "road--6-0",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--5-0",
-      "bounds": {
-        "minX": -100,
-        "maxX": -80,
-        "minZ": 0,
-        "maxZ": 20
-      },
-      "resourceId": "road--5-0",
-      "assetIds": [
-        "road-crossroad",
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--4-0",
-      "bounds": {
-        "minX": -80,
-        "maxX": -60,
-        "minZ": 0,
-        "maxZ": 20
-      },
-      "resourceId": "road--4-0",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--3-0",
-      "bounds": {
-        "minX": -60,
-        "maxX": -40,
-        "minZ": 0,
-        "maxZ": 20
-      },
-      "resourceId": "road--3-0",
-      "assetIds": [
-        "road-straight"
+        "map-0e464e3b5566cc2c",
+        "map-130da6ffc51d8d13",
+        "map-a80edbf0901d9ea1",
+        "map-ce6b36321726e251",
+        "map-d8fe3b88f5aa4e92"
       ]
     },
     {
       "id": "road--2-0",
       "bounds": {
-        "minX": -40,
+        "minX": -40.25,
         "maxX": -20,
-        "minZ": 0,
+        "minZ": -5.0,
         "maxZ": 20
       },
       "resourceId": "road--2-0",
       "assetIds": [
-        "road-crossroad",
-        "road-straight"
+        "map-0e464e3b5566cc2c",
+        "map-130da6ffc51d8d13",
+        "map-a80edbf0901d9ea1",
+        "map-d8fe3b88f5aa4e92"
       ]
     },
     {
-      "id": "road--1-0",
+      "id": "road--2--1",
       "bounds": {
-        "minX": -20,
-        "maxX": 0,
-        "minZ": 0,
+        "minX": -45.0,
+        "maxX": -15.0,
+        "minZ": -25.0,
+        "maxZ": 0
+      },
+      "resourceId": "road--2--1",
+      "assetIds": [
+        "map-130da6ffc51d8d13",
+        "map-241ce766ed87517d",
+        "map-a80edbf0901d9ea1",
+        "map-d1ae55fb9bb06b2e",
+        "map-d8fe3b88f5aa4e92"
+      ]
+    },
+    {
+      "id": "road--2--2",
+      "bounds": {
+        "minX": -45.0,
+        "maxX": -20,
+        "minZ": -45.0,
+        "maxZ": -20
+      },
+      "resourceId": "road--2--2",
+      "assetIds": [
+        "map-0e464e3b5566cc2c",
+        "map-130da6ffc51d8d13",
+        "map-a80edbf0901d9ea1",
+        "map-d1ae55fb9bb06b2e",
+        "map-d8fe3b88f5aa4e92"
+      ]
+    },
+    {
+      "id": "road--2--3",
+      "bounds": {
+        "minX": -40.25,
+        "maxX": -20,
+        "minZ": -65.0,
+        "maxZ": -40
+      },
+      "resourceId": "road--2--3",
+      "assetIds": [
+        "map-0e464e3b5566cc2c",
+        "map-130da6ffc51d8d13",
+        "map-a80edbf0901d9ea1",
+        "map-d8fe3b88f5aa4e92"
+      ]
+    },
+    {
+      "id": "road--2--4",
+      "bounds": {
+        "minX": -45.0,
+        "maxX": -20,
+        "minZ": -80,
+        "maxZ": -60
+      },
+      "resourceId": "road--2--4",
+      "assetIds": [
+        "map-130da6ffc51d8d13",
+        "map-a80edbf0901d9ea1",
+        "map-d1ae55fb9bb06b2e",
+        "map-d8fe3b88f5aa4e92"
+      ]
+    },
+    {
+      "id": "road--3-2",
+      "bounds": {
+        "minX": -65.0,
+        "maxX": -40,
+        "minZ": 35.0,
+        "maxZ": 60
+      },
+      "resourceId": "road--3-2",
+      "assetIds": [
+        "map-130da6ffc51d8d13",
+        "map-742ac4b402f41e28",
+        "map-a80edbf0901d9ea1",
+        "map-d8fe3b88f5aa4e92"
+      ]
+    },
+    {
+      "id": "road--3-1",
+      "bounds": {
+        "minX": -65.0,
+        "maxX": -40,
+        "minZ": 15.0,
+        "maxZ": 40
+      },
+      "resourceId": "road--3-1",
+      "assetIds": [
+        "map-130da6ffc51d8d13",
+        "map-a80edbf0901d9ea1",
+        "map-d1ae55fb9bb06b2e",
+        "map-d8fe3b88f5aa4e92"
+      ]
+    },
+    {
+      "id": "road--3--1",
+      "bounds": {
+        "minX": -65.0,
+        "maxX": -40,
+        "minZ": -25.0,
+        "maxZ": 0
+      },
+      "resourceId": "road--3--1",
+      "assetIds": [
+        "map-0e464e3b5566cc2c",
+        "map-130da6ffc51d8d13",
+        "map-742ac4b402f41e28",
+        "map-a80edbf0901d9ea1",
+        "map-d1ae55fb9bb06b2e",
+        "map-d8fe3b88f5aa4e92"
+      ]
+    },
+    {
+      "id": "road--3--2",
+      "bounds": {
+        "minX": -65.0,
+        "maxX": -40,
+        "minZ": -45.0,
+        "maxZ": -20
+      },
+      "resourceId": "road--3--2",
+      "assetIds": [
+        "map-130da6ffc51d8d13",
+        "map-a80edbf0901d9ea1",
+        "map-d1ae55fb9bb06b2e",
+        "map-d8fe3b88f5aa4e92"
+      ]
+    },
+    {
+      "id": "road--3--4",
+      "bounds": {
+        "minX": -65.0,
+        "maxX": -40,
+        "minZ": -80,
+        "maxZ": -60
+      },
+      "resourceId": "road--3--4",
+      "assetIds": [
+        "map-130da6ffc51d8d13",
+        "map-742ac4b402f41e28",
+        "map-a80edbf0901d9ea1",
+        "map-d8fe3b88f5aa4e92"
+      ]
+    },
+    {
+      "id": "road--3-0",
+      "bounds": {
+        "minX": -65.0,
+        "maxX": -40,
+        "minZ": -5.0,
         "maxZ": 20
       },
-      "resourceId": "road--1-0",
+      "resourceId": "road--3-0",
       "assetIds": [
-        "road-straight",
-        "bridge-pillar"
+        "map-130da6ffc51d8d13",
+        "map-a80edbf0901d9ea1",
+        "map-d8fe3b88f5aa4e92"
       ]
     },
     {
-      "id": "road-1-0",
+      "id": "road--3--3",
+      "bounds": {
+        "minX": -65.0,
+        "maxX": -40,
+        "minZ": -65.0,
+        "maxZ": -40
+      },
+      "resourceId": "road--3--3",
+      "assetIds": [
+        "map-130da6ffc51d8d13",
+        "map-a80edbf0901d9ea1",
+        "map-d8fe3b88f5aa4e92"
+      ]
+    },
+    {
+      "id": "road-0--2",
+      "bounds": {
+        "minX": -15.0,
+        "maxX": 20,
+        "minZ": -55.0,
+        "maxZ": -20
+      },
+      "resourceId": "road-0--2",
+      "assetIds": [
+        "map-130da6ffc51d8d13",
+        "map-7214df6f54891f94",
+        "map-d8fe3b88f5aa4e92",
+        "map-ef898603ae3e9ddd"
+      ]
+    },
+    {
+      "id": "road-2-1",
+      "bounds": {
+        "minX": 35.0,
+        "maxX": 60,
+        "minZ": 15.0,
+        "maxZ": 40
+      },
+      "resourceId": "road-2-1",
+      "assetIds": [
+        "map-130da6ffc51d8d13",
+        "map-241ce766ed87517d",
+        "map-d8fe3b88f5aa4e92"
+      ]
+    },
+    {
+      "id": "road-2--3",
+      "bounds": {
+        "minX": 39.75,
+        "maxX": 60,
+        "minZ": -65.0,
+        "maxZ": -40
+      },
+      "resourceId": "road-2--3",
+      "assetIds": [
+        "map-130da6ffc51d8d13",
+        "map-1ad5ba7e002b286a",
+        "map-241ce766ed87517d",
+        "map-d8fe3b88f5aa4e92"
+      ]
+    },
+    {
+      "id": "road-2--5",
+      "bounds": {
+        "minX": 39.5,
+        "maxX": 60,
+        "minZ": -100,
+        "maxZ": -80
+      },
+      "resourceId": "road-2--5",
+      "assetIds": [
+        "map-ef898603ae3e9ddd"
+      ]
+    },
+    {
+      "id": "road-1--5",
       "bounds": {
         "minX": 20,
         "maxX": 40,
-        "minZ": 0,
-        "maxZ": 20
+        "minZ": -100,
+        "maxZ": -80
       },
-      "resourceId": "road-1-0",
+      "resourceId": "road-1--5",
       "assetIds": [
-        "road-straight"
+        "map-ef898603ae3e9ddd"
       ]
     },
     {
@@ -2394,3097 +1434,115 @@
       },
       "resourceId": "road-2-0",
       "assetIds": [
-        "road-crossroad",
-        "road-straight"
+        "map-130da6ffc51d8d13",
+        "map-d8fe3b88f5aa4e92"
       ]
     },
     {
-      "id": "road-3-0",
+      "id": "road--1-0",
       "bounds": {
-        "minX": 60,
-        "maxX": 80,
-        "minZ": 0,
+        "minX": -20.25,
+        "maxX": 0,
+        "minZ": -0.25,
         "maxZ": 20
       },
-      "resourceId": "road-3-0",
+      "resourceId": "road--1-0",
       "assetIds": [
-        "road-straight"
+        "map-0e464e3b5566cc2c",
+        "map-130da6ffc51d8d13",
+        "map-d8fe3b88f5aa4e92"
       ]
     },
     {
-      "id": "road-4-0",
+      "id": "road--1--3",
       "bounds": {
-        "minX": 80,
-        "maxX": 100,
-        "minZ": 0,
-        "maxZ": 20
-      },
-      "resourceId": "road-4-0",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-5-0",
-      "bounds": {
-        "minX": 100,
-        "maxX": 120,
-        "minZ": 0,
-        "maxZ": 20
-      },
-      "resourceId": "road-5-0",
-      "assetIds": [
-        "road-crossroad",
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-6-0",
-      "bounds": {
-        "minX": 120,
-        "maxX": 140,
-        "minZ": 0,
-        "maxZ": 20
-      },
-      "resourceId": "road-6-0",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-7-0",
-      "bounds": {
-        "minX": 140,
-        "maxX": 160,
-        "minZ": 0,
-        "maxZ": 20
-      },
-      "resourceId": "road-7-0",
-      "assetIds": [
-        "road-straight",
-        "road-crossroad"
-      ]
-    },
-    {
-      "id": "road-8-0",
-      "bounds": {
-        "minX": 160,
-        "maxX": 180,
-        "minZ": 0,
-        "maxZ": 20
-      },
-      "resourceId": "road-8-0",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-9-0",
-      "bounds": {
-        "minX": 180,
-        "maxX": 200,
-        "minZ": 0,
-        "maxZ": 20
-      },
-      "resourceId": "road-9-0",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-10-0",
-      "bounds": {
-        "minX": 200,
-        "maxX": 220,
-        "minZ": 0,
-        "maxZ": 20
-      },
-      "resourceId": "road-10-0",
-      "assetIds": [
-        "road-intersection",
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--10--9",
-      "bounds": {
-        "minX": -200,
-        "maxX": -180,
-        "minZ": -180,
-        "maxZ": -160
-      },
-      "resourceId": "road--10--9",
-      "assetIds": [
-        "road-bend",
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--10--8",
-      "bounds": {
-        "minX": -200,
-        "maxX": -180,
-        "minZ": -160,
-        "maxZ": -140
-      },
-      "resourceId": "road--10--8",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--10--7",
-      "bounds": {
-        "minX": -200,
-        "maxX": -180,
-        "minZ": -140,
-        "maxZ": -120
-      },
-      "resourceId": "road--10--7",
-      "assetIds": [
-        "road-intersection",
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--10--6",
-      "bounds": {
-        "minX": -200,
-        "maxX": -180,
-        "minZ": -120,
-        "maxZ": -100
-      },
-      "resourceId": "road--10--6",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--10--5",
-      "bounds": {
-        "minX": -200,
-        "maxX": -180,
-        "minZ": -100,
-        "maxZ": -80
-      },
-      "resourceId": "road--10--5",
-      "assetIds": [
-        "road-intersection",
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--10--4",
-      "bounds": {
-        "minX": -200,
-        "maxX": -180,
-        "minZ": -80,
-        "maxZ": -60
-      },
-      "resourceId": "road--10--4",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--10--3",
-      "bounds": {
-        "minX": -200,
-        "maxX": -180,
-        "minZ": -60,
+        "minX": -20.25,
+        "maxX": 0,
+        "minZ": -60.25,
         "maxZ": -40
       },
-      "resourceId": "road--10--3",
+      "resourceId": "road--1--3",
       "assetIds": [
-        "road-straight"
+        "map-130da6ffc51d8d13",
+        "map-d8fe3b88f5aa4e92"
       ]
     },
     {
-      "id": "road--10--2",
-      "bounds": {
-        "minX": -200,
-        "maxX": -180,
-        "minZ": -40,
-        "maxZ": -20
-      },
-      "resourceId": "road--10--2",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--10--1",
-      "bounds": {
-        "minX": -200,
-        "maxX": -180,
-        "minZ": -20,
-        "maxZ": 0
-      },
-      "resourceId": "road--10--1",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--10-1",
-      "bounds": {
-        "minX": -200,
-        "maxX": -180,
-        "minZ": 20,
-        "maxZ": 40
-      },
-      "resourceId": "road--10-1",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--10-2",
-      "bounds": {
-        "minX": -200,
-        "maxX": -180,
-        "minZ": 40,
-        "maxZ": 60
-      },
-      "resourceId": "road--10-2",
-      "assetIds": [
-        "road-straight",
-        "bus-stop"
-      ]
-    },
-    {
-      "id": "road--10-3",
-      "bounds": {
-        "minX": -200,
-        "maxX": -180,
-        "minZ": 60,
-        "maxZ": 80
-      },
-      "resourceId": "road--10-3",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--10-4",
-      "bounds": {
-        "minX": -200,
-        "maxX": -180,
-        "minZ": 80,
-        "maxZ": 100
-      },
-      "resourceId": "road--10-4",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--10-5",
-      "bounds": {
-        "minX": -200,
-        "maxX": -180,
-        "minZ": 100,
-        "maxZ": 120
-      },
-      "resourceId": "road--10-5",
-      "assetIds": [
-        "road-intersection",
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--10-6",
-      "bounds": {
-        "minX": -200,
-        "maxX": -180,
-        "minZ": 120,
-        "maxZ": 140
-      },
-      "resourceId": "road--10-6",
-      "assetIds": [
-        "road-level-crossing",
-        "road-straight",
-        "railroad-straight",
-        "railroad-crossing",
-        "rail-crossing-sign"
-      ]
-    },
-    {
-      "id": "road--10-7",
-      "bounds": {
-        "minX": -200,
-        "maxX": -180,
-        "minZ": 140,
-        "maxZ": 160
-      },
-      "resourceId": "road--10-7",
-      "assetIds": [
-        "road-intersection",
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--10-8",
-      "bounds": {
-        "minX": -200,
-        "maxX": -180,
-        "minZ": 160,
-        "maxZ": 180
-      },
-      "resourceId": "road--10-8",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--10-9",
-      "bounds": {
-        "minX": -200,
-        "maxX": -180,
-        "minZ": 180,
-        "maxZ": 200
-      },
-      "resourceId": "road--10-9",
-      "assetIds": [
-        "road-bend",
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--9-9",
-      "bounds": {
-        "minX": -180,
-        "maxX": -160,
-        "minZ": 180,
-        "maxZ": 200
-      },
-      "resourceId": "road--9-9",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--8-9",
-      "bounds": {
-        "minX": -160,
-        "maxX": -140,
-        "minZ": 180,
-        "maxZ": 200
-      },
-      "resourceId": "road--8-9",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--7-9",
-      "bounds": {
-        "minX": -140,
-        "maxX": -120,
-        "minZ": 180,
-        "maxZ": 200
-      },
-      "resourceId": "road--7-9",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--6-9",
-      "bounds": {
-        "minX": -120,
-        "maxX": -100,
-        "minZ": 180,
-        "maxZ": 200
-      },
-      "resourceId": "road--6-9",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--5-9",
-      "bounds": {
-        "minX": -100,
-        "maxX": -80,
-        "minZ": 180,
-        "maxZ": 200
-      },
-      "resourceId": "road--5-9",
-      "assetIds": [
-        "road-intersection",
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--4-9",
+      "id": "road--4-1",
       "bounds": {
         "minX": -80,
         "maxX": -60,
-        "minZ": 180,
-        "maxZ": 200
-      },
-      "resourceId": "road--4-9",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--3-9",
-      "bounds": {
-        "minX": -60,
-        "maxX": -40,
-        "minZ": 180,
-        "maxZ": 200
-      },
-      "resourceId": "road--3-9",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--2-9",
-      "bounds": {
-        "minX": -40,
-        "maxX": -20,
-        "minZ": 180,
-        "maxZ": 200
-      },
-      "resourceId": "road--2-9",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--1-9",
-      "bounds": {
-        "minX": -20,
-        "maxX": 0,
-        "minZ": 180,
-        "maxZ": 200
-      },
-      "resourceId": "road--1-9",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-1-9",
-      "bounds": {
-        "minX": 20,
-        "maxX": 40,
-        "minZ": 180,
-        "maxZ": 200
-      },
-      "resourceId": "road-1-9",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-2-9",
-      "bounds": {
-        "minX": 40,
-        "maxX": 60,
-        "minZ": 180,
-        "maxZ": 200
-      },
-      "resourceId": "road-2-9",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-3-9",
-      "bounds": {
-        "minX": 60,
-        "maxX": 80,
-        "minZ": 180,
-        "maxZ": 200
-      },
-      "resourceId": "road-3-9",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-4-9",
-      "bounds": {
-        "minX": 80,
-        "maxX": 100,
-        "minZ": 180,
-        "maxZ": 200
-      },
-      "resourceId": "road-4-9",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-5-9",
-      "bounds": {
-        "minX": 100,
-        "maxX": 120,
-        "minZ": 180,
-        "maxZ": 200
-      },
-      "resourceId": "road-5-9",
-      "assetIds": [
-        "road-intersection",
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-6-9",
-      "bounds": {
-        "minX": 120,
-        "maxX": 140,
-        "minZ": 180,
-        "maxZ": 200
-      },
-      "resourceId": "road-6-9",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-7-9",
-      "bounds": {
-        "minX": 140,
-        "maxX": 160,
-        "minZ": 180,
-        "maxZ": 200
-      },
-      "resourceId": "road-7-9",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-8-9",
-      "bounds": {
-        "minX": 160,
-        "maxX": 180,
-        "minZ": 180,
-        "maxZ": 200
-      },
-      "resourceId": "road-8-9",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-9-9",
-      "bounds": {
-        "minX": 180,
-        "maxX": 200,
-        "minZ": 180,
-        "maxZ": 200
-      },
-      "resourceId": "road-9-9",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-10-9",
-      "bounds": {
-        "minX": 200,
-        "maxX": 220,
-        "minZ": 180,
-        "maxZ": 200
-      },
-      "resourceId": "road-10-9",
-      "assetIds": [
-        "road-bend"
-      ]
-    },
-    {
-      "id": "road-10-8",
-      "bounds": {
-        "minX": 200,
-        "maxX": 220,
-        "minZ": 160,
-        "maxZ": 180
-      },
-      "resourceId": "road-10-8",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-10-7",
-      "bounds": {
-        "minX": 200,
-        "maxX": 220,
-        "minZ": 140,
-        "maxZ": 160
-      },
-      "resourceId": "road-10-7",
-      "assetIds": [
-        "road-straight",
-        "road-intersection"
-      ]
-    },
-    {
-      "id": "road-10-6",
-      "bounds": {
-        "minX": 200,
-        "maxX": 220,
-        "minZ": 120,
-        "maxZ": 140
-      },
-      "resourceId": "road-10-6",
-      "assetIds": [
-        "road-straight",
-        "road-level-crossing",
-        "railroad-straight",
-        "railroad-crossing",
-        "rail-crossing-sign"
-      ]
-    },
-    {
-      "id": "road-10-5",
-      "bounds": {
-        "minX": 200,
-        "maxX": 220,
-        "minZ": 100,
-        "maxZ": 120
-      },
-      "resourceId": "road-10-5",
-      "assetIds": [
-        "road-straight",
-        "road-intersection"
-      ]
-    },
-    {
-      "id": "road-10-4",
-      "bounds": {
-        "minX": 200,
-        "maxX": 220,
-        "minZ": 80,
-        "maxZ": 100
-      },
-      "resourceId": "road-10-4",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-10-3",
-      "bounds": {
-        "minX": 200,
-        "maxX": 220,
-        "minZ": 60,
-        "maxZ": 80
-      },
-      "resourceId": "road-10-3",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-10-2",
-      "bounds": {
-        "minX": 200,
-        "maxX": 220,
-        "minZ": 40,
-        "maxZ": 60
-      },
-      "resourceId": "road-10-2",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-10-1",
-      "bounds": {
-        "minX": 200,
-        "maxX": 220,
         "minZ": 20,
         "maxZ": 40
       },
-      "resourceId": "road-10-1",
+      "resourceId": "road--4-1",
       "assetIds": [
-        "road-straight"
+        "map-130da6ffc51d8d13",
+        "map-d8fe3b88f5aa4e92"
       ]
     },
     {
-      "id": "road-10--1",
-      "bounds": {
-        "minX": 200,
-        "maxX": 220,
-        "minZ": -20,
-        "maxZ": 0
-      },
-      "resourceId": "road-10--1",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-10--2",
-      "bounds": {
-        "minX": 200,
-        "maxX": 220,
-        "minZ": -40,
-        "maxZ": -20
-      },
-      "resourceId": "road-10--2",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-10--3",
-      "bounds": {
-        "minX": 200,
-        "maxX": 220,
-        "minZ": -60,
-        "maxZ": -40
-      },
-      "resourceId": "road-10--3",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-10--4",
-      "bounds": {
-        "minX": 200,
-        "maxX": 220,
-        "minZ": -80,
-        "maxZ": -60
-      },
-      "resourceId": "road-10--4",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-10--5",
-      "bounds": {
-        "minX": 200,
-        "maxX": 220,
-        "minZ": -100,
-        "maxZ": -80
-      },
-      "resourceId": "road-10--5",
-      "assetIds": [
-        "road-straight",
-        "road-intersection"
-      ]
-    },
-    {
-      "id": "road-10--6",
-      "bounds": {
-        "minX": 200,
-        "maxX": 220,
-        "minZ": -120,
-        "maxZ": -100
-      },
-      "resourceId": "road-10--6",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-10--7",
-      "bounds": {
-        "minX": 200,
-        "maxX": 220,
-        "minZ": -140,
-        "maxZ": -120
-      },
-      "resourceId": "road-10--7",
-      "assetIds": [
-        "road-straight",
-        "road-intersection"
-      ]
-    },
-    {
-      "id": "road-10--8",
-      "bounds": {
-        "minX": 200,
-        "maxX": 220,
-        "minZ": -160,
-        "maxZ": -140
-      },
-      "resourceId": "road-10--8",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-10--9",
-      "bounds": {
-        "minX": 200,
-        "maxX": 220,
-        "minZ": -180,
-        "maxZ": -160
-      },
-      "resourceId": "road-10--9",
-      "assetIds": [
-        "road-straight",
-        "road-bend"
-      ]
-    },
-    {
-      "id": "road-9--9",
-      "bounds": {
-        "minX": 180,
-        "maxX": 200,
-        "minZ": -180,
-        "maxZ": -160
-      },
-      "resourceId": "road-9--9",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-8--9",
-      "bounds": {
-        "minX": 160,
-        "maxX": 180,
-        "minZ": -180,
-        "maxZ": -160
-      },
-      "resourceId": "road-8--9",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-7--9",
-      "bounds": {
-        "minX": 140,
-        "maxX": 160,
-        "minZ": -180,
-        "maxZ": -160
-      },
-      "resourceId": "road-7--9",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-6--9",
-      "bounds": {
-        "minX": 120,
-        "maxX": 140,
-        "minZ": -180,
-        "maxZ": -160
-      },
-      "resourceId": "road-6--9",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-5--9",
-      "bounds": {
-        "minX": 100,
-        "maxX": 120,
-        "minZ": -180,
-        "maxZ": -160
-      },
-      "resourceId": "road-5--9",
-      "assetIds": [
-        "road-straight",
-        "road-intersection"
-      ]
-    },
-    {
-      "id": "road-4--9",
-      "bounds": {
-        "minX": 80,
-        "maxX": 100,
-        "minZ": -180,
-        "maxZ": -160
-      },
-      "resourceId": "road-4--9",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-3--9",
-      "bounds": {
-        "minX": 60,
-        "maxX": 80,
-        "minZ": -180,
-        "maxZ": -160
-      },
-      "resourceId": "road-3--9",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-2--9",
-      "bounds": {
-        "minX": 40,
-        "maxX": 60,
-        "minZ": -180,
-        "maxZ": -160
-      },
-      "resourceId": "road-2--9",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-1--9",
-      "bounds": {
-        "minX": 20,
-        "maxX": 40,
-        "minZ": -180,
-        "maxZ": -160
-      },
-      "resourceId": "road-1--9",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--1--9",
-      "bounds": {
-        "minX": -20,
-        "maxX": 0,
-        "minZ": -180,
-        "maxZ": -160
-      },
-      "resourceId": "road--1--9",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--2--9",
-      "bounds": {
-        "minX": -40,
-        "maxX": -20,
-        "minZ": -180,
-        "maxZ": -160
-      },
-      "resourceId": "road--2--9",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--3--9",
-      "bounds": {
-        "minX": -60,
-        "maxX": -40,
-        "minZ": -180,
-        "maxZ": -160
-      },
-      "resourceId": "road--3--9",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--4--9",
+      "id": "road--4-0",
       "bounds": {
         "minX": -80,
         "maxX": -60,
-        "minZ": -180,
-        "maxZ": -160
+        "minZ": 0,
+        "maxZ": 20
       },
-      "resourceId": "road--4--9",
+      "resourceId": "road--4-0",
       "assetIds": [
-        "road-straight"
+        "map-130da6ffc51d8d13",
+        "map-d8fe3b88f5aa4e92"
       ]
     },
     {
-      "id": "road--5--9",
-      "bounds": {
-        "minX": -100,
-        "maxX": -80,
-        "minZ": -180,
-        "maxZ": -160
-      },
-      "resourceId": "road--5--9",
-      "assetIds": [
-        "road-straight",
-        "road-intersection"
-      ]
-    },
-    {
-      "id": "road--6--9",
-      "bounds": {
-        "minX": -120,
-        "maxX": -100,
-        "minZ": -180,
-        "maxZ": -160
-      },
-      "resourceId": "road--6--9",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--7--9",
-      "bounds": {
-        "minX": -140,
-        "maxX": -120,
-        "minZ": -180,
-        "maxZ": -160
-      },
-      "resourceId": "road--7--9",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--8--9",
-      "bounds": {
-        "minX": -160,
-        "maxX": -140,
-        "minZ": -180,
-        "maxZ": -160
-      },
-      "resourceId": "road--8--9",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--9--9",
-      "bounds": {
-        "minX": -180,
-        "maxX": -160,
-        "minZ": -180,
-        "maxZ": -160
-      },
-      "resourceId": "road--9--9",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--5--8",
-      "bounds": {
-        "minX": -100,
-        "maxX": -80,
-        "minZ": -160,
-        "maxZ": -140
-      },
-      "resourceId": "road--5--8",
-      "assetIds": [
-        "road-straight",
-        "bus-stop"
-      ]
-    },
-    {
-      "id": "road--5--7",
-      "bounds": {
-        "minX": -100,
-        "maxX": -80,
-        "minZ": -140,
-        "maxZ": -120
-      },
-      "resourceId": "road--5--7",
-      "assetIds": [
-        "road-crossroad",
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--5--6",
-      "bounds": {
-        "minX": -100,
-        "maxX": -80,
-        "minZ": -120,
-        "maxZ": -100
-      },
-      "resourceId": "road--5--6",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--5--5",
-      "bounds": {
-        "minX": -100,
-        "maxX": -80,
-        "minZ": -100,
-        "maxZ": -80
-      },
-      "resourceId": "road--5--5",
-      "assetIds": [
-        "road-intersection",
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--5--4",
-      "bounds": {
-        "minX": -100,
-        "maxX": -80,
-        "minZ": -80,
-        "maxZ": -60
-      },
-      "resourceId": "road--5--4",
-      "assetIds": [
-        "road-intersection",
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--5--3",
-      "bounds": {
-        "minX": -100,
-        "maxX": -80,
-        "minZ": -60,
-        "maxZ": -40
-      },
-      "resourceId": "road--5--3",
-      "assetIds": [
-        "road-straight",
-        "tunnel-section"
-      ]
-    },
-    {
-      "id": "road--5--2",
-      "bounds": {
-        "minX": -100,
-        "maxX": -80,
-        "minZ": -40,
-        "maxZ": -20
-      },
-      "resourceId": "road--5--2",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--5--1",
-      "bounds": {
-        "minX": -100,
-        "maxX": -80,
-        "minZ": -20,
-        "maxZ": 0
-      },
-      "resourceId": "road--5--1",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--5-1",
-      "bounds": {
-        "minX": -100,
-        "maxX": -80,
-        "minZ": 20,
-        "maxZ": 40
-      },
-      "resourceId": "road--5-1",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--5-2",
-      "bounds": {
-        "minX": -100,
-        "maxX": -80,
-        "minZ": 40,
-        "maxZ": 60
-      },
-      "resourceId": "road--5-2",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--5-3",
-      "bounds": {
-        "minX": -100,
-        "maxX": -80,
-        "minZ": 60,
-        "maxZ": 80
-      },
-      "resourceId": "road--5-3",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--5-4",
-      "bounds": {
-        "minX": -100,
-        "maxX": -80,
-        "minZ": 80,
-        "maxZ": 100
-      },
-      "resourceId": "road--5-4",
-      "assetIds": [
-        "road-intersection",
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--5-5",
-      "bounds": {
-        "minX": -100,
-        "maxX": -80,
-        "minZ": 100,
-        "maxZ": 120
-      },
-      "resourceId": "road--5-5",
-      "assetIds": [
-        "road-intersection",
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--5-6",
-      "bounds": {
-        "minX": -100,
-        "maxX": -80,
-        "minZ": 120,
-        "maxZ": 140
-      },
-      "resourceId": "road--5-6",
-      "assetIds": [
-        "road-level-crossing",
-        "road-straight",
-        "railroad-straight",
-        "railroad-crossing",
-        "rail-crossing-sign"
-      ]
-    },
-    {
-      "id": "road--5-7",
-      "bounds": {
-        "minX": -100,
-        "maxX": -80,
-        "minZ": 140,
-        "maxZ": 160
-      },
-      "resourceId": "road--5-7",
-      "assetIds": [
-        "road-crossroad",
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--5-8",
-      "bounds": {
-        "minX": -100,
-        "maxX": -80,
-        "minZ": 160,
-        "maxZ": 180
-      },
-      "resourceId": "road--5-8",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--8--5",
-      "bounds": {
-        "minX": -160,
-        "maxX": -140,
-        "minZ": -100,
-        "maxZ": -80
-      },
-      "resourceId": "road--8--5",
-      "assetIds": [
-        "road-intersection",
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--8--4",
-      "bounds": {
-        "minX": -160,
-        "maxX": -140,
-        "minZ": -80,
-        "maxZ": -60
-      },
-      "resourceId": "road--8--4",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--8--3",
-      "bounds": {
-        "minX": -160,
-        "maxX": -140,
-        "minZ": -60,
-        "maxZ": -40
-      },
-      "resourceId": "road--8--3",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--8--2",
-      "bounds": {
-        "minX": -160,
-        "maxX": -140,
-        "minZ": -40,
-        "maxZ": -20
-      },
-      "resourceId": "road--8--2",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--8--1",
-      "bounds": {
-        "minX": -160,
-        "maxX": -140,
-        "minZ": -20,
-        "maxZ": 0
-      },
-      "resourceId": "road--8--1",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--8-1",
-      "bounds": {
-        "minX": -160,
-        "maxX": -140,
-        "minZ": 20,
-        "maxZ": 40
-      },
-      "resourceId": "road--8-1",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--8-2",
-      "bounds": {
-        "minX": -160,
-        "maxX": -140,
-        "minZ": 40,
-        "maxZ": 60
-      },
-      "resourceId": "road--8-2",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--8-3",
-      "bounds": {
-        "minX": -160,
-        "maxX": -140,
-        "minZ": 60,
-        "maxZ": 80
-      },
-      "resourceId": "road--8-3",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--8-4",
-      "bounds": {
-        "minX": -160,
-        "maxX": -140,
-        "minZ": 80,
-        "maxZ": 100
-      },
-      "resourceId": "road--8-4",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--8-5",
-      "bounds": {
-        "minX": -160,
-        "maxX": -140,
-        "minZ": 100,
-        "maxZ": 120
-      },
-      "resourceId": "road--8-5",
-      "assetIds": [
-        "road-intersection",
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--9--5",
-      "bounds": {
-        "minX": -180,
-        "maxX": -160,
-        "minZ": -100,
-        "maxZ": -80
-      },
-      "resourceId": "road--9--5",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--7--5",
-      "bounds": {
-        "minX": -140,
-        "maxX": -120,
-        "minZ": -100,
-        "maxZ": -80
-      },
-      "resourceId": "road--7--5",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--6--5",
-      "bounds": {
-        "minX": -120,
-        "maxX": -100,
-        "minZ": -100,
-        "maxZ": -80
-      },
-      "resourceId": "road--6--5",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--9-5",
-      "bounds": {
-        "minX": -180,
-        "maxX": -160,
-        "minZ": 100,
-        "maxZ": 120
-      },
-      "resourceId": "road--9-5",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--7-5",
-      "bounds": {
-        "minX": -140,
-        "maxX": -120,
-        "minZ": 100,
-        "maxZ": 120
-      },
-      "resourceId": "road--7-5",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--6-5",
-      "bounds": {
-        "minX": -120,
-        "maxX": -100,
-        "minZ": 100,
-        "maxZ": 120
-      },
-      "resourceId": "road--6-5",
-      "assetIds": [
-        "road-straight",
-        "rail-crossing-sign"
-      ]
-    },
-    {
-      "id": "road--4--4",
+      "id": "road--4--2",
       "bounds": {
         "minX": -80,
         "maxX": -60,
-        "minZ": -80,
-        "maxZ": -60
+        "minZ": -40,
+        "maxZ": -20
       },
-      "resourceId": "road--4--4",
+      "resourceId": "road--4--2",
       "assetIds": [
-        "road-straight"
+        "map-130da6ffc51d8d13",
+        "map-d8fe3b88f5aa4e92"
       ]
     },
     {
-      "id": "road--3--4",
-      "bounds": {
-        "minX": -60,
-        "maxX": -40,
-        "minZ": -80,
-        "maxZ": -60
-      },
-      "resourceId": "road--3--4",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--2--4",
-      "bounds": {
-        "minX": -40,
-        "maxX": -20,
-        "minZ": -80,
-        "maxZ": -60
-      },
-      "resourceId": "road--2--4",
-      "assetIds": [
-        "road-intersection",
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--1--4",
-      "bounds": {
-        "minX": -20,
-        "maxX": 0,
-        "minZ": -80,
-        "maxZ": -60
-      },
-      "resourceId": "road--1--4",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--4-4",
+      "id": "road--4--3",
       "bounds": {
         "minX": -80,
         "maxX": -60,
-        "minZ": 80,
-        "maxZ": 100
-      },
-      "resourceId": "road--4-4",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--3-4",
-      "bounds": {
-        "minX": -60,
-        "maxX": -40,
-        "minZ": 80,
-        "maxZ": 100
-      },
-      "resourceId": "road--3-4",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--2-4",
-      "bounds": {
-        "minX": -40,
-        "maxX": -20,
-        "minZ": 80,
-        "maxZ": 100
-      },
-      "resourceId": "road--2-4",
-      "assetIds": [
-        "road-intersection",
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--1-4",
-      "bounds": {
-        "minX": -20,
-        "maxX": 0,
-        "minZ": 80,
-        "maxZ": 100
-      },
-      "resourceId": "road--1-4",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--2--3",
-      "bounds": {
-        "minX": -40,
-        "maxX": -20,
         "minZ": -60,
         "maxZ": -40
       },
-      "resourceId": "road--2--3",
+      "resourceId": "road--4--3",
       "assetIds": [
-        "road-straight"
+        "map-130da6ffc51d8d13",
+        "map-d8fe3b88f5aa4e92"
       ]
     },
     {
-      "id": "road--2--2",
-      "bounds": {
-        "minX": -40,
-        "maxX": -20,
-        "minZ": -40,
-        "maxZ": -20
-      },
-      "resourceId": "road--2--2",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--2--1",
-      "bounds": {
-        "minX": -40,
-        "maxX": -20,
-        "minZ": -20,
-        "maxZ": 0
-      },
-      "resourceId": "road--2--1",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--2-1",
-      "bounds": {
-        "minX": -40,
-        "maxX": -20,
-        "minZ": 20,
-        "maxZ": 40
-      },
-      "resourceId": "road--2-1",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--2-2",
-      "bounds": {
-        "minX": -40,
-        "maxX": -20,
-        "minZ": 40,
-        "maxZ": 60
-      },
-      "resourceId": "road--2-2",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--2-3",
-      "bounds": {
-        "minX": -40,
-        "maxX": -20,
-        "minZ": 60,
-        "maxZ": 80
-      },
-      "resourceId": "road--2-3",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-5--8",
-      "bounds": {
-        "minX": 100,
-        "maxX": 120,
-        "minZ": -160,
-        "maxZ": -140
-      },
-      "resourceId": "road-5--8",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-5--7",
-      "bounds": {
-        "minX": 100,
-        "maxX": 120,
-        "minZ": -140,
-        "maxZ": -120
-      },
-      "resourceId": "road-5--7",
-      "assetIds": [
-        "road-crossroad",
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-5--6",
-      "bounds": {
-        "minX": 100,
-        "maxX": 120,
-        "minZ": -120,
-        "maxZ": -100
-      },
-      "resourceId": "road-5--6",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-5--5",
-      "bounds": {
-        "minX": 100,
-        "maxX": 120,
-        "minZ": -100,
-        "maxZ": -80
-      },
-      "resourceId": "road-5--5",
-      "assetIds": [
-        "road-intersection",
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-5--4",
-      "bounds": {
-        "minX": 100,
-        "maxX": 120,
-        "minZ": -80,
-        "maxZ": -60
-      },
-      "resourceId": "road-5--4",
-      "assetIds": [
-        "road-intersection",
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-5--3",
-      "bounds": {
-        "minX": 100,
-        "maxX": 120,
-        "minZ": -60,
-        "maxZ": -40
-      },
-      "resourceId": "road-5--3",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-5--2",
-      "bounds": {
-        "minX": 100,
-        "maxX": 120,
-        "minZ": -40,
-        "maxZ": -20
-      },
-      "resourceId": "road-5--2",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-5--1",
-      "bounds": {
-        "minX": 100,
-        "maxX": 120,
-        "minZ": -20,
-        "maxZ": 0
-      },
-      "resourceId": "road-5--1",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-5-1",
-      "bounds": {
-        "minX": 100,
-        "maxX": 120,
-        "minZ": 20,
-        "maxZ": 40
-      },
-      "resourceId": "road-5-1",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-5-2",
-      "bounds": {
-        "minX": 100,
-        "maxX": 120,
-        "minZ": 40,
-        "maxZ": 60
-      },
-      "resourceId": "road-5-2",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-5-3",
-      "bounds": {
-        "minX": 100,
-        "maxX": 120,
-        "minZ": 60,
-        "maxZ": 80
-      },
-      "resourceId": "road-5-3",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-5-4",
-      "bounds": {
-        "minX": 100,
-        "maxX": 120,
-        "minZ": 80,
-        "maxZ": 100
-      },
-      "resourceId": "road-5-4",
-      "assetIds": [
-        "road-intersection",
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-5-5",
-      "bounds": {
-        "minX": 100,
-        "maxX": 120,
-        "minZ": 100,
-        "maxZ": 120
-      },
-      "resourceId": "road-5-5",
-      "assetIds": [
-        "road-intersection",
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-5-6",
-      "bounds": {
-        "minX": 100,
-        "maxX": 120,
-        "minZ": 120,
-        "maxZ": 140
-      },
-      "resourceId": "road-5-6",
-      "assetIds": [
-        "road-level-crossing",
-        "road-straight",
-        "railroad-straight",
-        "railroad-crossing",
-        "rail-crossing-sign"
-      ]
-    },
-    {
-      "id": "road-5-7",
-      "bounds": {
-        "minX": 100,
-        "maxX": 120,
-        "minZ": 140,
-        "maxZ": 160
-      },
-      "resourceId": "road-5-7",
-      "assetIds": [
-        "road-crossroad",
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-5-8",
-      "bounds": {
-        "minX": 100,
-        "maxX": 120,
-        "minZ": 160,
-        "maxZ": 180
-      },
-      "resourceId": "road-5-8",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-7--5",
-      "bounds": {
-        "minX": 140,
-        "maxX": 160,
-        "minZ": -100,
-        "maxZ": -80
-      },
-      "resourceId": "road-7--5",
-      "assetIds": [
-        "road-intersection",
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-7--4",
-      "bounds": {
-        "minX": 140,
-        "maxX": 160,
-        "minZ": -80,
-        "maxZ": -60
-      },
-      "resourceId": "road-7--4",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-7--3",
-      "bounds": {
-        "minX": 140,
-        "maxX": 160,
-        "minZ": -60,
-        "maxZ": -40
-      },
-      "resourceId": "road-7--3",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-7--2",
-      "bounds": {
-        "minX": 140,
-        "maxX": 160,
-        "minZ": -40,
-        "maxZ": -20
-      },
-      "resourceId": "road-7--2",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-7--1",
-      "bounds": {
-        "minX": 140,
-        "maxX": 160,
-        "minZ": -20,
-        "maxZ": 0
-      },
-      "resourceId": "road-7--1",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-7-1",
-      "bounds": {
-        "minX": 140,
-        "maxX": 160,
-        "minZ": 20,
-        "maxZ": 40
-      },
-      "resourceId": "road-7-1",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-7-2",
-      "bounds": {
-        "minX": 140,
-        "maxX": 160,
-        "minZ": 40,
-        "maxZ": 60
-      },
-      "resourceId": "road-7-2",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-7-3",
-      "bounds": {
-        "minX": 140,
-        "maxX": 160,
-        "minZ": 60,
-        "maxZ": 80
-      },
-      "resourceId": "road-7-3",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-7-4",
-      "bounds": {
-        "minX": 140,
-        "maxX": 160,
-        "minZ": 80,
-        "maxZ": 100
-      },
-      "resourceId": "road-7-4",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-7-5",
-      "bounds": {
-        "minX": 140,
-        "maxX": 160,
-        "minZ": 100,
-        "maxZ": 120
-      },
-      "resourceId": "road-7-5",
-      "assetIds": [
-        "road-intersection",
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-9--5",
-      "bounds": {
-        "minX": 180,
-        "maxX": 200,
-        "minZ": -100,
-        "maxZ": -80
-      },
-      "resourceId": "road-9--5",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-8--5",
-      "bounds": {
-        "minX": 160,
-        "maxX": 180,
-        "minZ": -100,
-        "maxZ": -80
-      },
-      "resourceId": "road-8--5",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-6--5",
-      "bounds": {
-        "minX": 120,
-        "maxX": 140,
-        "minZ": -100,
-        "maxZ": -80
-      },
-      "resourceId": "road-6--5",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-9-5",
-      "bounds": {
-        "minX": 180,
-        "maxX": 200,
-        "minZ": 100,
-        "maxZ": 120
-      },
-      "resourceId": "road-9-5",
-      "assetIds": [
-        "road-straight",
-        "rail-crossing-sign"
-      ]
-    },
-    {
-      "id": "road-8-5",
-      "bounds": {
-        "minX": 160,
-        "maxX": 180,
-        "minZ": 100,
-        "maxZ": 120
-      },
-      "resourceId": "road-8-5",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-6-5",
-      "bounds": {
-        "minX": 120,
-        "maxX": 140,
-        "minZ": 100,
-        "maxZ": 120
-      },
-      "resourceId": "road-6-5",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-4--4",
-      "bounds": {
-        "minX": 80,
-        "maxX": 100,
-        "minZ": -80,
-        "maxZ": -60
-      },
-      "resourceId": "road-4--4",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-3--4",
-      "bounds": {
-        "minX": 60,
-        "maxX": 80,
-        "minZ": -80,
-        "maxZ": -60
-      },
-      "resourceId": "road-3--4",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-2--4",
-      "bounds": {
-        "minX": 40,
-        "maxX": 60,
-        "minZ": -80,
-        "maxZ": -60
-      },
-      "resourceId": "road-2--4",
-      "assetIds": [
-        "road-straight",
-        "road-intersection"
-      ]
-    },
-    {
-      "id": "road-1--4",
-      "bounds": {
-        "minX": 20,
-        "maxX": 40,
-        "minZ": -80,
-        "maxZ": -60
-      },
-      "resourceId": "road-1--4",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-4-4",
-      "bounds": {
-        "minX": 80,
-        "maxX": 100,
-        "minZ": 80,
-        "maxZ": 100
-      },
-      "resourceId": "road-4-4",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-3-4",
-      "bounds": {
-        "minX": 60,
-        "maxX": 80,
-        "minZ": 80,
-        "maxZ": 100
-      },
-      "resourceId": "road-3-4",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-2-4",
-      "bounds": {
-        "minX": 40,
-        "maxX": 60,
-        "minZ": 80,
-        "maxZ": 100
-      },
-      "resourceId": "road-2-4",
-      "assetIds": [
-        "road-straight",
-        "road-intersection"
-      ]
-    },
-    {
-      "id": "road-1-4",
-      "bounds": {
-        "minX": 20,
-        "maxX": 40,
-        "minZ": 80,
-        "maxZ": 100
-      },
-      "resourceId": "road-1-4",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-2--3",
-      "bounds": {
-        "minX": 40,
-        "maxX": 60,
-        "minZ": -60,
-        "maxZ": -40
-      },
-      "resourceId": "road-2--3",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-2--2",
-      "bounds": {
-        "minX": 40,
-        "maxX": 60,
-        "minZ": -40,
-        "maxZ": -20
-      },
-      "resourceId": "road-2--2",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-2--1",
-      "bounds": {
-        "minX": 40,
-        "maxX": 60,
-        "minZ": -20,
-        "maxZ": 0
-      },
-      "resourceId": "road-2--1",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-2-1",
-      "bounds": {
-        "minX": 40,
-        "maxX": 60,
-        "minZ": 20,
-        "maxZ": 40
-      },
-      "resourceId": "road-2-1",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-2-2",
-      "bounds": {
-        "minX": 40,
-        "maxX": 60,
-        "minZ": 40,
-        "maxZ": 60
-      },
-      "resourceId": "road-2-2",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-2-3",
-      "bounds": {
-        "minX": 40,
-        "maxX": 60,
-        "minZ": 60,
-        "maxZ": 80
-      },
-      "resourceId": "road-2-3",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--9--7",
-      "bounds": {
-        "minX": -180,
-        "maxX": -160,
-        "minZ": -140,
-        "maxZ": -120
-      },
-      "resourceId": "road--9--7",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--8--7",
-      "bounds": {
-        "minX": -160,
-        "maxX": -140,
-        "minZ": -140,
-        "maxZ": -120
-      },
-      "resourceId": "road--8--7",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--7--7",
-      "bounds": {
-        "minX": -140,
-        "maxX": -120,
-        "minZ": -140,
-        "maxZ": -120
-      },
-      "resourceId": "road--7--7",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--6--7",
-      "bounds": {
-        "minX": -120,
-        "maxX": -100,
-        "minZ": -140,
-        "maxZ": -120
-      },
-      "resourceId": "road--6--7",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--4--7",
+      "id": "road--4--1",
       "bounds": {
         "minX": -80,
         "maxX": -60,
-        "minZ": -140,
-        "maxZ": -120
-      },
-      "resourceId": "road--4--7",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--3--7",
-      "bounds": {
-        "minX": -60,
-        "maxX": -40,
-        "minZ": -140,
-        "maxZ": -120
-      },
-      "resourceId": "road--3--7",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--2--7",
-      "bounds": {
-        "minX": -40,
-        "maxX": -20,
-        "minZ": -140,
-        "maxZ": -120
-      },
-      "resourceId": "road--2--7",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--1--7",
-      "bounds": {
-        "minX": -20,
-        "maxX": 0,
-        "minZ": -140,
-        "maxZ": -120
-      },
-      "resourceId": "road--1--7",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-1--7",
-      "bounds": {
-        "minX": 20,
-        "maxX": 40,
-        "minZ": -140,
-        "maxZ": -120
-      },
-      "resourceId": "road-1--7",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-2--7",
-      "bounds": {
-        "minX": 40,
-        "maxX": 60,
-        "minZ": -140,
-        "maxZ": -120
-      },
-      "resourceId": "road-2--7",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-3--7",
-      "bounds": {
-        "minX": 60,
-        "maxX": 80,
-        "minZ": -140,
-        "maxZ": -120
-      },
-      "resourceId": "road-3--7",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-4--7",
-      "bounds": {
-        "minX": 80,
-        "maxX": 100,
-        "minZ": -140,
-        "maxZ": -120
-      },
-      "resourceId": "road-4--7",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-6--7",
-      "bounds": {
-        "minX": 120,
-        "maxX": 140,
-        "minZ": -140,
-        "maxZ": -120
-      },
-      "resourceId": "road-6--7",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-7--7",
-      "bounds": {
-        "minX": 140,
-        "maxX": 160,
-        "minZ": -140,
-        "maxZ": -120
-      },
-      "resourceId": "road-7--7",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-8--7",
-      "bounds": {
-        "minX": 160,
-        "maxX": 180,
-        "minZ": -140,
-        "maxZ": -120
-      },
-      "resourceId": "road-8--7",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-9--7",
-      "bounds": {
-        "minX": 180,
-        "maxX": 200,
-        "minZ": -140,
-        "maxZ": -120
-      },
-      "resourceId": "road-9--7",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--9-7",
-      "bounds": {
-        "minX": -180,
-        "maxX": -160,
-        "minZ": 140,
-        "maxZ": 160
-      },
-      "resourceId": "road--9-7",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--8-7",
-      "bounds": {
-        "minX": -160,
-        "maxX": -140,
-        "minZ": 140,
-        "maxZ": 160
-      },
-      "resourceId": "road--8-7",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--7-7",
-      "bounds": {
-        "minX": -140,
-        "maxX": -120,
-        "minZ": 140,
-        "maxZ": 160
-      },
-      "resourceId": "road--7-7",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--6-7",
-      "bounds": {
-        "minX": -120,
-        "maxX": -100,
-        "minZ": 140,
-        "maxZ": 160
-      },
-      "resourceId": "road--6-7",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--4-7",
-      "bounds": {
-        "minX": -80,
-        "maxX": -60,
-        "minZ": 140,
-        "maxZ": 160
-      },
-      "resourceId": "road--4-7",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--3-7",
-      "bounds": {
-        "minX": -60,
-        "maxX": -40,
-        "minZ": 140,
-        "maxZ": 160
-      },
-      "resourceId": "road--3-7",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--2-7",
-      "bounds": {
-        "minX": -40,
-        "maxX": -20,
-        "minZ": 140,
-        "maxZ": 160
-      },
-      "resourceId": "road--2-7",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--1-7",
-      "bounds": {
-        "minX": -20,
-        "maxX": 0,
-        "minZ": 140,
-        "maxZ": 160
-      },
-      "resourceId": "road--1-7",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-1-7",
-      "bounds": {
-        "minX": 20,
-        "maxX": 40,
-        "minZ": 140,
-        "maxZ": 160
-      },
-      "resourceId": "road-1-7",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-2-7",
-      "bounds": {
-        "minX": 40,
-        "maxX": 60,
-        "minZ": 140,
-        "maxZ": 160
-      },
-      "resourceId": "road-2-7",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-3-7",
-      "bounds": {
-        "minX": 60,
-        "maxX": 80,
-        "minZ": 140,
-        "maxZ": 160
-      },
-      "resourceId": "road-3-7",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-4-7",
-      "bounds": {
-        "minX": 80,
-        "maxX": 100,
-        "minZ": 140,
-        "maxZ": 160
-      },
-      "resourceId": "road-4-7",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-6-7",
-      "bounds": {
-        "minX": 120,
-        "maxX": 140,
-        "minZ": 140,
-        "maxZ": 160
-      },
-      "resourceId": "road-6-7",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-7-7",
-      "bounds": {
-        "minX": 140,
-        "maxX": 160,
-        "minZ": 140,
-        "maxZ": 160
-      },
-      "resourceId": "road-7-7",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-8-7",
-      "bounds": {
-        "minX": 160,
-        "maxX": 180,
-        "minZ": 140,
-        "maxZ": 160
-      },
-      "resourceId": "road-8-7",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road-9-7",
-      "bounds": {
-        "minX": 180,
-        "maxX": 200,
-        "minZ": 140,
-        "maxZ": 160
-      },
-      "resourceId": "road-9-7",
-      "assetIds": [
-        "road-straight"
-      ]
-    },
-    {
-      "id": "road--1--1",
-      "bounds": {
-        "minX": -20,
-        "maxX": 0,
         "minZ": -20,
         "maxZ": 0
       },
-      "resourceId": "road--1--1",
+      "resourceId": "road--4--1",
       "assetIds": [
-        "bridge-pillar"
-      ]
-    },
-    {
-      "id": "road-9--2",
-      "bounds": {
-        "minX": 180,
-        "maxX": 200,
-        "minZ": -40,
-        "maxZ": -20
-      },
-      "resourceId": "road-9--2",
-      "assetIds": [
-        "bus-stop"
-      ]
-    },
-    {
-      "id": "road--14-6",
-      "bounds": {
-        "minX": -280,
-        "maxX": -260,
-        "minZ": 120,
-        "maxZ": 140
-      },
-      "resourceId": "road--14-6",
-      "assetIds": [
-        "railroad-straight"
-      ]
-    },
-    {
-      "id": "road--13-6",
-      "bounds": {
-        "minX": -260,
-        "maxX": -240,
-        "minZ": 120,
-        "maxZ": 140
-      },
-      "resourceId": "road--13-6",
-      "assetIds": [
-        "railroad-straight"
-      ]
-    },
-    {
-      "id": "road--12-6",
-      "bounds": {
-        "minX": -240,
-        "maxX": -220,
-        "minZ": 120,
-        "maxZ": 140
-      },
-      "resourceId": "road--12-6",
-      "assetIds": [
-        "railroad-straight"
-      ]
-    },
-    {
-      "id": "road--11-6",
-      "bounds": {
-        "minX": -220,
-        "maxX": -200,
-        "minZ": 120,
-        "maxZ": 140
-      },
-      "resourceId": "road--11-6",
-      "assetIds": [
-        "railroad-straight"
-      ]
-    },
-    {
-      "id": "road--9-6",
-      "bounds": {
-        "minX": -180,
-        "maxX": -160,
-        "minZ": 120,
-        "maxZ": 140
-      },
-      "resourceId": "road--9-6",
-      "assetIds": [
-        "railroad-straight"
-      ]
-    },
-    {
-      "id": "road--8-6",
-      "bounds": {
-        "minX": -160,
-        "maxX": -140,
-        "minZ": 120,
-        "maxZ": 140
-      },
-      "resourceId": "road--8-6",
-      "assetIds": [
-        "railroad-straight"
-      ]
-    },
-    {
-      "id": "road--7-6",
-      "bounds": {
-        "minX": -140,
-        "maxX": -120,
-        "minZ": 120,
-        "maxZ": 140
-      },
-      "resourceId": "road--7-6",
-      "assetIds": [
-        "railroad-straight"
-      ]
-    },
-    {
-      "id": "road--6-6",
-      "bounds": {
-        "minX": -120,
-        "maxX": -100,
-        "minZ": 120,
-        "maxZ": 140
-      },
-      "resourceId": "road--6-6",
-      "assetIds": [
-        "railroad-straight"
-      ]
-    },
-    {
-      "id": "road--4-6",
-      "bounds": {
-        "minX": -80,
-        "maxX": -60,
-        "minZ": 120,
-        "maxZ": 140
-      },
-      "resourceId": "road--4-6",
-      "assetIds": [
-        "railroad-straight"
-      ]
-    },
-    {
-      "id": "road--3-6",
-      "bounds": {
-        "minX": -60,
-        "maxX": -40,
-        "minZ": 120,
-        "maxZ": 140
-      },
-      "resourceId": "road--3-6",
-      "assetIds": [
-        "railroad-straight"
-      ]
-    },
-    {
-      "id": "road--2-6",
-      "bounds": {
-        "minX": -40,
-        "maxX": -20,
-        "minZ": 120,
-        "maxZ": 140
-      },
-      "resourceId": "road--2-6",
-      "assetIds": [
-        "railroad-straight"
-      ]
-    },
-    {
-      "id": "road--1-6",
-      "bounds": {
-        "minX": -20,
-        "maxX": 0,
-        "minZ": 120,
-        "maxZ": 140
-      },
-      "resourceId": "road--1-6",
-      "assetIds": [
-        "railroad-straight"
-      ]
-    },
-    {
-      "id": "road-1-6",
-      "bounds": {
-        "minX": 20,
-        "maxX": 40,
-        "minZ": 120,
-        "maxZ": 140
-      },
-      "resourceId": "road-1-6",
-      "assetIds": [
-        "railroad-straight"
-      ]
-    },
-    {
-      "id": "road-2-6",
-      "bounds": {
-        "minX": 40,
-        "maxX": 60,
-        "minZ": 120,
-        "maxZ": 140
-      },
-      "resourceId": "road-2-6",
-      "assetIds": [
-        "railroad-straight"
-      ]
-    },
-    {
-      "id": "road-3-6",
-      "bounds": {
-        "minX": 60,
-        "maxX": 80,
-        "minZ": 120,
-        "maxZ": 140
-      },
-      "resourceId": "road-3-6",
-      "assetIds": [
-        "railroad-straight"
-      ]
-    },
-    {
-      "id": "road-4-6",
-      "bounds": {
-        "minX": 80,
-        "maxX": 100,
-        "minZ": 120,
-        "maxZ": 140
-      },
-      "resourceId": "road-4-6",
-      "assetIds": [
-        "railroad-straight"
-      ]
-    },
-    {
-      "id": "road-6-6",
-      "bounds": {
-        "minX": 120,
-        "maxX": 140,
-        "minZ": 120,
-        "maxZ": 140
-      },
-      "resourceId": "road-6-6",
-      "assetIds": [
-        "railroad-straight"
-      ]
-    },
-    {
-      "id": "road-7-6",
-      "bounds": {
-        "minX": 140,
-        "maxX": 160,
-        "minZ": 120,
-        "maxZ": 140
-      },
-      "resourceId": "road-7-6",
-      "assetIds": [
-        "railroad-straight"
-      ]
-    },
-    {
-      "id": "road-8-6",
-      "bounds": {
-        "minX": 160,
-        "maxX": 180,
-        "minZ": 120,
-        "maxZ": 140
-      },
-      "resourceId": "road-8-6",
-      "assetIds": [
-        "railroad-straight"
-      ]
-    },
-    {
-      "id": "road-9-6",
-      "bounds": {
-        "minX": 180,
-        "maxX": 200,
-        "minZ": 120,
-        "maxZ": 140
-      },
-      "resourceId": "road-9-6",
-      "assetIds": [
-        "railroad-straight"
-      ]
-    },
-    {
-      "id": "road-11-6",
-      "bounds": {
-        "minX": 220,
-        "maxX": 240,
-        "minZ": 120,
-        "maxZ": 140
-      },
-      "resourceId": "road-11-6",
-      "assetIds": [
-        "railroad-straight"
-      ]
-    },
-    {
-      "id": "road-12-6",
-      "bounds": {
-        "minX": 240,
-        "maxX": 260,
-        "minZ": 120,
-        "maxZ": 140
-      },
-      "resourceId": "road-12-6",
-      "assetIds": [
-        "railroad-straight"
-      ]
-    },
-    {
-      "id": "road-13-6",
-      "bounds": {
-        "minX": 260,
-        "maxX": 280,
-        "minZ": 120,
-        "maxZ": 140
-      },
-      "resourceId": "road-13-6",
-      "assetIds": [
-        "railroad-straight"
-      ]
-    },
-    {
-      "id": "road--11-5",
-      "bounds": {
-        "minX": -220,
-        "maxX": -200,
-        "minZ": 100,
-        "maxZ": 120
-      },
-      "resourceId": "road--11-5",
-      "assetIds": [
-        "rail-crossing-sign"
-      ]
-    },
-    {
-      "id": "road--1-5",
-      "bounds": {
-        "minX": -20,
-        "maxX": 0,
-        "minZ": 100,
-        "maxZ": 120
-      },
-      "resourceId": "road--1-5",
-      "assetIds": [
-        "rail-crossing-sign"
-      ]
-    },
-    {
-      "id": "road-4-5",
-      "bounds": {
-        "minX": 80,
-        "maxX": 100,
-        "minZ": 100,
-        "maxZ": 120
-      },
-      "resourceId": "road-4-5",
-      "assetIds": [
-        "rail-crossing-sign"
+        "map-0e464e3b5566cc2c"
       ]
     }
   ],
   "overviewResourceId": "road-overview",
   "navigationResourceId": "road-navigation",
   "stats": {
-    "roadTiles": 502,
-    "chunks": 263,
-    "lanes": 1064,
-    "junctions": 46,
-    "stops": 3,
-    "crossings": 5,
-    "bridges": 1,
-    "tunnels": 1,
-    "reachableRoads": 502
+    "roadTiles": 111,
+    "chunks": 56,
+    "objects": 290,
+    "models": 19
   }
 }

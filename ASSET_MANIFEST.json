@@ -80,6 +80,39 @@
         "client/public/content/assets/environment/road-level-crossing.glb",
         "client/public/content/assets/environment/bridge-pillar.glb"
       ]
+    },
+    {
+      "id": "local:compact-reference-blender",
+      "title": "Compact reference road map",
+      "source_name": "User-provided Blender scene and Kenney City Kit Roads",
+      "source_url": "https://kenney.nl/assets/city-kit-roads",
+      "license": "CC0 for Kenney source models; project-authored structures",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "source_files": [
+        "blender/compact-reference.blend",
+        "blender/compact-reference.graph.json"
+      ],
+      "files": [
+        "client/public/content/assets/imported/map-0db7c8dfbe7b5215.glb.bin",
+        "client/public/content/assets/imported/map-0e464e3b5566cc2c.glb.bin",
+        "client/public/content/assets/imported/map-130da6ffc51d8d13.glb.bin",
+        "client/public/content/assets/imported/map-1ad5ba7e002b286a.glb.bin",
+        "client/public/content/assets/imported/map-241ce766ed87517d.glb.bin",
+        "client/public/content/assets/imported/map-3fe33aa18d56eda4.glb.bin",
+        "client/public/content/assets/imported/map-4bdc8824db7ca95e.glb.bin",
+        "client/public/content/assets/imported/map-4fdb7de51d9faf4c.glb.bin",
+        "client/public/content/assets/imported/map-7214df6f54891f94.glb.bin",
+        "client/public/content/assets/imported/map-742ac4b402f41e28.glb.bin",
+        "client/public/content/assets/imported/map-7bf3e5b72548225a.glb.bin",
+        "client/public/content/assets/imported/map-888737959321a386.glb.bin",
+        "client/public/content/assets/imported/map-a0eeac40ecf64d0d.glb.bin",
+        "client/public/content/assets/imported/map-a80edbf0901d9ea1.glb.bin",
+        "client/public/content/assets/imported/map-ce6b36321726e251.glb.bin",
+        "client/public/content/assets/imported/map-d1ae55fb9bb06b2e.glb.bin",
+        "client/public/content/assets/imported/map-d8fe3b88f5aa4e92.glb.bin",
+        "client/public/content/assets/imported/map-eea5c549e3afcc87.glb.bin",
+        "client/public/content/assets/imported/map-ef898603ae3e9ddd.glb.bin"
+      ]
     }
   ],
   "version": 1

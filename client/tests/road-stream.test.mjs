@@ -98,6 +98,7 @@ test('mirrored glTF keeps front-face orientation and never mutates source indice
 
 test('the real map can be traversed without cache overflow or missing nearby chunks', async t => {
   const { readFile } = await import('node:fs/promises');
+  const { gunzipSync } = await import('node:zlib');
   const root = new URL('../public/content/', import.meta.url);
   const manifest = JSON.parse(await readFile(new URL('world/manifest.json', root)));
   const navigation = JSON.parse(await readFile(new URL('world/navigation.json', root)));
@@ -109,7 +110,8 @@ test('the real map can be traversed without cache overflow or missing nearby chu
   road.registry = new Map(manifest.resources.map(resource => [resource.id, resource]));
   const data = new Map();
   for (const resource of manifest.resources) if (resource.kind === 'data') {
-    data.set(resource.id, JSON.parse(await readFile(new URL(resource.url.slice('/content/'.length), root))));
+    const bytes = await readFile(new URL(resource.url.slice('/content/'.length), root));
+    data.set(resource.id, JSON.parse(resource.encoding === 'gzip' ? gunzipSync(bytes) : bytes));
   }
   // Настоящие размеры и JSON карты; GPU и парсинг GLB проверяются отдельно.
   road.acquire = async resource => {

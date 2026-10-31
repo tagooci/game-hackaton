@@ -37,6 +37,15 @@ def pack(raw, archive, parent, unmarked=False, ramp=False, rail=False, level_cro
     def linear(c):
         f=c/255
         return round(255*(f/12.92 if f<=0.04045 else ((f+0.055)/1.055)**2.4))
+    all_positions=[]
+    for mesh in doc['meshes']:
+        for primitive in mesh['primitives']:
+            for x,y,z in values(primitive['attributes']['POSITION']):
+                if level_crossing:y=min(y,.01)
+                if rail:y,z=y+1,z-2
+                if ramp:y+=.1*(x+.5)
+                all_positions.append((x,y,z))
+    decode=max(abs(c) for point in all_positions for c in point)/32760 or 1/32760
     for mesh in doc['meshes']:
         for primitive in mesh['primitives']:
             attrs=primitive['attributes'];positions=values(attrs['POSITION']);normals=values(attrs['NORMAL']);uvs=values(attrs['TEXCOORD_0']) if 'TEXCOORD_0' in attrs else []
@@ -49,10 +58,14 @@ def pack(raw, archive, parent, unmarked=False, ramp=False, rail=False, level_cro
                     point=positions[len(colors)];normal=normals[len(colors)]
                     if abs(point[1]-.01)<.002 and normal[1]>.9 and min(color)>120: color=(102,107,128)
                 colors.append(tuple(linear(c) for c in color)+(255,))
-            if not uvs:
+            if not uvs and 'COLOR_0' in attrs:
                 a=old_accessors[attrs['COLOR_0']]
                 colors=[tuple(round(c*255) if a['componentType']==5126 else c for c in row)+(255,) for row in values(attrs['COLOR_0'])]
                 colors=[row[:4] for row in colors]
+            if not colors:
+                material=doc.get('materials',[{}])[primitive.get('material',0)]
+                factor=material.get('pbrMetallicRoughness',{}).get('baseColorFactor',[1,1,1,1])
+                colors=[tuple(round(c*255) for c in factor)]*len(positions)
             if ramp:
                 positions=[(x,y+.1*(x+.5),z) for x,y,z in positions]
                 normals=[(x-.1*y,y,z) for x,y,z in normals]
@@ -66,7 +79,6 @@ def pack(raw, archive, parent, unmarked=False, ramp=False, rail=False, level_cro
                 mapping.append(unique[key])
             indices=[(mapping[row[0]],) for row in values(primitive['indices'])]
             positions,normals,colors=new_p,new_n,new_c
-            decode=max(abs(c) for point in positions for c in point)/32760 or 1/32760
             primitive['attributes']={
                 'POSITION':add([tuple(round(c/decode) for c in v)+(0,) for v in positions],'h',5122,'VEC4',bounds=True),
                 'NORMAL':add([tuple(round(max(-1,min(1,c))*127) for c in v)+(0,) for v in normals],'b',5120,'VEC4',normalized=True),

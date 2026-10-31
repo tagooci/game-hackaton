@@ -84,7 +84,7 @@ def test_v2_physics_validation_timeout_and_saved_position(client):
         ws.send_json(input_message())
         time.sleep(0.15)
         state = module.v2_players[account['playerId']]
-        assert state['vehicle'].x > module.WORLD_MAP['spawn']['x']
+        assert (state['vehicle'].x,state['vehicle'].z) != (module.WORLD_MAP['spawn']['x'],module.WORLD_MAP['spawn']['z'])
         ws.send_json(input_message(throttle=-1))  # Duplicate seq cannot overwrite accepted input.
         time.sleep(0.03)
         assert state['controls'].throttle == 1
@@ -103,6 +103,10 @@ def test_v2_physics_validation_timeout_and_saved_position(client):
         assert module.v2_players[account['playerId']]['seq'] == 0
 
 
+def moved_from_spawn(player):
+    return abs(player['x']-module.WORLD_MAP['spawn']['x']) + abs(player['z']-module.WORLD_MAP['spawn']['z']) > .001
+
+
 def test_two_accounts_full_snapshots_and_disconnect(client):
     alice = register(client)
     alice_cookie = client.cookies.get('game_session')
@@ -117,9 +121,9 @@ def test_two_accounts_full_snapshots_and_disconnect(client):
             b.send_json(input_message())
             for _ in range(20):
                 snapshot = receive(a, 'snapshot')
-                if next(p for p in snapshot['players'] if p['id'] == bob['playerId'])['x'] > module.WORLD_MAP['spawn']['x']:
+                if moved_from_spawn(next(p for p in snapshot['players'] if p['id'] == bob['playerId'])):
                     break
-            assert next(p for p in snapshot['players'] if p['id'] == bob['playerId'])['x'] > module.WORLD_MAP['spawn']['x']
+            assert moved_from_spawn(next(p for p in snapshot['players'] if p['id'] == bob['playerId']))
         for _ in range(20):
             if {p['id'] for p in receive(a, 'snapshot')['players']} == {alice['playerId']}:
                 break

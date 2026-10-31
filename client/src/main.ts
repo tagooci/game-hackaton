@@ -154,6 +154,7 @@ function startGame(account: Account): () => void {
       mapReady = false;
       overlay.textContent = 'Загрузка карты…';
       await roads.init(message.plan.mapManifestUrl);
+      if (roads.manifest.groundColor) groundMaterial.diffuseColor = Color3.FromHexString(roads.manifest.groundColor);
       await roads.update(message.spawn.x, message.spawn.z);
       overlay.textContent = 'Загрузка машины…';
       await vehicle.ready;

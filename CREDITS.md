@@ -15,3 +15,8 @@ Original license: `client/public/content/assets/railway/License.txt`.
 Road ramps and level crossings derive from City Kit Roads.
 Tunnel sections, bus shelters, crossing signs and inset rails are generated locally
 by `client/scripts/build-road-props.py`; no third-party models are used for them.
+
+Current imported map: user-provided `blender/compact-reference.blend` and its JSON graph.
+Kenney models supplied locally from `Downloads/kenney_city-kit-roads/Models/GLB format`.
+Imported runtime models: `client/public/content/assets/imported/` (CC0 Kenney geometry
+and project-authored decks/supports). License: `assets/imported/License.txt`.

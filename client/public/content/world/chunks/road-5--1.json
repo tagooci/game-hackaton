@@ -1,1 +1,0 @@
-{"id":"road-5--1","bounds":{"minX":100,"maxX":120,"minZ":-20,"maxZ":0},"objects":[{"id":"100:-20:ground","assetId":"road-straight","x":100,"y":-0.1,"z":-20,"heading":1.5707963267948966,"scale":10},{"id":"100:-10:ground","assetId":"road-straight","x":100,"y":-0.1,"z":-10,"heading":1.5707963267948966,"scale":10}],"signs":[]}
