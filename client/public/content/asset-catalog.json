@@ -1,0 +1,271 @@
+{
+  "road-straight": {
+    "id": "road-straight",
+    "kind": "model",
+    "url": "/content/assets/environment/road-straight.glb",
+    "bytes": 2648,
+    "sha256": "677dc54eb6335f7d7d9a848c30d6dafcff87238569178648bb402ad53b533161"
+  },
+  "road-bend": {
+    "id": "road-bend",
+    "kind": "model",
+    "url": "/content/assets/environment/road-bend.glb",
+    "bytes": 7364,
+    "sha256": "b5b0733efab370994e1a23fc3d70a8535aaa3886a0bfc4576d512e8810e0d1fc"
+  },
+  "road-intersection": {
+    "id": "road-intersection",
+    "kind": "model",
+    "url": "/content/assets/environment/road-intersection.glb",
+    "bytes": 3736,
+    "sha256": "2a264920f678901ee05426cf2b2a271b529dc61572dc079f820172917b2909c0"
+  },
+  "road-crossroad": {
+    "id": "road-crossroad",
+    "kind": "model",
+    "url": "/content/assets/environment/road-crossroad.glb",
+    "bytes": 4624,
+    "sha256": "959d4c4ebc0943e74675ea5e2e745df8414c9b19f79cccfcdbf0fa85e3f67885"
+  },
+  "bridge-pillar": {
+    "id": "bridge-pillar",
+    "kind": "model",
+    "url": "/content/assets/environment/bridge-pillar.glb",
+    "bytes": 2544,
+    "sha256": "60f0ba5bd2450c97be4f8c4f1e92de9c0c810d4c29a808698479beb5f64f4954"
+  },
+  "road-ramp": {
+    "id": "road-ramp",
+    "kind": "model",
+    "url": "/content/assets/environment/road-ramp.glb",
+    "bytes": 2648,
+    "sha256": "8e6c10a9a1f26f8a38df14a39c8610f18e5c500df922362fe02a98e3f6d4320d"
+  },
+  "road-level-crossing": {
+    "id": "road-level-crossing",
+    "kind": "model",
+    "url": "/content/assets/environment/road-level-crossing.glb",
+    "bytes": 2584,
+    "sha256": "e0492abe6812155ffcb66cfd31b0abc8217b97deb3c6ae1525fc2420189c5bf4"
+  },
+  "railroad-straight": {
+    "id": "railroad-straight",
+    "kind": "model",
+    "url": "/content/assets/railway/railroad-straight.glb",
+    "bytes": 11476,
+    "sha256": "0c9584769b22da16f6c4a7d973b2b1ac9031a15cf2008a307273e4088fb0e104"
+  },
+  "sedan": {
+    "id": "sedan",
+    "kind": "model",
+    "url": "/content/assets/vehicles/sedan.glb",
+    "bytes": 43504,
+    "sha256": "a4d8bf95c20ed51f1367bbbf62de5e62de52b74d6b9a361c1ef6a230bb0d04ed"
+  },
+  "truck": {
+    "id": "truck",
+    "kind": "model",
+    "url": "/content/assets/vehicles/truck.glb",
+    "bytes": 45056,
+    "sha256": "9e0b31e858769fbb4132085c3602835f71669ddac5d1c8f23c8d9979cd1be674"
+  },
+  "tunnel-section": {
+    "id": "tunnel-section",
+    "kind": "model",
+    "url": "/content/assets/props/tunnel-section.glb",
+    "bytes": 3836,
+    "sha256": "d17211e0c2894a190ed8588ba562eb10da8993c1ace03159f08c8e9c5dcecbdd"
+  },
+  "bus-stop": {
+    "id": "bus-stop",
+    "kind": "model",
+    "url": "/content/assets/props/bus-stop.glb",
+    "bytes": 5192,
+    "sha256": "daeac4a6d1efe591b76fa18a297dae9d558d3700e408ffb56dbe375a50ae0cb4"
+  },
+  "rail-crossing-sign": {
+    "id": "rail-crossing-sign",
+    "kind": "model",
+    "url": "/content/assets/props/rail-crossing-sign.glb",
+    "bytes": 2464,
+    "sha256": "63010ec49890c084879b12acb867f3d1a92e7f2212f42cfe77a766ddc6796652"
+  },
+  "railroad-crossing": {
+    "id": "railroad-crossing",
+    "kind": "model",
+    "url": "/content/assets/props/railroad-crossing.glb",
+    "bytes": 2008,
+    "sha256": "0aa882ac357eec48b61261b836ca1de2f23597f64f18a5934a86a20640efd13d"
+  },
+  "map-742ac4b402f41e28": {
+    "id": "map-742ac4b402f41e28",
+    "url": "/content/assets/imported/map-742ac4b402f41e28.glb.bin",
+    "kind": "model",
+    "bytes": 3878,
+    "sha256": "9f279cf78d60a4c267dba92d17c625df11b5df1f694702d4ea8585b1ab5cb945",
+    "encoding": "gzip",
+    "label": "road-bend"
+  },
+  "map-a80edbf0901d9ea1": {
+    "id": "map-a80edbf0901d9ea1",
+    "url": "/content/assets/imported/map-a80edbf0901d9ea1.glb.bin",
+    "kind": "model",
+    "bytes": 2246,
+    "sha256": "8aacad24cf4ac4ce514334db2abff8e939b06d831ebf6d76d83fb3be045ae496",
+    "encoding": "gzip",
+    "label": "road-straight"
+  },
+  "map-d1ae55fb9bb06b2e": {
+    "id": "map-d1ae55fb9bb06b2e",
+    "url": "/content/assets/imported/map-d1ae55fb9bb06b2e.glb.bin",
+    "kind": "model",
+    "bytes": 3197,
+    "sha256": "09f71d143fd8277780a605b0b4f4a68971dec4d43e6b999d4a5b10bca9f58615",
+    "encoding": "gzip",
+    "label": "road-intersection-path"
+  },
+  "map-ce6b36321726e251": {
+    "id": "map-ce6b36321726e251",
+    "url": "/content/assets/imported/map-ce6b36321726e251.glb.bin",
+    "kind": "model",
+    "bytes": 3626,
+    "sha256": "5706aab2efd31c1200c108812825024db3b68e074fdd18cec793f512a486636e",
+    "encoding": "gzip",
+    "label": "road-crossroad-path"
+  },
+  "map-7214df6f54891f94": {
+    "id": "map-7214df6f54891f94",
+    "url": "/content/assets/imported/map-7214df6f54891f94.glb.bin",
+    "kind": "model",
+    "bytes": 14266,
+    "sha256": "b1b4cd71fd6872694614687002f48b04651c28af5502620b5f2f5ceba111a05d",
+    "encoding": "gzip",
+    "label": "road-roundabout"
+  },
+  "map-241ce766ed87517d": {
+    "id": "map-241ce766ed87517d",
+    "url": "/content/assets/imported/map-241ce766ed87517d.glb.bin",
+    "kind": "model",
+    "bytes": 7536,
+    "sha256": "eb65265873531b8f1d0a5fae69008ae3bbe581cd7773699fcffd1098c3948448",
+    "encoding": "gzip",
+    "label": "road-slant-flat-curve"
+  },
+  "map-7bf3e5b72548225a": {
+    "id": "map-7bf3e5b72548225a",
+    "url": "/content/assets/imported/map-7bf3e5b72548225a.glb.bin",
+    "kind": "model",
+    "bytes": 4302,
+    "sha256": "c91dfa81417a8704c4a68c7484ebc7cfad39da84fb48f92215ec70c914efab56",
+    "encoding": "gzip",
+    "label": "road-curve"
+  },
+  "map-888737959321a386": {
+    "id": "map-888737959321a386",
+    "url": "/content/assets/imported/map-888737959321a386.glb.bin",
+    "kind": "model",
+    "bytes": 3902,
+    "sha256": "00af91ffa61056e807dd530f14e923764c1756a96264a290881eb94fd44cf51e",
+    "encoding": "gzip",
+    "label": "road-bridge"
+  },
+  "map-ef898603ae3e9ddd": {
+    "id": "map-ef898603ae3e9ddd",
+    "url": "/content/assets/imported/map-ef898603ae3e9ddd.glb.bin",
+    "kind": "model",
+    "bytes": 2324,
+    "sha256": "2c2a321791dc597e24addfcdfa814019dd43250bca4f3df5a83c7032c9a322fd",
+    "encoding": "gzip",
+    "label": "Support - S02 - WIDE TURN NORTH 0"
+  },
+  "map-eea5c549e3afcc87": {
+    "id": "map-eea5c549e3afcc87",
+    "url": "/content/assets/imported/map-eea5c549e3afcc87.glb.bin",
+    "kind": "model",
+    "bytes": 4516,
+    "sha256": "ededd963acdb1a178527f7c01c1f31659fbb21ee9743437ce026ce93c6338c6d",
+    "encoding": "gzip",
+    "label": "Deck - S02 - WIDE TURN NORTH"
+  },
+  "map-a0eeac40ecf64d0d": {
+    "id": "map-a0eeac40ecf64d0d",
+    "url": "/content/assets/imported/map-a0eeac40ecf64d0d.glb.bin",
+    "kind": "model",
+    "bytes": 2103,
+    "sha256": "6901605b576e955c2c1f491545230fed93a812190d589763015ea56329f306e1",
+    "encoding": "gzip",
+    "label": "Deck - S03 - HORIZONTAL UPPER STRAIGHT"
+  },
+  "map-3fe33aa18d56eda4": {
+    "id": "map-3fe33aa18d56eda4",
+    "url": "/content/assets/imported/map-3fe33aa18d56eda4.glb.bin",
+    "kind": "model",
+    "bytes": 4523,
+    "sha256": "aaac1b69a0528604548f51091fb5d83156ef761dc62c9eb8c75416a705e2965c",
+    "encoding": "gzip",
+    "label": "Deck - S04 - WIDE TURN EAST"
+  },
+  "map-0db7c8dfbe7b5215": {
+    "id": "map-0db7c8dfbe7b5215",
+    "url": "/content/assets/imported/map-0db7c8dfbe7b5215.glb.bin",
+    "kind": "model",
+    "bytes": 2105,
+    "sha256": "412298ac79f9c301d938a90507cbb1ff33fe5eb6170af34b45195e6f89ad465b",
+    "encoding": "gzip",
+    "label": "Deck - S06 - HORIZONTAL UPPER STRAIGHT"
+  },
+  "map-4bdc8824db7ca95e": {
+    "id": "map-4bdc8824db7ca95e",
+    "url": "/content/assets/imported/map-4bdc8824db7ca95e.glb.bin",
+    "kind": "model",
+    "bytes": 4538,
+    "sha256": "b00661bfcb6b6ced6fb7dbeeb2443907d5d802e89eff7e88010a0171c2fe9f4b",
+    "encoding": "gzip",
+    "label": "Deck - U02 - U TURN WEST HALF"
+  },
+  "map-4fdb7de51d9faf4c": {
+    "id": "map-4fdb7de51d9faf4c",
+    "url": "/content/assets/imported/map-4fdb7de51d9faf4c.glb.bin",
+    "kind": "model",
+    "bytes": 4534,
+    "sha256": "6f16ef10115cf0db30a00dc2aae9892edf4b123f80b0c24a4a0af21fbcf1a5b1",
+    "encoding": "gzip",
+    "label": "Deck - U03 - U TURN EAST HALF"
+  },
+  "map-130da6ffc51d8d13": {
+    "id": "map-130da6ffc51d8d13",
+    "url": "/content/assets/imported/map-130da6ffc51d8d13.glb.bin",
+    "kind": "model",
+    "bytes": 2917,
+    "sha256": "ac1b24129ad51760bb008245725d3a8dd39b6d4131d1bedddf79c742a6843ad7",
+    "encoding": "gzip",
+    "label": "Lamp_00 - curb / inward"
+  },
+  "map-d8fe3b88f5aa4e92": {
+    "id": "map-d8fe3b88f5aa4e92",
+    "url": "/content/assets/imported/map-d8fe3b88f5aa4e92.glb.bin",
+    "kind": "model",
+    "bytes": 1985,
+    "sha256": "e85640f03e80f2d1a95a32af1803fa63b38e762471e6af3ff6cda80e4156fdb6",
+    "encoding": "gzip",
+    "label": "Lens Lamp_00 - curb / inward"
+  },
+  "map-0e464e3b5566cc2c": {
+    "id": "map-0e464e3b5566cc2c",
+    "url": "/content/assets/imported/map-0e464e3b5566cc2c.glb.bin",
+    "kind": "model",
+    "bytes": 3884,
+    "sha256": "bbbb5be1f2b5eaaf7c3060c5e15a9ac87bf0858215d513fd2cbca2b8c7ac5f15",
+    "encoding": "gzip",
+    "label": "Signal_00"
+  },
+  "map-1ad5ba7e002b286a": {
+    "id": "map-1ad5ba7e002b286a",
+    "url": "/content/assets/imported/map-1ad5ba7e002b286a.glb.bin",
+    "kind": "model",
+    "bytes": 3507,
+    "sha256": "0ee403a6f7050b6fe1d40d3d287201b994bf693aeefa83b4172e306a61ced399",
+    "encoding": "gzip",
+    "label": "Highway sign - S06 - HORIZONTAL UPPER STRAIGHT"
+  }
+}

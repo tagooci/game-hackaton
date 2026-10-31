@@ -44,6 +44,17 @@ class Database:
                 """
             )
 
+        with self._connect() as db:
+            columns = {row["name"] for row in db.execute("PRAGMA table_info(accounts)")}
+            for name, definition in [("safe_y", "REAL NOT NULL DEFAULT 0"), ("safe_world", "TEXT NOT NULL DEFAULT ''")]:
+                if name not in columns:
+                    db.execute(f"ALTER TABLE accounts ADD COLUMN {name} {definition}")
+
+    def safe_context(self, player_id: str) -> tuple[str, float]:
+        with self._lock, self._connect() as db:
+            row = db.execute("SELECT safe_world, safe_y FROM accounts WHERE player_id = ?", (player_id,)).fetchone()
+        return (row['safe_world'], row['safe_y']) if row else ('', 0)
+
     def _connect(self) -> sqlite3.Connection:
         connection = sqlite3.connect(self.path, timeout=5)
         connection.row_factory = sqlite3.Row
@@ -140,16 +151,16 @@ class Database:
         return (row["safe_x"], row["safe_z"], row["safe_heading"]) if row else (0, 0, 0)
 
     def save_safe_position(
-        self, player_id: str, x: float, z: float, heading: float
+        self, player_id: str, x: float, z: float, heading: float, y: float = 0, world: str = ""
     ) -> None:
         with self._lock, self._connect() as db:
             db.execute(
                 """
                 UPDATE accounts
-                SET safe_x = ?, safe_z = ?, safe_heading = ?
+                SET safe_x = ?, safe_z = ?, safe_heading = ?, safe_y = ?, safe_world = ?
                 WHERE player_id = ?
                 """,
-                (x, z, heading, player_id),
+                (x, z, heading, y, world, player_id),
             )
 
     def close(self) -> None:

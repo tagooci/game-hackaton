@@ -7,10 +7,14 @@ import { TransformNode } from '@babylonjs/core/Meshes/transformNode.js';
 import type { AssetContainer, InstantiatedEntries } from '@babylonjs/core/assetContainer.js';
 import type { Scene } from '@babylonjs/core/scene.js';
 
+export const VEHICLE_LENGTH = 3.3;
+
 export interface VehiclePose {
   x: number;
   z: number;
   heading: number;
+  y?: number;
+  pitch?: number;
   wheelAngle?: number;
   color?: number;
 }
@@ -91,7 +95,8 @@ export function createVehicleView(scene: Scene, length: number, name = 'local-ve
   ready.catch(error => console.error('Не удалось загрузить модель машины:', error));
 
   function setPose(pose: VehiclePose): void {
-    root.position.set(pose.x, 0, pose.z);
+    root.position.set(pose.x, pose.y ?? 0, pose.z);
+    root.rotation.x = pose.pitch ?? 0;
     root.rotation.y = pose.heading;
     const nextAngle = pose.wheelAngle ?? wheelAngle;
     const nextColor = pose.color ?? color;
@@ -106,7 +111,7 @@ export function createVehicleView(scene: Scene, length: number, name = 'local-ve
   }
 
   function getPose(): VehiclePose {
-    return { x: root.position.x, z: root.position.z, heading: root.rotation.y, wheelAngle, color };
+    return { x: root.position.x, y: root.position.y, pitch: root.rotation.x, z: root.position.z, heading: root.rotation.y, wheelAngle, color };
   }
 
   function dispose(): void {

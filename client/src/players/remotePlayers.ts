@@ -1,4 +1,4 @@
-import { createVehicleView } from '../vehicle/vehicleView.ts';
+import { createVehicleView, VEHICLE_LENGTH } from '../vehicle/vehicleView.ts';
 import type { Scene } from '@babylonjs/core/scene.js';
 import type { PlayerSnapshot, ServerMessage } from '../network/protocol';
 
@@ -17,7 +17,7 @@ export function createRemotePlayers(scene: Scene, createView = createVehicleView
 
   function addPlayer(player: PlayerSnapshot, now: number): void {
     if (player.id === ownId || players.has(player.id)) return;
-    const vehicle = createView(scene, 4.4, `player-${player.id}`);
+    const vehicle = createView(scene, VEHICLE_LENGTH, `player-${player.id}`);
     vehicle.setPose(player);
     vehicle.root.metadata = { playerId: player.id, name: player.name };
     players.set(player.id, { vehicle, samples: [{ ...player, time: now }] });
@@ -73,6 +73,8 @@ export function createRemotePlayers(scene: Scene, createView = createVehicleView
         x: from.x + (to.x - from.x) * t,
         z: from.z + (to.z - from.z) * t,
         heading: from.heading + angle * t,
+        y: (from.y ?? 0) + ((to.y ?? 0) - (from.y ?? 0)) * t,
+        pitch: (from.pitch ?? 0) + ((to.pitch ?? 0) - (from.pitch ?? 0)) * t,
         wheelAngle: (from.wheelAngle ?? 0) + ((to.wheelAngle ?? 0) - (from.wheelAngle ?? 0)) * t,
         color: to.color,
       });
