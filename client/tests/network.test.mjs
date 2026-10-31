@@ -72,6 +72,30 @@ test('silent server times out and reconnects', t => {
   assert.equal(sockets.length, 2);
 });
 
+test('vehicle mode sends input only after server confirmation and resets sequence on reconnect', t => {
+  const { sockets } = setup(t, { getControls: () => ({ throttle: 1, steering: -1, brake: 0 }) });
+  sockets[0].open();
+  assert.equal(sockets[0].sent[0].controlMode, 'vehicle');
+  const vehicleWelcome = { ...welcome, controlMode: 'vehicle', sceneId: 'world:main', epoch: 1 };
+  sockets[0].message(vehicleWelcome);
+  assert.deepEqual(sockets[0].sent[1], { type: 'input', sceneId: 'world:main', epoch: 1, seq: 1, throttle: 1, steering: -1, brake: 0 });
+  t.mock.timers.tick(50);
+  assert.equal(sockets[0].sent[2].seq, 2);
+  sockets[0].close();
+  t.mock.timers.tick(3000);
+  sockets[1].open();
+  sockets[1].message(vehicleWelcome);
+  assert.equal(sockets[1].sent[1].seq, 1);
+});
+
+test('vehicle client does not send controls to a legacy server without confirmation', t => {
+  const { sockets } = setup(t, { getControls: () => ({ throttle: 1, steering: 0, brake: 0 }) });
+  sockets[0].open();
+  sockets[0].message(welcome);
+  t.mock.timers.tick(100);
+  assert.equal(sockets[0].sent.length, 1);
+});
+
 test('server events are delivered; malformed or future messages are ignored', t => {
   const received = [];
   const { sockets } = setup(t, { onMessage: message => received.push(message) });

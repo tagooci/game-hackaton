@@ -2,15 +2,16 @@ import './style.css';
 
 import { Engine } from '@babylonjs/core/Engines/engine';
 import { Scene } from '@babylonjs/core/scene';
-import { UniversalCamera } from '@babylonjs/core/Cameras/universalCamera';
+import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera';
 import { HemisphericLight } from '@babylonjs/core/Lights/hemisphericLight';
 import { MeshBuilder } from '@babylonjs/core/Meshes/meshBuilder';
 import { Vector3 } from '@babylonjs/core/Maths/math.vector';
 import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial';
 import { startStateSender } from './network/stateSender';
 import { createRemotePlayers } from './players/remotePlayers';
+import { createVehicleView } from './vehicle/vehicleView';
+import { createVehicleControls } from './vehicle/controls';
 
-const EYE_HEIGHT = 1.7;
 const events = new AbortController();
 const eventOptions = { signal: events.signal };
 
@@ -24,54 +25,32 @@ const engine = new Engine(canvas, true);
 // Сцена содержит камеру, свет и объекты.
 const scene = new Scene(engine);
 
-// Камера от первого лица, на высоте глаз.
-const camera = new UniversalCamera(
+// Длина модели в метрах; пропорции сохраняются при загрузке.
+const vehicle = createVehicleView(scene, 4.4);
+vehicle.setPose({ x: 0, z: 0, heading: 0 });
+
+// Камера наблюдает за машиной и не управляет её положением.
+const camera = new ArcRotateCamera(
   'camera',
-  new Vector3(0, EYE_HEIGHT, -4),
+  -Math.PI / 2,
+  Math.PI / 3,
+  10,
+  Vector3.Zero(),
   scene,
 );
-
-camera.rotation.set(0, 0, 0);
+camera.lockedTarget = vehicle.body;
+camera.lowerRadiusLimit = 5;
+camera.upperRadiusLimit = 20;
+camera.lowerBetaLimit = 0.2;
+camera.upperBetaLimit = Math.PI / 2 - 0.05;
+camera.panningSensibility = 0;
+camera.inputs.removeByType('ArcRotateCameraKeyboardMoveInput');
+camera.attachControl(canvas, false);
 scene.activeCamera = camera;
-
-// Используем встроенное управление Babylon.js.
-camera.keysUp = [87];    // W
-camera.keysDown = [83];  // S
-camera.keysLeft = [65];  // A
-camera.keysRight = [68]; // D
-camera.keysUpward = [];
-camera.keysDownward = [];
-camera.speed = 0.3;
-camera.inertia = 0;
-camera.angularSensibility = 2000;
-
 canvas.tabIndex = 0;
-
-canvas.addEventListener('click', async () => {
-  if (document.pointerLockElement === canvas) return;
-  canvas.focus();
-  try {
-    await canvas.requestPointerLock();
-  } catch (error) {
-    console.warn('Не удалось захватить курсор. Нажми на сцену ещё раз.', error);
-  }
-}, eventOptions);
-
-// Управление активно только после клика; Esc освобождает курсор.
-document.addEventListener('pointerlockchange', () => {
-  if (document.pointerLockElement === canvas) {
-    camera.attachControl(canvas, false);
-  } else {
-    camera.detachControl();
-    camera.cameraDirection.setAll(0);
-    camera.cameraRotation.setAll(0);
-  }
-}, eventOptions);
-
-// При переходе в другое окно прекращаем управление.
-window.addEventListener('blur', () => {
-  if (document.pointerLockElement === canvas) document.exitPointerLock();
-}, eventOptions);
+const controls = createVehicleControls(canvas);
+let ownId = '';
+let targetPose = vehicle.getPose();
 
 // Освещение сверху.
 new HemisphericLight('light', new Vector3(0, 1, 0), scene);
@@ -96,24 +75,39 @@ const remotePlayers = createRemotePlayers(scene);
 
 const stopStateSender = startStateSender(serverUrl, {
   name,
-  getState: () => ({
-    x: camera.position.x,
-    z: camera.position.z,
-    heading: camera.rotation.y,
-  }),
+  getControls: controls.getControls,
   onWelcome: message => {
     // Сервер задаёт начальную позицию заново при каждом подключении.
-    camera.position.set(message.x, EYE_HEIGHT, message.z);
-    camera.rotation.set(0, message.heading, 0);
-    camera.cameraDirection.setAll(0);
-    camera.cameraRotation.setAll(0);
+    vehicle.setPose({ x: message.x, z: message.z, heading: message.heading });
+    ownId = message.id;
+    targetPose = vehicle.getPose();
+    controls.clear();
   },
-  onMessage: message => remotePlayers.handleMessage(message),
-  onDisconnect: () => remotePlayers.clear(),
+  onMessage: message => {
+    if (message.type === 'snapshot') {
+      const own = message.players.find(player => player.id === ownId);
+      if (own) targetPose = own;
+    }
+    remotePlayers.handleMessage(message);
+  },
+  onDisconnect: () => {
+    remotePlayers.clear();
+    controls.clear();
+    targetPose = vehicle.getPose();
+  },
 });
 
 // На каждом кадре рисуем сцену из положения камеры.
 engine.runRenderLoop(() => {
+  // Сглаживание отрисовки, не расчёт физики: движемся только к позиции сервера.
+  const pose = vehicle.getPose();
+  const blend = 1 - Math.exp(-20 * Math.min(engine.getDeltaTime() / 1000, 0.1));
+  const angle = Math.atan2(Math.sin(targetPose.heading - pose.heading), Math.cos(targetPose.heading - pose.heading));
+  vehicle.setPose({
+    x: pose.x + (targetPose.x - pose.x) * blend,
+    z: pose.z + (targetPose.z - pose.z) * blend,
+    heading: pose.heading + angle * blend,
+  });
   remotePlayers.update();
   scene.render();
 });
@@ -125,10 +119,11 @@ window.addEventListener('resize', () => {
 
 function dispose(): void {
   stopStateSender();
+  controls.dispose();
   events.abort();
-  if (document.pointerLockElement === canvas) document.exitPointerLock();
   engine.stopRenderLoop();
   remotePlayers.dispose();
+  vehicle.dispose();
   scene.dispose();
   engine.dispose();
   canvas.remove();

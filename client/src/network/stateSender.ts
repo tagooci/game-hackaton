@@ -1,5 +1,5 @@
 import { parseServerMessage } from './protocol.ts';
-import type { PlayerState, PlayerStateMessage, ServerMessage, WelcomeMessage } from './protocol';
+import type { PlayerState, PlayerStateMessage, ServerMessage, VehicleControls, VehicleInputMessage, WelcomeMessage } from './protocol';
 
 const SEND_INTERVAL_MS = 1000 / 20;
 const RECONNECT_DELAY_MS = 3000;
@@ -7,7 +7,8 @@ const JOIN_TIMEOUT_MS = 5000;
 
 interface ConnectionOptions {
   name: string;
-  getState: () => PlayerState;
+  getState?: () => PlayerState;
+  getControls?: () => VehicleControls;
   onWelcome: (message: WelcomeMessage) => void;
   onMessage?: (message: ServerMessage) => void;
   onDisconnect?: () => void;
@@ -21,10 +22,21 @@ export function startStateSender(url: string, options: ConnectionOptions): () =>
   let joinTimer: ReturnType<typeof setTimeout> | undefined;
   let stopped = false;
   let joined = false;
+  let seq = 0;
+  let vehicleContext: { sceneId: string; epoch: number } | undefined;
 
   function sendState(): void {
     if (!joined || socket?.readyState !== WebSocket.OPEN || socket.bufferedAmount > 0) return;
-    const state = options.getState();
+    if (options.getControls) {
+      if (!vehicleContext) return;
+      const message: VehicleInputMessage = {
+        type: 'input', ...vehicleContext, seq: ++seq, ...options.getControls(),
+      };
+      socket.send(JSON.stringify(message));
+      return;
+    }
+    const state = options.getState?.();
+    if (!state) return;
     if (![state.x, state.z, state.heading].every(Number.isFinite)) return;
     const message: PlayerStateMessage = {
       type: 'state',
@@ -38,10 +50,14 @@ export function startStateSender(url: string, options: ConnectionOptions): () =>
   function connect(): void {
     if (stopped) return;
     joined = false;
+    seq = 0;
+    vehicleContext = undefined;
     const connection = new WebSocket(url);
     socket = connection;
     connection.onopen = () => {
-      connection.send(JSON.stringify({ type: 'join', name: options.name, v: 1 }));
+      connection.send(JSON.stringify({ type: 'join', name: options.name, v: 1,
+        ...(options.getControls ? { controlMode: 'vehicle' } : {}),
+      }));
       // A silent/wrong endpoint must not leave the client waiting forever.
       joinTimer = setTimeout(() => connection.close(), JOIN_TIMEOUT_MS);
     };
@@ -54,6 +70,13 @@ export function startStateSender(url: string, options: ConnectionOptions): () =>
         console.warn(`Сервер: ${message.code}: ${message.text}`);
       } else if (message.type === 'welcome' && !joined) {
         clearTimeout(joinTimer);
+        if (options.getControls) {
+          if (message.controlMode === 'vehicle' && typeof message.sceneId === 'string' && Number.isSafeInteger(message.epoch)) {
+            vehicleContext = { sceneId: message.sceneId, epoch: message.epoch! };
+          } else {
+            console.warn('Сервер не подтвердил управление автомобилем.');
+          }
+        }
         options.onWelcome(message);
         joined = true;
         console.info(`Вход выполнен: ${message.id}`, url);

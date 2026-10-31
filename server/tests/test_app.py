@@ -1,4 +1,5 @@
 import math
+import time
 import importlib.util
 from unittest.mock import patch
 
@@ -87,6 +88,33 @@ def test_bad_protocol_version(client, version):
 
 def test_health(client):
     assert client.get("/health").json() == {"status": "ok"}
+
+
+def test_vehicle_input_moves_on_server_and_timeout_brakes(client):
+    with client.websocket_connect('/ws') as ws:
+        ws.send_json({'type': 'join', 'name': 'Driver', 'v': 1, 'controlMode': 'vehicle'})
+        welcome = receive_type(ws, 'welcome')
+        assert welcome['controlMode'] == 'vehicle'
+        player = players[welcome['id']]
+        for seq in range(1, 11):
+            ws.send_json({'type': 'input', 'sceneId': welcome['sceneId'], 'epoch': welcome['epoch'],
+                          'seq': seq, 'throttle': 1, 'steering': 0, 'brake': 0})
+            time.sleep(0.05)
+        assert player['vehicle'].speed > 1
+        assert player['z'] > welcome['z']
+        ws.send_json({'type': 'input', 'sceneId': welcome['sceneId'], 'epoch': 0,
+                      'seq': 100, 'throttle': 1, 'steering': 0, 'brake': 0})
+        ws.send_json({'type': 'input', 'sceneId': welcome['sceneId'], 'epoch': 1,
+                      'seq': 1, 'throttle': 1, 'steering': 0, 'brake': 0})
+        ws.send_json({'type': 'state', 'x': 100, 'z': 100, 'heading': 0})
+        assert receive_type(ws, 'error')['code'] == 'bad_value'
+        assert player['input_seq'] == 10
+        for _ in range(60):
+            snapshot = receive_type(ws, 'snapshot')
+            if player['vehicle'].speed == 0:
+                break
+        assert player['vehicle'].speed == 0
+        assert next(p for p in snapshot['players'] if p['id'] == welcome['id'])['z'] > 0
 
 
 def test_server_can_start_before_client_is_built():

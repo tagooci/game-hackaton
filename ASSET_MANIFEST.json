@@ -1,0 +1,23 @@
+{
+  "assets": [
+    {
+      "added_at": "2026-10-31T12:59:13.306360+00:00",
+      "attribution_required": false,
+      "attribution_text": null,
+      "author": "Kenney",
+      "files": [
+        "client/public/assets/car-kit/sedan.glb",
+        "client/public/assets/car-kit/Textures/colormap.png"
+      ],
+      "id": "Kenney:Car Kit 3.1 sedan",
+      "license": "CC0",
+      "license_status": "allowed_public_domain",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "source_name": "Kenney",
+      "source_url": "https://kenney.nl/assets/car-kit",
+      "title": "Car Kit 3.1 — sedan",
+      "warnings": []
+    }
+  ],
+  "version": 1
+}

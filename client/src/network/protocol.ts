@@ -8,6 +8,19 @@ export interface PlayerStateMessage extends PlayerState {
   type: 'state';
 }
 
+export interface VehicleControls {
+  throttle: number;
+  steering: number;
+  brake: number;
+}
+
+export interface VehicleInputMessage extends VehicleControls {
+  type: 'input';
+  sceneId: string;
+  epoch: number;
+  seq: number;
+}
+
 export interface PlayerSnapshot extends PlayerState {
   id: string;
 }
@@ -22,6 +35,9 @@ export interface WelcomeMessage extends PlayerState {
   id: string;
   zone: string;
   players: PlayerInfo[];
+  controlMode?: 'vehicle';
+  sceneId?: string;
+  epoch?: number;
 }
 
 export type ServerMessage =
