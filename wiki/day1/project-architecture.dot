@@ -1,0 +1,122 @@
+digraph project_architecture {
+  graph [
+    rankdir=TB,
+    bgcolor="#f7f9fc",
+    pad=0.35,
+    nodesep=0.7,
+    ranksep=0.75,
+    splines=ortho,
+    fontname="Arial",
+    label="Учебный автогород — схема работы",
+    labelloc=t,
+    fontsize=25,
+    fontcolor="#172033"
+  ];
+
+  node [
+    shape=box,
+    style="rounded,filled",
+    fontname="Arial",
+    fontsize=15,
+    margin="0.22,0.14",
+    color="#8090a8",
+    penwidth=1.3,
+    fillcolor="white",
+    fontcolor="#172033"
+  ];
+
+  edge [
+    fontname="Arial",
+    fontsize=12,
+    color="#53657d",
+    fontcolor="#34445a",
+    penwidth=1.4,
+    arrowsize=0.8
+  ];
+
+  client [
+    label="КЛИЕНТ\nTypeScript + Babylon.js\nинтерфейс и 3D-карта",
+    fillcolor="#eaf4ff",
+    color="#6da7e8"
+  ];
+
+  http [
+    label="HTTP\nавторизация\nкарта и чанки",
+    fillcolor="#f4efff",
+    color="#b39ddb"
+  ];
+
+  websocket [
+    label="WEBSOCKET /ws/v2\nввод игрока\nсостояние машин",
+    fillcolor="#f4efff",
+    color="#b39ddb"
+  ];
+
+  server [
+    label="СЕРВЕР\nPython + FastAPI\nавторизация, карта, физика",
+    fillcolor="#ecfaf0",
+    color="#68b68a"
+  ];
+
+  database [
+    label="БАЗА ДАННЫХ\nSQLite\ndb/game.sqlite3\nаккаунты и позиции",
+    shape=cylinder,
+    fillcolor="#fff1ed",
+    color="#d78670"
+  ];
+
+  map [
+    label="КАРТА\nчанки и ресурсы\nмодели, текстуры",
+    fillcolor="#fff8e6",
+    color="#d9a441"
+  ];
+
+  client -> http [
+    label="запросы: регистрация, login",
+    color="#5e4a9b"
+  ];
+  http -> client [
+    label="ответы: сессия, карта, чанки",
+    color="#5e4a9b"
+  ];
+  client -> websocket [
+    label="управление автомобилем",
+    color="#5e4a9b"
+  ];
+  websocket -> client [
+    label="snapshots машин",
+    color="#5e4a9b"
+  ];
+  http -> server [
+    label="HTTP-запросы",
+    color="#5e4a9b"
+  ];
+  server -> http [
+    label="HTTP-ответы",
+    color="#5e4a9b"
+  ];
+  websocket -> server [
+    label="input",
+    color="#5e4a9b"
+  ];
+  server -> websocket [
+    label="snapshots и события",
+    color="#5e4a9b"
+  ];
+  server -> database [
+    label="запись: аккаунты, позиции",
+    color="#b76d57"
+  ];
+  database -> server [
+    label="чтение данных",
+    color="#b76d57"
+  ];
+  server -> map [
+    label="выбирает карту и чанки",
+    color="#a57916"
+  ];
+  map -> http [
+    label="файлы карты и ресурсов",
+    color="#a57916"
+  ];
+}
