@@ -7,6 +7,8 @@ import { TransformNode } from '@babylonjs/core/Meshes/transformNode.js';
 import type { AssetContainer, InstantiatedEntries } from '@babylonjs/core/assetContainer.js';
 import type { Scene } from '@babylonjs/core/scene.js';
 
+export const VEHICLE_LENGTH = 3.3;
+
 export interface VehiclePose {
   x: number;
   z: number;

@@ -76,8 +76,8 @@ async def snapshot_loop():
                 continue
             await send(ws, {
                 "type": "snapshot",
-                "sceneId": "world:main",
-                "epoch": 1,
+                "sceneId": v2_players[player_id]["sceneId"],
+                "epoch": v2_players[player_id]["epoch"],
                 "tick": tick,
                 "players": [_v2_player_snapshot(pid) for pid in v2_players if pid in v2_scene_ready],
                 "signals": [],
@@ -277,6 +277,20 @@ async def send_v2_error(ws: WebSocket, code: str, text: str) -> None:
     await send(ws, {"type": "error", "code": code, "text": text})
 
 
+def world_scene_prepare(player):
+    state, body = player['vehicle'], player['vertical']
+    return {
+        "type": "scene_prepare", "sceneId": player['sceneId'], "epoch": player['epoch'],
+        "sceneKind": player['sceneKind'], "mapId": WORLD_MAP['worldId'],
+        "scenarioId": None, "roleId": None, "vehicleType": "car",
+        "spawn": {"x": state.x, "z": state.z, "heading": state.heading, "y": body.y, "pitch": body.pitch},
+        "participants": [],
+        "plan": {"revision": 1, "chunkIds": [], "resources": world_resources(),
+                 "mapManifestUrl": "/content/world/manifest.json"},
+        "timeoutMs": 30000,
+    }
+
+
 @app.websocket("/ws/v2")
 async def get_v2_websocket(websocket: WebSocket):
     allowed_origins = {
@@ -312,6 +326,7 @@ async def get_v2_websocket(websocket: WebSocket):
     vertical = old['vertical'] if old else vehicle_world.restore(state.x,state.z,state.heading,elevation)
     player = {"id": player_id, "name": account["name"], "ws": websocket, "v2": True,
               "vehicle": VehicleState(state.x, state.z, state.heading), "controls": Controls(brake=1),
+              "sceneId": "world:main", "sceneKind": "world", "epoch": 1,
               "seq": 0, "input_time": 0.0, "vertical": vertical, "color": old["color"] if old else secrets.randbelow(5)}
     v2_players[player_id] = player
     window_start = asyncio.get_running_loop().time()
@@ -372,24 +387,24 @@ async def get_v2_websocket(websocket: WebSocket):
                         "contentUrl": "/api/v2/content/bootstrap",
                     },
                 )
-                await send(
-                    websocket,
-                    {
-                        "type": "scene_prepare",
-                        "sceneId": scene_id,
-                        "epoch": epoch,
-                        "sceneKind": "world",
-                        "mapId": WORLD_MAP["worldId"],
-                        "scenarioId": None,
-                        "roleId": None,
-                        "vehicleType": "car",
-                        "spawn": {"x": state.x, "z": state.z, "heading": state.heading, "y": vertical.y, "pitch": vertical.pitch},
-                        "participants": [],
-                        "plan": {"revision": 1, "chunkIds": [], "resources": world_resources(),
-                                 "mapManifestUrl": "/content/world/manifest.json"},
-                        "timeoutMs": 30000,
-                    },
-                )
+                await send(websocket, world_scene_prepare(player))
+                continue
+
+            if msg_type == "respawn":
+                if player['sceneKind'] != 'world' or player['sceneId'] != 'world:main':
+                    await send_v2_error(websocket, "respawn_forbidden", "respawn is only available in the world")
+                    continue
+                if (player_id not in v2_scene_ready or message.get('sceneId') != scene_id
+                        or type(message.get('epoch')) is not int or message['epoch'] != epoch):
+                    continue
+                v2_scene_ready.discard(player_id)
+                epoch += 1
+                state = VehicleState(**WORLD_MAP['spawn'])
+                body = vehicle_world.restore(state.x, state.z, state.heading, WORLD_MAP.get('spawnY', 0))
+                player.update(vehicle=state, vertical=body, controls=Controls(brake=1),
+                              seq=0, applied_seq=0, input_time=0.0, epoch=epoch)
+                database.save_safe_position(player_id, state.x, state.z, state.heading, body.y, WORLD_MAP['worldId'])
+                await send(websocket, world_scene_prepare(player))
                 continue
 
             if msg_type == "scene_ready":

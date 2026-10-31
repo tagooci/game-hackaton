@@ -78,3 +78,21 @@ test('lost focus immediately sends braking input and invalid messages are ignore
   assert.equal(sockets[0].sent.at(-1).brake, 1);
   for (const text of ['invalid', 'null', '{"type":"welcome"}', '{"type":"snapshot","players":[null]}']) assert.equal(parseServerMessage(text), undefined);
 });
+
+test('respawn sends scene context and waits for the next scene handshake', async t => {
+  let requested = false;
+  const {sockets} = setup(t, {takeRespawn: () => { const value = requested; requested = false; return value; }});
+  const ws = sockets[0]; await activate(ws);
+  requested = true; t.mock.timers.tick(50);
+  assert.deepEqual(ws.sent.at(-1), {type: 'respawn', ...scene});
+  await ws.message({...prepare, epoch: 2});
+  const count = ws.sent.length;
+  t.mock.timers.tick(100);
+  assert.equal(ws.sent.length, count);
+  await ws.message({...start, epoch: 2, tick: 4, startTick: 5});
+  await ws.message({...snapshot, epoch: 2, tick: 5});
+  t.mock.timers.tick(50);
+  assert.equal(ws.sent.at(-1).type, 'input');
+  assert.equal(ws.sent.at(-1).epoch, 2);
+  assert.equal(ws.sent.at(-1).seq, 1);
+});

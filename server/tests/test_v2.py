@@ -152,3 +152,47 @@ def test_scene_gate_rate_limit_and_duplicate_connection(client):
                     old.receive_json()
             assert error.value.code == 4001
             assert len(module.v2_players) == 1
+
+
+def test_new_player_spawn_and_respawn_reloads_scene_and_rejects_old_input(client):
+    account = register(client)
+    with client.websocket_connect('/ws/v2') as ws:
+        _, first = ready(ws)
+        assert first['spawn']['x'] == module.WORLD_MAP['spawn']['x']
+        assert first['spawn']['z'] == module.WORLD_MAP['spawn']['z']
+        assert first['spawn']['y'] == pytest.approx(module.WORLD_MAP['spawnY'])
+        ws.send_json(input_message())
+        time.sleep(.15)
+        player = module.v2_players[account['playerId']]
+        assert player['vehicle'].speed > 0
+        ws.send_json({'type': 'respawn', 'sceneId': 'world:main', 'epoch': 1})
+        plan = receive(ws, 'scene_prepare')
+        assert plan['epoch'] == 2
+        assert plan['spawn'] == first['spawn']
+        assert player['vehicle'].speed == 0
+        assert account['playerId'] not in module.v2_scene_ready
+        ws.send_json(input_message(seq=100))
+        time.sleep(.1)
+        assert player['seq'] == 0
+        assert player['vehicle'].speed == 0
+        ws.send_json({'type': 'scene_ready', 'sceneId': 'world:main', 'epoch': 2, 'revision': 1})
+        receive(ws, 'scene_start')
+        assert receive(ws, 'snapshot')['epoch'] == 2
+        ws.send_json(input_message(seq=101))  # Previous epoch remains invalid after ready.
+        ws.send_json(input_message(epoch=2))
+        time.sleep(.1)
+        assert player['seq'] == 1
+        assert player['vehicle'].speed > 0
+
+
+def test_respawn_is_rejected_in_scenario(client):
+    account = register(client)
+    with client.websocket_connect('/ws/v2') as ws:
+        ready(ws)
+        player = module.v2_players[account['playerId']]
+        player['sceneKind'] = 'scenario'
+        before = player['vehicle']
+        ws.send_json({'type': 'respawn', 'sceneId': 'world:main', 'epoch': 1})
+        assert receive(ws, 'error')['code'] == 'respawn_forbidden'
+        assert player['vehicle'] == before
+        assert player['epoch'] == 1

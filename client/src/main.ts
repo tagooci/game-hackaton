@@ -14,7 +14,7 @@ import type { VehiclePose } from './vehicle/vehicleView';
 import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial';
 import { startStateSender } from './network/stateSender';
 import { createRemotePlayers } from './players/remotePlayers';
-import { createVehicleView } from './vehicle/vehicleView';
+import { createVehicleView, VEHICLE_LENGTH } from './vehicle/vehicleView';
 import { createVehicleControls } from './vehicle/controls';
 
 const host = document.querySelector<HTMLDivElement>('#app')!;
@@ -55,7 +55,7 @@ function startGame(account: Account): () => void {
   scene.fogEnd = 40;
 
   // Длина модели в метрах; пропорции сохраняются при загрузке.
-  const vehicle = createVehicleView(scene, 4.4);
+  const vehicle = createVehicleView(scene, VEHICLE_LENGTH);
   vehicle.setPose({ x: 0, z: 0, heading: 0 });
 
   // Камера наблюдает за машиной и не управляет её положением.
@@ -146,6 +146,7 @@ function startGame(account: Account): () => void {
   }
   const stopStateSender = startStateSender(serverUrl, {
     getControls: () => mapError ? neutralControls : controls.getControls(),
+    takeRespawn: controls.takeRespawn,
     prepareScene: async message => {
       const expected = new Set(['car-kit/sedan.glb', 'car-kit/Textures/colormap.png']);
       if (message.plan.resources.length !== expected.size || message.plan.resources.some(r => !expected.has(r.id))) {

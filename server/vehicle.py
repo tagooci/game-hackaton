@@ -6,7 +6,7 @@ import math
 
 @dataclass(frozen=True)
 class VehicleConfig:
-    wheelbase: float = 2.6
+    wheelbase: float = 1.95
     maxForwardSpeed: float = 22.0
     maxReverseSpeed: float = 4.0
     acceleration: float = 4.0

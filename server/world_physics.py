@@ -5,9 +5,10 @@ import math
 
 from .road_surface import RoadSurface
 
-CAR_WIDTH = 2.6
-CAR_LENGTH = 4.4
-CAR_HEIGHT = 2.25
+CAR_WIDTH = 1.95
+CAR_LENGTH = 3.3
+CAR_HEIGHT = 1.6875
+WHEELBASE = 1.95
 STEP_HEIGHT = .16
 GRAVITY = 9.81
 
@@ -103,16 +104,16 @@ class VehicleWorld:
     def ground_pose(self,state,height,pitch,boxes):
         # Опора под передней и задней осями выравнивает кузов на кривом профиле подъёма.
         axle_heights = []
-        for offset in (1.3,-1.3):
+        for offset in (WHEELBASE/2,-WHEELBASE/2):
             x,z = state.x+math.sin(state.heading)*offset,state.z+math.cos(state.heading)*offset
             expected = height-offset*math.sin(pitch)
             contacts = [(h,p) for h,p in self.floors(x,z,state.heading,boxes) if
-                        abs(h-expected) <= STEP_HEIGHT+1.3*abs(math.tan(p))]
+                        abs(h-expected) <= STEP_HEIGHT+WHEELBASE/2*abs(math.tan(p))]
             if not contacts:
                 return VerticalState(height,pitch=pitch)
             axle_heights.append(min(contacts,key=lambda contact:abs(contact[0]-expected))[0])
         front,rear = axle_heights
-        return VerticalState((front+rear)/2,pitch=-math.atan2(front-rear,2.6))
+        return VerticalState((front+rear)/2,pitch=-math.atan2(front-rear,WHEELBASE))
 
     def vertical_step(self,previous,state,body,dt,boxes):
         contacts = self.floors(state.x,state.z,state.heading,boxes)

@@ -63,7 +63,7 @@ def test_fast_frontal_collision_cannot_tunnel_through_thin_box():
     wall=box(z=0,width=20,length=.05)
     world=VehicleWorld(floor(0),[wall])
     state,body,_=drive(world,VehicleState(z=-5,speed=22),VerticalState(0),1)
-    assert state.z<=-2.22
+    assert state.z<=-CAR_LENGTH/2-.02
     assert abs(state.speed)<.01
     assert penetration(state.x,state.z,state.heading,wall) is None
 
@@ -83,13 +83,13 @@ def test_height_gate_allows_driving_below_deck_boxes_but_stops_at_support():
     assert state.z>10
     world=VehicleWorld(floor(0),[box(z=0,width=1,length=1,top=5)])
     state,_,_=drive(world,VehicleState(z=-10),VerticalState(0),4)
-    assert state.z<-2.6
+    assert state.z<-CAR_LENGTH/2-.49
 
 
 def test_low_ceiling_blocks_car_instead_of_lifting_it_to_the_roof():
     world=VehicleWorld(floor(0),ceilings=floor(1.3,z0=0,z1=10))
     state,body,_=drive(world,VehicleState(z=-10),VerticalState(0),4)
-    assert state.z<-2
+    assert state.z<=-CAR_LENGTH/2
     assert body.y==0
 
 
@@ -97,7 +97,7 @@ def test_cars_collide_only_when_their_heights_overlap():
     world=VehicleWorld(floor(0))
     other=world.car_box(VehicleState(),VerticalState(0))
     state,_,_=drive(world,VehicleState(z=-10),VerticalState(0),4,others=[other])
-    assert state.z<=-4.39
+    assert state.z<=-CAR_LENGTH+.01
     other=world.car_box(VehicleState(),VerticalState(5))
     state,_,_=drive(world,VehicleState(z=-10),VerticalState(0),4,others=[other])
     assert state.z>10
@@ -133,7 +133,7 @@ def test_raised_curb_cannot_be_stepped_over_or_crossed_at_extreme_speed():
     world=VehicleWorld(floor(.1),[curb])
     start=VehicleState(z=-10,speed=100)
     state,body=world.step(start,replace(start,z=10),VerticalState(.1),.1)
-    assert state.z < -2.2
+    assert state.z < -CAR_LENGTH/2
     assert body.y==pytest.approx(.1)
     assert penetration(state.x,state.z,state.heading,curb) is None
 

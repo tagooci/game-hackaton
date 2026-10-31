@@ -3,6 +3,7 @@ import type { ScenePrepare, ServerMessage, VehicleControls } from './protocol';
 
 interface ConnectionOptions {
   getControls: () => VehicleControls;
+  takeRespawn?: () => boolean;
   prepareScene: (message: ScenePrepare) => Promise<void>;
   onMessage: (message: ServerMessage) => void;
   onDisconnect: () => void;
@@ -26,6 +27,10 @@ export function startStateSender(url: string, options: ConnectionOptions): () =>
 
   function sendInput(): void {
     if (!active || !prepared || lastTick < startTick || socket.readyState !== WebSocket.OPEN || socket.bufferedAmount) return;
+    if (options.takeRespawn?.()) {
+      socket.send(JSON.stringify({ type: 'respawn', sceneId: prepared.sceneId, epoch: prepared.epoch }));
+      return;
+    }
     socket.send(JSON.stringify({ type: 'input', sceneId: prepared.sceneId, epoch: prepared.epoch, seq: ++seq, ...options.getControls() }));
   }
   function connect(): void {
