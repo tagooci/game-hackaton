@@ -91,13 +91,9 @@ const serverUrl = import.meta.env.VITE_SERVER_WS_URL
   || `${wsProtocol}//${window.location.hostname}:8000/ws`;
 
 const stopStateSender = startStateSender(serverUrl, () => ({
-  position: {
-    x: camera.position.x,
-    y: camera.position.y - EYE_HEIGHT,
-    z: camera.position.z,
-  },
-  yaw: camera.rotation.y,
-  pitch: camera.rotation.x,
+  x: camera.position.x,
+  z: camera.position.z,
+  heading: camera.rotation.y,
 }));
 
 // На каждом кадре рисуем сцену из положения камеры.

@@ -9,14 +9,12 @@ export function startStateSender(url: string, getState: () => PlayerState): () =
   let sendTimer: ReturnType<typeof setInterval> | undefined;
   let reconnectTimer: ReturnType<typeof setTimeout> | undefined;
   let stopped = false;
-  let seq = 0;
 
   function sendState(): void {
     if (socket?.readyState !== WebSocket.OPEN || socket.bufferedAmount > 0) return;
     const message: PlayerStateMessage = {
+      type: 'state',
       ...getState(),
-      type: 'player_state',
-      seq: ++seq,
     };
     socket.send(JSON.stringify(message));
   }
