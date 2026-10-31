@@ -67,20 +67,6 @@ seq, epoch и частоту сообщений. Старые snapshot и зав
 Текущий этап и целевой контракт: [server/PROTOCOL.md](server/PROTOCOL.md).
 Старый `/ws` сохранён для совместимости, интерфейс игры использует только `/ws/v2`.
 
-## Проверки
-
-```sh
-cd /Users/tagooc/game-hackaton
-.venv/bin/python -m pip install -r server/requirements-dev.txt
-.venv/bin/python -m pytest server/tests -q
-npm --prefix client test
-npm --prefix client run build
-```
-
-Проверяются авторизация, ошибки формата, scene handshake, два игрока,
-физика, сохранение позиции, таймаут ввода, ограничение частоты, интерполяция,
-переподключение и отключение старого окна аккаунта.
-
 ## Текущие ограничения
 
 - Один серверный процесс; запускать с одним worker.
