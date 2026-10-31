@@ -32,9 +32,13 @@ def test_speed_limits_and_brakes_do_not_reverse():
 
 def test_s_brakes_before_reverse_and_reverse_has_its_own_limit():
     state = VehicleState(speed=4)
-    state = drive(state, Controls(throttle=-1), 0.5)
+    for _ in range(30):
+        state = drive(state, Controls(throttle=-1), 1/30)
+        assert state.speed >= 0
+        if state.speed == 0:
+            break
     assert state.speed == pytest.approx(0, abs=1e-9)
-    state = drive(state, Controls(throttle=-1), 0.1)
+    state = drive(state, Controls(throttle=-1), CONFIG.directionChangeDelay/2)
     assert state.speed == 0
     state = drive(state, Controls(throttle=-1), 3)
     assert state.speed == -CONFIG.maxReverseSpeed

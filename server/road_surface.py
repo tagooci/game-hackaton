@@ -28,7 +28,7 @@ class RoadSurface:
                 for z in range(math.floor(min_z/cell_size),math.floor(max_z/cell_size)+1):
                     self.cells[x,z].append(surface)
 
-    def sample(self, x, z, heading, previous_y=0):
+    def contacts(self, x, z, heading):
         candidates = []
         for surface in self.cells.get((math.floor(x/self.cell_size),math.floor(z/self.cell_size)), []):
             if 'plane' in surface:
@@ -39,7 +39,7 @@ class RoadSurface:
                     continue
                 y = a[1]+gx*(x-a[0])+gz*(z-a[2])
                 pitch = -math.atan(gx*math.sin(heading)+gz*math.cos(heading))
-                candidates.append((abs(y-previous_y),0,y,pitch))
+                candidates.append((y,pitch))
                 continue
             dx, dz = surface['bx']-surface['ax'],surface['bz']-surface['az']
             length2 = dx*dx+dz*dz
@@ -52,8 +52,9 @@ class RoadSurface:
             rise = surface['by']-surface['ay']
             y = surface['ay']+t*rise
             pitch = -math.atan(rise*(dx*math.sin(heading)+dz*math.cos(heading))/length2)
-            candidates.append((abs(y-previous_y),distance2,y,pitch))
-        if not candidates:
-            return 0.0,0.0
-        _,_,y,pitch = min(candidates)
-        return y,pitch
+            candidates.append((y,pitch))
+        return candidates
+
+    def sample(self,x,z,heading,previous_y=0):
+        candidates=self.contacts(x,z,heading)
+        return min(candidates,key=lambda contact:abs(contact[0]-previous_y)) if candidates else (0.0,0.0)

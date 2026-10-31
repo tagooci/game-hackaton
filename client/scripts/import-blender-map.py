@@ -63,7 +63,7 @@ def main():
             q=registry[next_id]
             lanes.append(dict(id=n['id']+'>'+next_id,roadId=n['roadId'],width=3,centerline=[dict(x=n['x'],y=n['y'],z=n['z']),dict(x=q['x'],y=q['y'],z=q['z'])],
                               nextLaneIds=[next_id+'>'+end for end in q['neighbors'] if end!=n['id']]))
-    nav=dict(nodes=nodes,lanes=lanes,surfaces=scene['surfaces'],features=[],sourceRoads=scene['roads'],
+    nav=dict(nodes=nodes,lanes=lanes,surfaces=scene['surfaces'],ceilings=scene['ceilings'],colliders=scene['colliders'],features=[],sourceRoads=scene['roads'],
              validation=dict(connected=True,totalRoads=len(nodes),reachableRoads=len(seen),deadEndPorts=0))
     overview=dict(nodes=[{k:v for k,v in n.items() if k!='neighbors'} for n in nodes if len(n['neighbors'])>2],features=[],edges=[])
     publish('road-navigation','world/navigation.json',encode(nav))
@@ -87,7 +87,7 @@ def main():
     bounds={key:(min if key.startswith('min') else max)(c['bounds'][key] for c in descriptors) for key in ['minX','maxX','minZ','maxZ']}
     manifest=dict(worldId='compact-reference-'+digest(encode(scene['roads']))[:8],contentVersion=digest(encode(resources))[:16],
                   accounting='unique_resource_bytes',worldBytes=world_bytes,cacheBudgetBytes=world_bytes//10,tileSize=10,chunkSize=size,
-                  streamRadius=65,streamStep=2.5,bounds=bounds,spawn=spawn,groundColor='#35353f',resources=resources,chunks=descriptors,
+                  streamRadius=65,streamStep=2.5,bounds=bounds,spawn=spawn,spawnY=first['ports'][0]['position'][2],groundColor='#35353f',resources=resources,chunks=descriptors,
                   overviewResourceId='road-overview',navigationResourceId='road-navigation',stats=dict(roadTiles=len(scene['roads']),chunks=len(chunks),objects=len(scene['objects']),models=len(catalog)))
     (ROOT/'world/manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
     previous=json.loads((ROOT/'asset-catalog.json').read_text())

@@ -15,7 +15,7 @@ from .state import players, add_player, remove_player, public_view, others_view,
 from .vehicle import Controls, VehicleConfig, VehicleState, step_vehicle, steering_angle
 from .auth import AuthService
 from .db import Database
-from .road_surface import RoadSurface
+from .world_physics import VehicleWorld
 
 TICK_RATE = 20
 tick = 0
@@ -40,7 +40,9 @@ async def physics_loop():
             controls = player["controls"] if now - player["input_time"] <= 0.25 else Controls(brake=1)
             state = step_vehicle(player["vehicle"], controls, VEHICLE_CONFIG, dt)
             if player.get('v2'):
-                player['elevation'], player['pitch'] = road_surface.sample(state.x, state.z, state.heading, player['elevation'])
+                others = [vehicle_world.car_box(other['vehicle'],other['vertical']) for other in v2_players.values()
+                          if other['id'] != player['id'] and other['id'] in v2_scene_ready]
+                state,player['vertical'] = vehicle_world.step(player['vehicle'],state,player['vertical'],dt,others)
             player["vehicle"] = state
             player["applied_seq"] = player.get("seq", 0)
             player.update(x=round(state.x, 2), z=round(state.z, 2), heading=round(state.heading, 2))
@@ -50,7 +52,7 @@ V2_PROTOCOL_VERSION = 2
 STATIC_DIR = Path(__file__).resolve().parent.parent / 'client' / 'dist'
 WORLD_MAP = json.loads((Path(__file__).resolve().parent.parent / 'client/public/content/world/manifest.json').read_text())
 NAVIGATION = json.loads((Path(__file__).resolve().parent.parent / 'client/public/content/world/navigation.json').read_text())
-road_surface = RoadSurface(NAVIGATION['surfaces'])
+vehicle_world = VehicleWorld(NAVIGATION['surfaces'],NAVIGATION.get('colliders',()),NAVIGATION.get('ceilings',()))
 SESSION_COOKIE = "game_session"
 database = Database()
 auth = AuthService(database)
@@ -101,7 +103,7 @@ async def lifespan(app: FastAPI):
         v2_scene_ready.clear()
         for player in v2_players.values():
             state = player["vehicle"]
-            database.save_safe_position(player["id"], state.x, state.z, state.heading, player["elevation"], WORLD_MAP["worldId"])
+            database.save_safe_position(player["id"], state.x, state.z, state.heading, player["vertical"].y, WORLD_MAP["worldId"])
         v2_players.clear()
         database.close()
 
@@ -265,7 +267,7 @@ def _v2_player_snapshot(player_id: str) -> dict:
         "id": player_id, "name": player["name"], "vehicleType": "car", "roleId": None,
         **{key: round(getattr(state, key), 3) for key in ("x", "z", "heading", "speed", "steering")},
         "lastInputSeq": player.get("applied_seq", 0),
-        "y": round(player["elevation"], 4), "pitch": round(player["pitch"], 4),
+        "y": round(player["vertical"].y, 4), "pitch": round(player["vertical"].pitch, 4),
         "wheelAngle": round(steering_angle(state.speed, state.steering, VEHICLE_CONFIG), 4),
         "color": player["color"],
     }
@@ -306,13 +308,11 @@ async def get_v2_websocket(websocket: WebSocket):
     saved_world, elevation = database.safe_context(player_id)
     if not old and saved_world != WORLD_MAP['worldId']:
         state = VehicleState(**WORLD_MAP["spawn"])
-        elevation = 0
-    if old:
-        elevation = old['elevation']
-    elevation, pitch = road_surface.sample(state.x, state.z, state.heading, elevation)
+        elevation = WORLD_MAP.get("spawnY",0)
+    vertical = old['vertical'] if old else vehicle_world.restore(state.x,state.z,state.heading,elevation)
     player = {"id": player_id, "name": account["name"], "ws": websocket, "v2": True,
               "vehicle": VehicleState(state.x, state.z, state.heading), "controls": Controls(brake=1),
-              "seq": 0, "input_time": 0.0, "elevation": elevation, "pitch": pitch, "color": old["color"] if old else secrets.randbelow(5)}
+              "seq": 0, "input_time": 0.0, "vertical": vertical, "color": old["color"] if old else secrets.randbelow(5)}
     v2_players[player_id] = player
     window_start = asyncio.get_running_loop().time()
     message_count = 0
@@ -383,7 +383,7 @@ async def get_v2_websocket(websocket: WebSocket):
                         "scenarioId": None,
                         "roleId": None,
                         "vehicleType": "car",
-                        "spawn": {"x": state.x, "z": state.z, "heading": state.heading, "y": elevation, "pitch": pitch},
+                        "spawn": {"x": state.x, "z": state.z, "heading": state.heading, "y": vertical.y, "pitch": vertical.pitch},
                         "participants": [],
                         "plan": {"revision": 1, "chunkIds": [], "resources": world_resources(),
                                  "mapManifestUrl": "/content/world/manifest.json"},
@@ -434,7 +434,7 @@ async def get_v2_websocket(websocket: WebSocket):
             v2_scene_ready.discard(player_id)
         if v2_players.get(player_id) is player:
             state = player["vehicle"]
-            database.save_safe_position(player_id, state.x, state.z, state.heading, player["elevation"], WORLD_MAP["worldId"])
+            database.save_safe_position(player_id, state.x, state.z, state.heading, player["vertical"].y, WORLD_MAP["worldId"])
             v2_players.pop(player_id, None)
 
 

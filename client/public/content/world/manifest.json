@@ -1,9 +1,9 @@
 {
   "worldId": "compact-reference-b311ebce",
-  "contentVersion": "52b5a7c597b3be26",
+  "contentVersion": "748742ec48c695f4",
   "accounting": "unique_resource_bytes",
-  "worldBytes": 1349557,
-  "cacheBudgetBytes": 134955,
+  "worldBytes": 3870493,
+  "cacheBudgetBytes": 387049,
   "tileSize": 10,
   "chunkSize": 20,
   "streamRadius": 65,
@@ -19,6 +19,7 @@
     "z": 40.0,
     "heading": -3.141592653589793
   },
+  "spawnY": 0.09999999403953552,
   "groundColor": "#35353f",
   "resources": [
     {
@@ -196,8 +197,8 @@
       "id": "road-navigation",
       "url": "/content/world/navigation.json",
       "kind": "data",
-      "bytes": 1240238,
-      "sha256": "f62d3d9e9f60c0f96eb61d5ae4744d76690722c42ef0da5a980a5c9b7b6f5127"
+      "bytes": 3761174,
+      "sha256": "b8dc835026fbe6befa4799a1481089451c588306cbeeb2fc7767ecc03ed680bc"
     },
     {
       "id": "road-overview",
