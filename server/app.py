@@ -1,20 +1,19 @@
+import asyncio
 import json
 import math
 import os
 import secrets
 import sqlite3
-from pathlib import Path
-import asyncio
-
 from contextlib import asynccontextmanager, suppress
+from pathlib import Path
 
 from fastapi import Cookie, FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
 
-from .state import players, add_player, remove_player, public_view, others_view, snapshot_view
-from .vehicle import Controls, VehicleConfig, VehicleState, step_vehicle, steering_angle
 from .auth import AuthService
 from .db import Database
+from .state import add_player, others_view, players, public_view, remove_player, snapshot_view
+from .vehicle import Controls, VehicleConfig, VehicleState, steering_angle, step_vehicle
 
 TICK_RATE = 20
 tick = 0
@@ -34,17 +33,22 @@ async def physics_loop():
         for player in [*players.values(), *v2_players.values()]:
             if "vehicle" not in player:
                 continue
-            if player.get("v2") and (player["id"] not in v2_scene_ready or tick < player.get("start_tick", 0)):
+            if player.get("v2") and (
+                player["id"] not in v2_scene_ready or tick < player.get("start_tick", 0)
+            ):
                 continue
-            controls = player["controls"] if now - player["input_time"] <= 0.25 else Controls(brake=1)
+            controls = (
+                player["controls"] if now - player["input_time"] <= 0.25 else Controls(brake=1)
+            )
             state = step_vehicle(player["vehicle"], controls, VEHICLE_CONFIG, dt)
             player["vehicle"] = state
             player["applied_seq"] = player.get("seq", 0)
             player.update(x=round(state.x, 2), z=round(state.z, 2), heading=round(state.heading, 2))
 
+
 PROTOCOL_VERSION = 1
 V2_PROTOCOL_VERSION = 2
-STATIC_DIR = Path(__file__).resolve().parent.parent / 'client' / 'dist'
+STATIC_DIR = Path(__file__).resolve().parent.parent / "client" / "dist"
 SESSION_COOKIE = "game_session"
 database = Database()
 auth = AuthService(database)
@@ -52,28 +56,37 @@ v2_connections: dict[str, WebSocket] = {}
 v2_scene_ready: set[str] = set()
 v2_players: dict[str, dict] = {}
 
+
 async def snapshot_loop():
     global tick
     while True:
         await asyncio.sleep(1 / TICK_RATE)
         tick += 1
         for p in list(players.values()):
-            await send(p["ws"], {
-                "type": "snapshot",
-                "tick": tick,
-                "players": snapshot_view(p["zone"]),
-            })
+            await send(
+                p["ws"],
+                {
+                    "type": "snapshot",
+                    "tick": tick,
+                    "players": snapshot_view(p["zone"]),
+                },
+            )
         for player_id, ws in list(v2_connections.items()):
             if player_id not in v2_scene_ready:
                 continue
-            await send(ws, {
-                "type": "snapshot",
-                "sceneId": "world:main",
-                "epoch": 1,
-                "tick": tick,
-                "players": [_v2_player_snapshot(pid) for pid in v2_players if pid in v2_scene_ready],
-                "signals": [],
-            })
+            await send(
+                ws,
+                {
+                    "type": "snapshot",
+                    "sceneId": "world:main",
+                    "epoch": 1,
+                    "tick": tick,
+                    "players": [
+                        _v2_player_snapshot(pid) for pid in v2_players if pid in v2_scene_ready
+                    ],
+                    "signals": [],
+                },
+            )
 
 
 @asynccontextmanager
@@ -99,7 +112,9 @@ async def lifespan(app: FastAPI):
         v2_players.clear()
         database.close()
 
+
 app = FastAPI(lifespan=lifespan)
+
 
 async def send(ws: WebSocket, data: dict) -> bool:
     try:
@@ -107,6 +122,7 @@ async def send(ws: WebSocket, data: dict) -> bool:
         return True
     except Exception:
         return False
+
 
 async def send_error(ws: WebSocket, code: str, text: str) -> None:
     await send(ws, {"type": "error", "code": code, "text": text})
@@ -127,9 +143,9 @@ def is_number(value) -> bool:
         return False
 
 
-@app.get('/health')
+@app.get("/health")
 async def get_health():
-    return {'status': 'ok'}
+    return {"status": "ok"}
 
 
 async def _read_json_object(request: Request) -> dict:
@@ -146,18 +162,14 @@ def _credentials(body: dict) -> tuple[str, str]:
     username = body.get("username")
     password = body.get("password")
     if not isinstance(username, str) or not isinstance(password, str):
-        raise HTTPException(
-            status_code=400, detail="username and password are required"
-        )
+        raise HTTPException(status_code=400, detail="username and password are required")
     return username, password
 
 
 def _session_response(account: dict, token: str):
     from fastapi.responses import JSONResponse
 
-    result = JSONResponse(
-        {"playerId": account["playerId"], "name": account["name"]}
-    )
+    result = JSONResponse({"playerId": account["playerId"], "name": account["name"]})
     result.set_cookie(
         SESSION_COOKIE,
         token,
@@ -239,7 +251,11 @@ async def get_content_bootstrap(game_session: str | None = Cookie(default=None))
 def world_resources() -> list[dict]:
     asset_dir = Path(__file__).resolve().parent.parent / "client" / "public" / "assets"
     return [
-        {"id": relative, "url": f"/assets/{relative}", "bytes": (asset_dir / relative).stat().st_size}
+        {
+            "id": relative,
+            "url": f"/assets/{relative}",
+            "bytes": (asset_dir / relative).stat().st_size,
+        }
         for relative in ("car-kit/sedan.glb", "car-kit/Textures/colormap.png")
     ]
 
@@ -248,8 +264,13 @@ def _v2_player_snapshot(player_id: str) -> dict:
     player = v2_players[player_id]
     state = player["vehicle"]
     return {
-        "id": player_id, "name": player["name"], "vehicleType": "car", "roleId": None,
-        **{key: round(getattr(state, key), 3) for key in ("x", "z", "heading", "speed", "steering")},
+        "id": player_id,
+        "name": player["name"],
+        "vehicleType": "car",
+        "roleId": None,
+        **{
+            key: round(getattr(state, key), 3) for key in ("x", "z", "heading", "speed", "steering")
+        },
         "lastInputSeq": player.get("applied_seq", 0),
         "wheelAngle": round(steering_angle(state.speed, state.steering, VEHICLE_CONFIG), 4),
         "color": player["color"],
@@ -288,9 +309,17 @@ async def get_v2_websocket(websocket: WebSocket):
     v2_scene_ready.discard(player_id)
     old = v2_players.get(player_id)
     state = old["vehicle"] if old else VehicleState(*database.safe_position(player_id))
-    player = {"id": player_id, "name": account["name"], "ws": websocket, "v2": True,
-              "vehicle": VehicleState(state.x, state.z, state.heading), "controls": Controls(brake=1),
-              "seq": 0, "input_time": 0.0, "color": old["color"] if old else secrets.randbelow(5)}
+    player = {
+        "id": player_id,
+        "name": account["name"],
+        "ws": websocket,
+        "v2": True,
+        "vehicle": VehicleState(state.x, state.z, state.heading),
+        "controls": Controls(brake=1),
+        "seq": 0,
+        "input_time": 0.0,
+        "color": old["color"] if old else secrets.randbelow(5),
+    }
     v2_players[player_id] = player
     window_start = asyncio.get_running_loop().time()
     message_count = 0
@@ -372,8 +401,10 @@ async def get_v2_websocket(websocket: WebSocket):
             if msg_type == "scene_ready":
                 if (
                     message.get("sceneId") == scene_id
-                    and type(message.get("epoch")) is int and message.get("epoch") == epoch
-                    and type(message.get("revision")) is int and message.get("revision") == 1
+                    and type(message.get("epoch")) is int
+                    and message.get("epoch") == epoch
+                    and type(message.get("revision")) is int
+                    and message.get("revision") == 1
                     and player_id not in v2_scene_ready
                 ):
                     v2_scene_ready.add(player_id)
@@ -390,14 +421,23 @@ async def get_v2_websocket(websocket: WebSocket):
                     )
                 continue
             if msg_type == "input":
-                if (player_id not in v2_scene_ready or tick < player.get("start_tick", 0)
-                        or message.get("sceneId") != scene_id or type(message.get("epoch")) is not int or message.get("epoch") != epoch):
+                if (
+                    player_id not in v2_scene_ready
+                    or tick < player.get("start_tick", 0)
+                    or message.get("sceneId") != scene_id
+                    or type(message.get("epoch")) is not int
+                    or message.get("epoch") != epoch
+                ):
                     continue
                 seq = message.get("seq")
                 if type(seq) is not int or seq <= player["seq"] or seq > 9007199254740991:
                     continue
                 axes = [message.get(key) for key in ("throttle", "steering", "brake")]
-                if not all(is_number(value) for value in axes) or not all(-1 <= value <= 1 for value in axes[:2]) or not 0 <= axes[2] <= 1:
+                if (
+                    not all(is_number(value) for value in axes)
+                    or not all(-1 <= value <= 1 for value in axes[:2])
+                    or not 0 <= axes[2] <= 1
+                ):
                     await send_v2_error(websocket, "bad_value", "invalid vehicle controls")
                     continue
                 player.update(controls=Controls(*axes), seq=seq, input_time=now)
@@ -415,10 +455,10 @@ async def get_v2_websocket(websocket: WebSocket):
             v2_players.pop(player_id, None)
 
 
-@app.websocket('/ws')
+@app.websocket("/ws")
 async def get_websocket(websocket: WebSocket):
     await websocket.accept()
-    print('Client connected')
+    print("Client connected")
     player = None
 
     try:
@@ -462,20 +502,29 @@ async def get_websocket(websocket: WebSocket):
                 if control_mode == "vehicle":
                     player.update(
                         vehicle=VehicleState(x=player["x"], z=player["z"]),
-                        controls=Controls(brake=1), input_time=0, input_seq=0,
+                        controls=Controls(brake=1),
+                        input_time=0,
+                        input_seq=0,
                     )
                 print(f"Joined: {player['id']} ({player['name']})")
 
-                await send(websocket, {
-                    "type": "welcome",
-                    "id": player["id"],
-                    "zone": player["zone"],
-                    "x": player["x"],
-                    "z": player["z"],
-                    "heading": player["heading"],
-                    "players": others_view(player["id"]),
-                    **({"controlMode": "vehicle", "sceneId": "world:main", "epoch": 1} if control_mode == "vehicle" else {}),
-                })
+                await send(
+                    websocket,
+                    {
+                        "type": "welcome",
+                        "id": player["id"],
+                        "zone": player["zone"],
+                        "x": player["x"],
+                        "z": player["z"],
+                        "heading": player["heading"],
+                        "players": others_view(player["id"]),
+                        **(
+                            {"controlMode": "vehicle", "sceneId": "world:main", "epoch": 1}
+                            if control_mode == "vehicle"
+                            else {}
+                        ),
+                    },
+                )
                 await broadcast(
                     {"type": "player_joined", **public_view(player)},
                     exclude_id=player["id"],
@@ -503,27 +552,44 @@ async def get_websocket(websocket: WebSocket):
                 if "vehicle" not in player:
                     await send_error(websocket, "bad_value", "join with controlMode vehicle first")
                     continue
-                if not all(key in msg for key in ("sceneId", "epoch", "seq", "throttle", "steering", "brake")):
+                if not all(
+                    key in msg
+                    for key in ("sceneId", "epoch", "seq", "throttle", "steering", "brake")
+                ):
                     await send_error(websocket, "bad_message", "missing input fields")
                     continue
                 seq = msg["seq"]
-                if type(seq) is not int or not 1 <= seq <= 9007199254740991 or not all(
-                    is_number(msg[key]) and low <= msg[key] <= high
-                    for key, low, high in (("throttle", -1, 1), ("steering", -1, 1), ("brake", 0, 1))
+                if (
+                    type(seq) is not int
+                    or not 1 <= seq <= 9007199254740991
+                    or not all(
+                        is_number(msg[key]) and low <= msg[key] <= high
+                        for key, low, high in (
+                            ("throttle", -1, 1),
+                            ("steering", -1, 1),
+                            ("brake", 0, 1),
+                        )
+                    )
                 ):
                     await send_error(websocket, "bad_value", "invalid vehicle controls")
                     continue
-                if msg["sceneId"] != "world:main" or type(msg["epoch"]) is not int or msg["epoch"] != 1 or seq <= player["input_seq"]:
+                if (
+                    msg["sceneId"] != "world:main"
+                    or type(msg["epoch"]) is not int
+                    or msg["epoch"] != 1
+                    or seq <= player["input_seq"]
+                ):
                     continue
                 player.update(
                     controls=Controls(msg["throttle"], msg["steering"], msg["brake"]),
-                    input_time=asyncio.get_running_loop().time(), input_seq=seq,
+                    input_time=asyncio.get_running_loop().time(),
+                    input_seq=seq,
                 )
             else:
                 await send_error(websocket, "unknown_type", f"unknown type: {msg_type}")
 
     except WebSocketDisconnect:
-        print('player disconnected')
+        print("player disconnected")
 
     finally:
         if player is not None:
@@ -533,8 +599,12 @@ async def get_websocket(websocket: WebSocket):
 
 
 if STATIC_DIR.is_dir():
-    app.mount('/', StaticFiles(directory=STATIC_DIR, html=True), name='static')
+    app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")
 else:
-    @app.get('/')
+
+    @app.get("/")
     async def get_build_status():
-        return {"status": "client_not_built", "hint": "Run npm ci && npm run build in client/, then restart the server"}
+        return {
+            "status": "client_not_built",
+            "hint": "Run npm ci && npm run build in client/, then restart the server",
+        }

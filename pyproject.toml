@@ -1,0 +1,29 @@
+[project]
+name = "game-hackaton"
+version = "0.1.0"
+description = "Учебный сетевой автогород"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115,<1",
+    "uvicorn[standard]>=0.30,<1",
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project.optional-dependencies]
+dev = [
+    "httpx>=0.27,<1",
+    "ruff>=0.9,<1",
+]
+
+[tool.setuptools]
+packages = ["server"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]

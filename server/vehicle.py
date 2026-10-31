@@ -1,7 +1,10 @@
-"""Аркадная физика автомобиля на плоскости. Не зависит от сети и графики."""
+"""Аркадная физика автомобиля на плоскости.
 
-from dataclasses import dataclass, replace
+Не зависит от сети и графики.
+"""
+
 import math
+from dataclasses import dataclass, replace
 
 
 @dataclass(frozen=True)
@@ -41,16 +44,34 @@ def approach(value: float, target: float, amount: float) -> float:
 
 
 def steering_angle(speed: float, steering: float, config: VehicleConfig) -> float:
-    """Фактический угол передних колёс, с ограничением на скорости."""
-    speed_limit = math.atan(config.maxLateralAcceleration * config.wheelbase / max(speed * speed, 0.01))
+    """Фактический угол передних колёс.
+
+    Угол ограничивается на высокой скорости.
+    """
+    speed_limit = math.atan(
+        config.maxLateralAcceleration
+        * config.wheelbase
+        / max(speed * speed, 0.01)
+    )
     return steering * min(config.maxSteerAngle, speed_limit)
 
 
-def step_vehicle(state: VehicleState, controls: Controls, config: VehicleConfig, dt: float) -> VehicleState:
-    """Один шаг в секундах. Возвращает новое состояние, не изменяя исходное."""
+def step_vehicle(
+    state: VehicleState,
+    controls: Controls,
+    config: VehicleConfig,
+    dt: float,
+) -> VehicleState:
+    """Выполнить один шаг в секундах.
+
+    Исходное состояние не изменяется.
+    """
     if not math.isfinite(dt) or dt <= 0 or dt > 0.1:
         raise ValueError("Physics dt must be finite and within (0, 0.1]")
-    valid_axes = all(math.isfinite(v) and -1 <= v <= 1 for v in (controls.throttle, controls.steering))
+    valid_axes = all(
+        math.isfinite(v) and -1 <= v <= 1
+        for v in (controls.throttle, controls.steering)
+    )
     valid_brake = math.isfinite(controls.brake) and 0 <= controls.brake <= 1
     if not valid_axes or not valid_brake:
         raise ValueError("Controls outside their allowed ranges")
@@ -66,7 +87,7 @@ def step_vehicle(state: VehicleState, controls: Controls, config: VehicleConfig,
     elif controls.throttle == 0:
         speed = approach(speed, 0, config.rollingDeceleration * dt)
     elif desired_direction != direction:
-        # Сначала остановка, затем короткая задержка перед сменой направления.
+        # Сначала остановка, затем задержка перед сменой направления.
         speed = approach(speed, 0, config.brakeDeceleration * abs(controls.throttle) * dt)
         if abs(state.speed) < 0.01:
             change_time = state.directionChangeTime + dt
@@ -77,7 +98,7 @@ def step_vehicle(state: VehicleState, controls: Controls, config: VehicleConfig,
         speed += controls.throttle * config.acceleration * dt
         speed = max(-config.maxReverseSpeed, min(config.maxForwardSpeed, speed))
 
-    # На скорости уменьшаем угол колёс, чтобы машина не разворачивалась резко.
+    # На скорости уменьшаем угол колёс, чтобы избежать резкого разворота.
     wheel_angle = steering_angle(speed, steering, config)
     distance = (state.speed + speed) * 0.5 * dt
     turn = distance / config.wheelbase * math.tan(wheel_angle)

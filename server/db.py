@@ -7,7 +7,6 @@ import sqlite3
 import threading
 from pathlib import Path
 
-
 DEFAULT_DB_PATH = (
     Path(__file__).resolve().parent.parent / "db" / "game.sqlite3"
 )

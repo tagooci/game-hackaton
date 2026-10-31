@@ -4,7 +4,6 @@ from typing import Dict
 
 from fastapi import WebSocket
 
-
 players: dict[str, dict] = {}
 SPAWN_X = 0
 SPAWN_Z = 0

@@ -12,7 +12,7 @@
 cd /Users/tagooc/game-hackaton
 python3 -m venv .venv
 source .venv/bin/activate
-python -m pip install -r server/requirements.txt
+python -m pip install -e .
 python -m uvicorn server.app:app --host 0.0.0.0 --port 8000
 ```
 
