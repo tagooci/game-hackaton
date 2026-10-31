@@ -10,7 +10,8 @@
   },
   "devDependencies": {
     "typescript": "~7.0.2",
-    "vite": "^8.3.5"
+    "vite": "^8.3.5",
+    "@types/node": "^26.6.6"
   },
   "dependencies": {
     "@babylonjs/core": "^9.33.1",
