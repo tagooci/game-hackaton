@@ -30,3 +30,6 @@ canvas {
 .scenario-panel h1 { margin: 0; font-size: 18px; }
 .scenario-panel a { color: #9adeff; }
 .scenario-panel select { padding: 5px; margin-left: 8px; }
+.scenario-panel button { padding: 8px 12px; cursor: pointer; margin-top: 8px; }
+.scenario-panel input { max-width: 140px; padding: 6px; }
+.scenario-panel { max-height: calc(100vh - 64px); overflow-y: auto; }
