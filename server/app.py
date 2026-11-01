@@ -15,6 +15,8 @@ from .state import players, add_player, remove_player, public_view, others_view,
 from .vehicle import Controls, VehicleConfig, VehicleState, step_vehicle, steering_angle
 from .auth import AuthService
 from .db import Database
+from .agent import OllamaFeedbackGenerator, parse_result
+import logging
 from .scenarios import ScenarioSessions, SCENARIO, WORLD as scenario_world
 from .world_physics import VehicleWorld
 
@@ -64,7 +66,36 @@ auth = AuthService(database)
 v2_connections: dict[str, WebSocket] = {}
 v2_scene_ready: set[str] = set()
 v2_players: dict[str, dict] = {}
-scenarios = ScenarioSessions()
+agent_tasks = set()
+agent_lock = asyncio.Lock()
+
+
+async def generate_agent_feedback(report, connection):
+    try:
+        result = parse_result(report)
+        async with agent_lock:
+            feedback = await OllamaFeedbackGenerator().generate(result)
+        if v2_connections.get(result.player_id) is connection:
+            await send(connection, {"type": "agent_feedback", "resultId": result.result_id,
+                                   "sessionId": result.session_id, "playerId": result.player_id,
+                                   "feedback": feedback.to_dict()})
+    except Exception:
+        logging.getLogger(__name__).exception("Agent feedback failed for result %s", report['resultId'])
+        if v2_connections.get(report['playerId']) is connection:
+            await send(connection, {"type": "agent_feedback_error", "resultId": report['resultId'],
+                                   "sessionId": report['sessionId'], "text": "Не удалось получить ответ локального ИИ"})
+
+
+def submit_agent_result(report):
+    connection = v2_connections.get(report['playerId'])
+    if connection is None:
+        return
+    task = asyncio.create_task(generate_agent_feedback(report, connection))
+    agent_tasks.add(task)
+    task.add_done_callback(agent_tasks.discard)
+
+
+scenarios = ScenarioSessions(submit_agent_result)
 
 async def snapshot_loop():
     global tick
@@ -113,6 +144,10 @@ async def lifespan(app: FastAPI):
         for player in v2_players.values():
             save_position(player)
         v2_players.clear()
+        for agent_task in list(agent_tasks):
+            agent_task.cancel()
+        await asyncio.gather(*agent_tasks, return_exceptions=True)
+        agent_tasks.clear()
         database.close()
 
 app = FastAPI(lifespan=lifespan)

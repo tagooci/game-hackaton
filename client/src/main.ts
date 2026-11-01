@@ -182,6 +182,10 @@ function startGame(account: Account): () => void {
     onStatus: text => { if (!mapLoading && !mapError) { overlay.hidden = !text; overlay.textContent = text; } },
     onSessionEnd: code => authScreen(code === 4001 ? 'Аккаунт уже подключён в другом окне' : 'Войдите в аккаунт снова'),
     onMessage: message => {
+      if (message.type === 'agent_feedback' || message.type === 'agent_feedback_error') {
+        window.dispatchEvent(new CustomEvent('agent-feedback', { detail: message }));
+        console.info('Agent feedback:', message);
+      }
       if (message.type === 'welcome') ownId = message.playerId;
       if (message.type === 'scene_prepare') {
         queuePosition = undefined; queueLabel.hidden = true;
