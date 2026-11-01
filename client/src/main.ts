@@ -2,6 +2,7 @@ import './style.css';
 import { api, ApiError, showAuth } from './auth/session';
 import type { Account } from './auth/session';
 
+import { createFinishArch } from './world/finishArch';
 import { RoadContent } from './world/road-content.js';
 import { Engine } from '@babylonjs/core/Engines/engine';
 import { Scene } from '@babylonjs/core/scene';
@@ -10,7 +11,7 @@ import { HemisphericLight } from '@babylonjs/core/Lights/hemisphericLight';
 import { DirectionalLight } from '@babylonjs/core/Lights/directionalLight';
 import { ShadowGenerator } from '@babylonjs/core/Lights/Shadows/shadowGenerator';
 import { MeshBuilder } from '@babylonjs/core/Meshes/meshBuilder';
-import { Vector3 } from '@babylonjs/core/Maths/math.vector';
+import { Matrix, Vector3 } from '@babylonjs/core/Maths/math.vector';
 import { Color3, Color4 } from '@babylonjs/core/Maths/math.color';
 import type { VehiclePose } from './vehicle/vehicleView';
 import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial';
@@ -114,14 +115,6 @@ function startGame(account: Account): () => void {
   ground.position.y = -0.12;
   ground.material = groundMaterial;
   ground.receiveShadows = true;
-  const lines: Vector3[][] = [];
-  for (let i = -50; i <= 50; i++) {
-    lines.push([new Vector3(i, -0.11, -50), new Vector3(i, -0.11, 50)]);
-    lines.push([new Vector3(-50, -0.11, i), new Vector3(50, -0.11, i)]);
-  }
-  const grid = MeshBuilder.CreateLineSystem('ground-grid', { lines }, scene);
-  grid.color = new Color3(0.5, 0.53, 0.57);
-
   const overlay = document.createElement('div');
   overlay.className = 'loading-screen';
   overlay.textContent = 'Подключение…';
@@ -140,6 +133,12 @@ function startGame(account: Account): () => void {
   };
   const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
   const serverUrl = `${wsProtocol}//${location.host}/ws/v2`;
+  const queueLabel = document.createElement('div');
+  queueLabel.className = 'scenario-queue';
+  queueLabel.hidden = true;
+  host.append(queueLabel);
+  let finishArch: ReturnType<typeof createFinishArch> | undefined;
+  let queuePosition: Vector3 | undefined;
   const remotePlayers = createRemotePlayers(scene);
   const roads = new RoadContent(scene, () => {});
   if (import.meta.env.DEV) Object.defineProperty(window, 'roadCache', { configurable: true, get: () => roads.stats() });
@@ -185,11 +184,17 @@ function startGame(account: Account): () => void {
     onMessage: message => {
       if (message.type === 'welcome') ownId = message.playerId;
       if (message.type === 'scene_prepare') {
+        queuePosition = undefined; queueLabel.hidden = true;
+        finishArch?.dispose();
+        finishArch = message.finish ? createFinishArch(scene, message.finish) : undefined;
         controls.clear();
         vehicle.setPose(message.spawn);
         targetPose = message.spawn;
       }
       if (message.type === 'snapshot') {
+        const queue = message.scenarioQueue;
+        queuePosition = queue ? new Vector3(queue.x, queue.y, queue.z) : undefined;
+        queueLabel.textContent = queue ? `${queue.count}/2` : '';
         const own = message.players.find(player => player.id === ownId);
         if (own) targetPose = own;
       }
@@ -216,7 +221,6 @@ function startGame(account: Account): () => void {
       wheelAngle: (pose.wheelAngle ?? 0) + ((targetPose.wheelAngle ?? 0) - (pose.wheelAngle ?? 0)) * blend,
       color: targetPose.color,
     });
-    grid.position.set(Math.floor(pose.x), 0, Math.floor(pose.z));
     if (mapReady && !mapLoading && !mapError) {
       const size = roads.manifest.streamStep ?? roads.manifest.chunkSize;
       const key = `${Math.floor(pose.x / size)}:${Math.floor(pose.z / size)}:none`;
@@ -224,11 +228,18 @@ function startGame(account: Account): () => void {
         void updateRoads(pose.x, pose.z).catch(() => {});
       }
     }
+    if (queuePosition && mapReady) {
+      const projected = Vector3.Project(queuePosition, Matrix.Identity(), scene.getTransformMatrix(),
+        camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight()));
+      queueLabel.hidden = projected.z < 0 || projected.z > 1 || Vector3.Distance(camera.position, queuePosition) > 60;
+      queueLabel.style.left = `${projected.x / engine.getRenderWidth() * canvas.clientWidth}px`;
+      queueLabel.style.top = `${projected.y / engine.getRenderHeight() * canvas.clientHeight}px`;
+    } else queueLabel.hidden = true;
     remotePlayers.update();
     // Одна карта теней вокруг игрока; выгруженные meshes автоматически исчезают из списка.
     sun.position.set(pose.x + 32, 80, pose.z + 24);
     shadows.getShadowMap()!.renderList = scene.meshes.filter(mesh =>
-      mesh !== ground && mesh !== grid && mesh.isEnabled() && mesh.isVisible && mesh.getTotalVertices() > 0);
+      mesh !== ground && mesh.isEnabled() && mesh.isVisible && mesh.getTotalVertices() > 0);
     scene.render();
   });
 
@@ -252,7 +263,7 @@ function startGame(account: Account): () => void {
     canvas.remove();
   }
 
-  return () => { dispose(); overlay.remove(); logout.remove(); };
+  return () => { dispose(); overlay.remove(); logout.remove(); queueLabel.remove(); finishArch?.dispose(); };
 }
 
 host.textContent = 'Проверка сессии…';

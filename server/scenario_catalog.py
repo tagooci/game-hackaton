@@ -3,7 +3,7 @@
 import math
 from typing import Any
 
-from .scenarios import ScenarioDefinition, ScenarioRole, ScenarioZone
+from .scenario_model import ScenarioDefinition, ScenarioRole, ScenarioZone
 
 
 def build_scenarios(world_map: dict[str, Any]) -> tuple[ScenarioDefinition, ...]:

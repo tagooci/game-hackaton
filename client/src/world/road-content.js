@@ -27,6 +27,13 @@ export class RoadContent {
   }
 
   async init(manifestUrl = '/content/world/manifest.json') {
+    await this.serial.catch(() => {});
+    this.clearMeshes();
+    this.releaseUnused(new Set());
+    this.activeObjects = [];
+    this.activeHashes.clear();
+    this.planKey = '';
+    this.activeKey = '';
     const response = await fetch(manifestUrl, { cache: 'no-store' });
     if (!response.ok) throw new Error(`Манифест: HTTP ${response.status}`);
     const data = await response.arrayBuffer();

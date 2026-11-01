@@ -5,14 +5,15 @@ export interface PlayerSnapshot extends PlayerState {
 }
 export interface SceneContext { sceneId: string; epoch: number }
 export interface ScenePrepare extends SceneContext {
-  type: 'scene_prepare'; spawn: PlayerState;
+  type: 'scene_prepare'; spawn: PlayerState; finish?: PlayerState | null;
+  sceneKind: 'world' | 'scenario'; scenarioId: string | null; roleId: string | null;
   plan: { mapManifestUrl: string; revision: number; resources: { id: string; url: string; bytes: number }[] };
 }
 export type ServerMessage =
   | { type: 'welcome'; v: 2; playerId: string; inputHz: number }
   | ScenePrepare
   | ({ type: 'scene_start'; startTick: number; tick: number } & SceneContext)
-  | ({ type: 'snapshot'; tick: number; players: PlayerSnapshot[] } & SceneContext)
+  | ({ type: 'snapshot'; tick: number; players: PlayerSnapshot[]; scenarioResult?: string | null; scenarioQueue?: { count: number; x: number; y: number; z: number } | null } & SceneContext)
   | { type: 'error'; code: string; text: string };
 
 function object(value: unknown): value is Record<string, unknown> {

@@ -1,0 +1,37 @@
+{
+  "id": "left-turn",
+  "junctionId": "Compact_003_road-intersection-path",
+  "manifestUrl": "/content/scenarios/left-turn/manifest.json",
+  "trigger": {
+    "minX": 50,
+    "maxX": 65,
+    "minZ": 5,
+    "maxZ": 35,
+    "minY": -0.2,
+    "maxY": 3.5
+  },
+  "spawns": [
+    {
+      "x": 61.5,
+      "z": 11,
+      "heading": 0
+    },
+    {
+      "x": 58.5,
+      "z": 29,
+      "heading": 3.141592653589793
+    }
+  ],
+  "finishes": {
+    "left-turn": {
+      "x": 48,
+      "z": 21.5,
+      "heading": -1.5707963267948966
+    },
+    "straight": {
+      "x": 58.5,
+      "z": 2,
+      "heading": 3.141592653589793
+    }
+  }
+}

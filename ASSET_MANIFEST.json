@@ -147,6 +147,19 @@
         "client/public/content/assets/imported/city-*.glb.bin"
       ],
       "notes": "Palette baked into vertex colors; placement from blender/compact-city.blend; bench orientation corrected during export."
+    },
+    {
+      "id": "Dodecagon:priority-and-yield",
+      "title": "Traffic Signs — priority and yield on poles",
+      "author": "Keet",
+      "source_url": "https://dodecagon.nl/dodecagontrafficsigns",
+      "license": "CC0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "files": [
+        "client/public/content/assets/imported/sign-priority.glb.bin",
+        "client/public/content/assets/imported/sign-yield.glb.bin"
+      ],
+      "warnings": []
     }
   ],
   "version": 1

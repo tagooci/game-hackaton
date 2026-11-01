@@ -26,3 +26,7 @@ City dressing in blender/compact-city.blend: original houses, trees and benches 
 ## LowPoly City environment
 
 Buildings, trees and benches: user-provided `LowPoly_City_01Readyblender.rar` and `textures.rar`. License information was not included in the archives. Runtime models use vertex colors and shared prototypes; no CC0 status is assumed.
+
+## Scenario road signs
+
+Priority and yield sign models: Keet, [Dodecagon Traffic Signs](https://dodecagon.nl/dodecagontrafficsigns), CC0 1.0 Universal. Imported OBJ geometry and supplied sign textures, scaled to 2.8 m; materials made matte.

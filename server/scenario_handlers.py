@@ -6,7 +6,7 @@ from typing import Any
 
 from fastapi import WebSocket
 
-from .scenarios import ScenarioEvent, ScenarioManager, ScenarioState
+from .scenario_model import ScenarioEvent, ScenarioManager, ScenarioState
 from .vehicle import Controls, VehicleState
 
 
