@@ -9,6 +9,7 @@ import type { Account, Profile } from './auth/session';
 import { createRoundaboutSigns } from './world/scenarioSigns';
 import { createFinishArch } from './world/finishArch';
 import { RoadContent } from './world/road-content.js';
+import { createStreetLights } from './world/streetLights.js';
 import { Engine } from '@babylonjs/core/Engines/engine';
 import { Scene } from '@babylonjs/core/scene';
 import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera';
@@ -176,6 +177,7 @@ function startGame(account: Account, profile: Profile): () => void {
   const remotePlayers = createRemotePlayers(scene);
   const minimap = createMinimap(host);
   const roads = new RoadContent(scene, () => {});
+  const streetLights = createStreetLights(scene, roads);
   if (import.meta.env.DEV) Object.defineProperty(window, 'roadCache', { configurable: true, get: () => roads.stats() });
   let mapReady = false;
   let mapLoading = false;
@@ -266,6 +268,7 @@ function startGame(account: Account, profile: Profile): () => void {
         scene.fogStart = message.weather === 'fog' ? 18 : 40;
         scene.fogEnd = message.weather === 'fog' ? 42 : 60;
         const isDark = message.weather === 'dark';
+        streetLights.setNight(isDark);
         scene.fogColor = isDark
           ? new Color3(0.015, 0.02, 0.04)
           : message.weather === 'rain'
@@ -328,6 +331,7 @@ function startGame(account: Account, profile: Profile): () => void {
       vehicleType: targetPose.vehicleType,
     });
     speedometer.update(targetPose.speed ?? 0);
+    streetLights.update(pose.x, pose.z);
     if (mapReady && !mapLoading && !mapError) {
       const size = roads.manifest.streamStep ?? roads.manifest.chunkSize;
       const key = `${Math.floor(pose.x / size)}:${Math.floor(pose.z / size)}:none`;
@@ -367,6 +371,7 @@ function startGame(account: Account, profile: Profile): () => void {
     events.abort();
     engine.stopRenderLoop();
     if (import.meta.env.DEV) Reflect.deleteProperty(window, 'roadCache');
+    streetLights.dispose();
     roads.dispose();
     remotePlayers.dispose();
     minimap.dispose();
