@@ -1,4 +1,5 @@
 import { createSpeedometer } from './vehicle/speedometer';
+import { createEngineSound } from './vehicle/engineSound';
 import './style.css';
 import { createMinimap } from './hud/minimap.js';
 import { createMusicPlayer } from './hud/musicPlayer.js';
@@ -104,6 +105,7 @@ function startGame(account: Account, profile: Profile): () => void {
   fpsLabel.textContent = 'FPS: —';
   performanceLabel.append(pingLabel, fpsLabel);
   host.append(performanceLabel);
+  const engineSound = createEngineSound(host, performanceLabel);
   let lastFpsUpdate = performance.now();
   const assistant = createScenarioAssistant(host, () => {
     controls.clear();
@@ -334,6 +336,7 @@ function startGame(account: Account, profile: Profile): () => void {
       vehicleType: targetPose.vehicleType,
     });
     speedometer.update(targetPose.speed ?? 0);
+    engineSound.update(targetPose.speed ?? 0, targetPose.throttle ?? 0, mapReady && !mapLoading && !mapError);
     streetLights.update();
     if (mapReady && !mapLoading && !mapError) {
       const size = roads.manifest.streamStep ?? roads.manifest.chunkSize;
@@ -370,6 +373,7 @@ function startGame(account: Account, profile: Profile): () => void {
     scenarioSigns?.dispose();
     controls.dispose();
     speedometer.dispose();
+    engineSound.dispose();
     performanceLabel.remove();
     events.abort();
     engine.stopRenderLoop();
