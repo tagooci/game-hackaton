@@ -99,7 +99,7 @@ def player_snapshot(
     return {
         "id": player["id"],
         "name": player["name"],
-        "vehicleType": "car",
+        "vehicleType": player.get("vehicleType", "car"),
         "roleId": player.get("roleId"),
         **{
             key: round(getattr(state, key), 3)

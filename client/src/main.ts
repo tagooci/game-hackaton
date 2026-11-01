@@ -1,7 +1,7 @@
 import './style.css';
 import { createScenarioAssistant, showAssistantPreview } from './assistant/scenarioAssistant';
-import { api, ApiError, showAuth } from './auth/session';
-import type { Account } from './auth/session';
+import { api, ApiError, showAuth, showGarage } from './auth/session';
+import type { Account, Profile } from './auth/session';
 
 import { createFinishArch } from './world/finishArch';
 import { RoadContent } from './world/road-content.js';
@@ -31,14 +31,19 @@ function authScreen(error = ''): void {
 }
 
 async function enterGame(account: Account): Promise<void> {
+  const profile = await api<Profile>('profile');
+  stopScreen = showGarage(host, profile, selected => startAfterGarage(account, selected));
+}
+
+async function startAfterGarage(account: Account, profile: Profile): Promise<void> {
   await api('content/bootstrap');
   if (disposed) return;
   stopScreen();
   host.replaceChildren();
-  stopScreen = startGame(account);
+  stopScreen = startGame(account, profile);
 }
 
-function startGame(account: Account): () => void {
+function startGame(account: Account, profile: Profile): () => void {
   const events = new AbortController();
   const eventOptions = { signal: events.signal };
 
@@ -60,7 +65,7 @@ function startGame(account: Account): () => void {
 
   // Длина модели в метрах; пропорции сохраняются при загрузке.
   const vehicle = createVehicleView(scene, VEHICLE_LENGTH);
-  vehicle.setPose({ x: 0, z: 0, heading: 0 });
+  vehicle.setPose({ x: 0, z: 0, heading: 0, color: profile.vehicleColor });
 
   // Камера наблюдает за машиной и не управляет её положением.
   const camera = new ArcRotateCamera(
@@ -198,6 +203,7 @@ function startGame(account: Account): () => void {
         console.info('Agent feedback:', message);
         if (message.sessionId === feedbackSession) {
           agentReplies = message.type === 'agent_feedback_error' ? [message.text] : [
+            message.feedback.experience,
             ...message.feedback.successful.map(item => item.comment),
             ...message.feedback.errors.map(item => item.comment),
           ];
@@ -224,6 +230,15 @@ function startGame(account: Account): () => void {
         controls.clear();
         vehicle.setPose(message.spawn);
         targetPose = message.spawn;
+        scene.fogStart = message.weather === 'fog' ? 18 : 40;
+        scene.fogEnd = message.weather === 'fog' ? 42 : 60;
+        scene.fogColor = message.weather === 'rain'
+          ? new Color3(0.35, 0.4, 0.48)
+          : new Color3(0.86, 0.83, 0.76);
+        scene.clearColor = message.weather === 'rain'
+          ? new Color4(0.35, 0.4, 0.48, 1)
+          : new Color4(0.86, 0.83, 0.76, 1);
+        sun.intensity = message.weather === 'rain' ? 0.55 : 1.0;
       }
 
       if (message.type === 'snapshot') {

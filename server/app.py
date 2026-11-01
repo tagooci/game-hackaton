@@ -3,6 +3,7 @@ import math
 import os
 import secrets
 import sqlite3
+from dataclasses import replace
 from pathlib import Path
 import asyncio
 
@@ -12,19 +13,23 @@ from fastapi import Cookie, FastAPI, HTTPException, Request, WebSocket, WebSocke
 from fastapi.staticfiles import StaticFiles
 
 from .state import players, add_player, remove_player, public_view, others_view, snapshot_view
-from .vehicle import Controls, VehicleConfig, VehicleState, step_vehicle, steering_angle
+from .vehicle import Controls, VehicleState, step_vehicle, steering_angle
+from .vehicles import vehicle_definition, vehicle_profile
+from .server_settings import ServerSettingsStore
 from .auth import AuthService
 from .db import Database
-from .agent import OllamaFeedbackGenerator, parse_result
+from .agent import FeedbackConfig, OllamaFeedbackGenerator, parse_result
 import logging
 from .scenarios import ScenarioSessions, SCENARIO, WORLD as scenario_world
 from .world_physics import VehicleWorld
 
 TICK_RATE = 20
 tick = 0
-VEHICLE_CONFIG = VehicleConfig()
 
-
+PARTICIPATION_XP = 50
+SHORT_SCENARIO_XP = 100
+LONG_SCENARIO_XP = 200
+VIOLATION_PENALTY_XP = 10
 async def physics_loop():
     dt = 1 / 30
     loop = asyncio.get_running_loop()
@@ -41,7 +46,8 @@ async def physics_loop():
             if player.get("v2") and (player["id"] not in v2_scene_ready or tick < player.get("start_tick", 0)):
                 continue
             controls = player["controls"] if now - player["input_time"] <= 0.25 else Controls(brake=1)
-            state = step_vehicle(player["vehicle"], controls, VEHICLE_CONFIG, dt)
+            vehicle_config = vehicle_definition(player.get("vehicleType", "car")).physics
+            state = step_vehicle(player["vehicle"], controls, vehicle_config, dt)
             if player.get('v2'):
                 others = [{**vehicle_world.car_box(other['vehicle'],other['vertical']), 'playerId': other['id']} for other in v2_players.values()
                           if other['id'] != player['id'] and other['id'] in v2_scene_ready
@@ -63,6 +69,7 @@ vehicle_world = VehicleWorld(NAVIGATION['surfaces'],NAVIGATION.get('colliders',(
 SESSION_COOKIE = "game_session"
 database = Database()
 auth = AuthService(database)
+server_settings = ServerSettingsStore()
 v2_connections: dict[str, WebSocket] = {}
 v2_scene_ready: set[str] = set()
 v2_players: dict[str, dict] = {}
@@ -70,15 +77,22 @@ agent_tasks = set()
 agent_lock = asyncio.Lock()
 
 
-async def generate_agent_feedback(report, connection):
+async def generate_agent_feedback(report, connection, experience: int):
     try:
         result = parse_result(report)
         async with agent_lock:
-            feedback = await OllamaFeedbackGenerator().generate(result)
+            settings = server_settings.get()
+            config = replace(
+                FeedbackConfig.from_environment(),
+                tone="coach" if settings["agentStyle"] == "coach" else "friendly",
+            )
+            feedback = await OllamaFeedbackGenerator(config=config).generate(result)
         if v2_connections.get(result.player_id) is connection:
+            feedback_payload = feedback.to_dict()
+            feedback_payload["experience"] = f"{experience:+d} XP"
             await send(connection, {"type": "agent_feedback", "resultId": result.result_id,
                                    "sessionId": result.session_id, "playerId": result.player_id,
-                                   "feedback": feedback.to_dict()})
+                                   "feedback": feedback_payload})
     except Exception:
         logging.getLogger(__name__).exception("Agent feedback failed for result %s", report['resultId'])
         if v2_connections.get(report['playerId']) is connection:
@@ -87,10 +101,25 @@ async def generate_agent_feedback(report, connection):
 
 
 def submit_agent_result(report):
+    result = parse_result(report)
+    violations = len(result.violations)
+    completion_xp = {
+        "short": SHORT_SCENARIO_XP,
+        "long": LONG_SCENARIO_XP,
+    }[result.scenario_type.value] if result.status.value == "completed" else 0
+    experience = max(
+        0,
+        PARTICIPATION_XP + completion_xp - violations * VIOLATION_PENALTY_XP,
+    )
+    database.save_scenario_result(
+        result.result_id, result.session_id, result.scenario_id, result.player_id,
+        result.role_id, result.status.value == "completed", experience,
+        [violation.id for violation in result.violations],
+    )
     connection = v2_connections.get(report['playerId'])
     if connection is None:
         return
-    task = asyncio.create_task(generate_agent_feedback(report, connection))
+    task = asyncio.create_task(generate_agent_feedback(report, connection, experience))
     agent_tasks.add(task)
     task.add_done_callback(agent_tasks.discard)
 
@@ -266,6 +295,84 @@ async def get_me(game_session: str | None = Cookie(default=None)):
     return account
 
 
+def _level(experience: int) -> int:
+    return experience // 100 + 1
+
+
+async def _authenticated_account(game_session: str | None) -> dict:
+    account = auth.account_for_session(game_session)
+    if account is None:
+        raise HTTPException(status_code=401, detail="not authenticated")
+    return account
+
+
+@app.get("/api/v2/profile")
+async def get_profile(game_session: str | None = Cookie(default=None)):
+    account = await _authenticated_account(game_session)
+    profile = database.profile(account["playerId"])
+    if profile is None:
+        raise HTTPException(status_code=404, detail="account not found")
+    return {**profile, "vehicles": vehicle_profile(profile["level"])}
+
+
+async def _admin_account(game_session: str | None) -> dict:
+    account = await _authenticated_account(game_session)
+    if not server_settings.is_admin(account["username"]):
+        raise HTTPException(status_code=403, detail="administrator access required")
+    return account
+
+
+@app.get("/api/v2/admin/settings")
+async def get_admin_settings(game_session: str | None = Cookie(default=None)):
+    await _admin_account(game_session)
+    return server_settings.get()
+
+
+@app.post("/api/v2/admin/settings")
+async def update_admin_settings(
+    request: Request, game_session: str | None = Cookie(default=None)
+):
+    await _admin_account(game_session)
+    body = await _read_json_object(request)
+    agent_style = body.get("agentStyle")
+    weather = body.get("weather")
+    if not isinstance(agent_style, str) or not isinstance(weather, str):
+        raise HTTPException(status_code=400, detail="agentStyle and weather are required")
+    try:
+        return server_settings.update(agent_style=agent_style, weather=weather)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.post("/api/v2/profile")
+async def update_profile(request: Request, game_session: str | None = Cookie(default=None)):
+    account = await _authenticated_account(game_session)
+    body = await _read_json_object(request)
+    color = body.get("vehicleColor")
+    vehicle_type = body.get("vehicleType")
+    if type(color) is not int or not 0 <= color < 5:
+        raise HTTPException(status_code=400, detail="vehicleColor must be between 0 and 4")
+    profile = database.profile(account["playerId"])
+    if profile is None:
+        raise HTTPException(status_code=404, detail="account not found")
+    try:
+        definition = vehicle_definition(vehicle_type)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    if definition.unlock_level > profile["level"]:
+        raise HTTPException(
+            status_code=403,
+            detail=f"{vehicle_type} unlocks at level {definition.unlock_level}",
+        )
+    database.update_profile(account["playerId"], color, vehicle_type)
+    return {
+        **profile,
+        "vehicleColor": color,
+        "vehicleType": vehicle_type,
+        "vehicles": vehicle_profile(profile["level"]),
+    }
+
+
 @app.post("/api/v2/logout")
 async def logout(game_session: str | None = Cookie(default=None)):
     player_id = auth.delete_session(game_session)
@@ -295,8 +402,19 @@ async def get_content_bootstrap(game_session: str | None = Cookie(default=None))
     }
 
 
-def world_resources() -> list[dict]:
-    return WORLD_MAP['residentResources']
+def world_resources(vehicle_type: str) -> list[dict]:
+    resources = list(WORLD_MAP['residentResources'])
+    definition = vehicle_definition(vehicle_type)
+    if not any(resource["id"] == definition.asset_id for resource in resources):
+        resources.append({
+            "id": definition.asset_id,
+            "url": definition.asset_url,
+            "kind": "model",
+            "bytes": definition.asset_bytes,
+            "encoding": "gzip",
+            "label": definition.id,
+        })
+    return resources
 
 
 
@@ -304,11 +422,18 @@ def _v2_player_snapshot(player_id: str) -> dict:
     player = v2_players[player_id]
     state = player["vehicle"]
     return {
-        "id": player_id, "name": player["name"], "vehicleType": "car", "roleId": player.get("roleId"),
+        "id": player_id, "name": player["name"], "vehicleType": player["vehicleType"], "roleId": player.get("roleId"),
         **{key: round(getattr(state, key), 3) for key in ("x", "z", "heading", "speed", "steering")},
         "lastInputSeq": player.get("applied_seq", 0),
         "y": round(player["vertical"].y, 4), "pitch": round(player["vertical"].pitch, 4),
-        "wheelAngle": round(steering_angle(state.speed, state.steering, VEHICLE_CONFIG), 4),
+        "wheelAngle": round(
+            steering_angle(
+                state.speed,
+                state.steering,
+                vehicle_definition(player["vehicleType"]).physics,
+            ),
+            4,
+        ),
         "color": player["color"],
     }
 
@@ -322,12 +447,13 @@ def world_scene_prepare(player):
     return {
         "type": "scene_prepare", "sceneId": player['sceneId'], "epoch": player['epoch'],
         "sceneKind": player['sceneKind'], "mapId": WORLD_MAP['worldId'] + (':left-turn' if player['sceneKind'] == 'scenario' else ''),
-        "scenarioId": SCENARIO["id"] if player["sceneKind"] == "scenario" else None, "roleId": player.get("roleId"), "vehicleType": "car",
+        "scenarioId": SCENARIO["id"] if player["sceneKind"] == "scenario" else None, "roleId": player.get("roleId"), "vehicleType": player["vehicleType"],
+        "weather": server_settings.get()["weather"],
         "spawn": {"x": state.x, "z": state.z, "heading": state.heading, "y": body.y, "pitch": body.pitch},
-        "participants": [{"playerId": p["id"], "roleId": p.get("roleId"), "vehicleType": "car"}
+        "participants": [{"playerId": p["id"], "roleId": p.get("roleId"), "vehicleType": p["vehicleType"]}
                          for p in v2_players.values() if p["sceneId"] == player["sceneId"]]
                         if player["sceneKind"] == "scenario" else [],
-        "plan": {"revision": 1, "chunkIds": [], "resources": world_resources(),
+        "plan": {"revision": 1, "chunkIds": [], "resources": world_resources(player["vehicleType"]),
                  "mapManifestUrl": SCENARIO["manifestUrl"] if player["sceneKind"] == "scenario" else "/content/world/manifest.json"},
         "finish": ({**SCENARIO["finishes"][player["roleId"]],
                     "y": max(h for h, _ in scenario_world.floors(
@@ -402,7 +528,9 @@ async def get_v2_websocket(websocket: WebSocket):
     player = {"id": player_id, "name": account["name"], "ws": websocket, "v2": True,
               "vehicle": VehicleState(state.x, state.z, state.heading), "controls": Controls(brake=1),
               "sceneId": "world:main", "sceneKind": "world", "epoch": 1,
-              "seq": 0, "input_time": 0.0, "vertical": vertical, "color": old["color"] if old else secrets.randbelow(5)}
+              "seq": 0, "input_time": 0.0, "vertical": vertical,
+              "color": old["color"] if old else account["vehicleColor"],
+              "vehicleType": old["vehicleType"] if old else account["vehicleType"]}
     v2_players[player_id] = player
     window_start = asyncio.get_running_loop().time()
     message_count = 0

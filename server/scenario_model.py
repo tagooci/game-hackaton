@@ -78,13 +78,14 @@ class ScenarioDefinition:
     map_id: str
     zone: ScenarioZone
     roles: tuple[ScenarioRole, ...]
+    scenario_type: str = "short"
     return_spawn: tuple[float, float, float] = (0.0, 0.0, 0.0)
     time_limit_seconds: float = 60.0
-    participation_xp: int = 10
+    participation_xp: int = 50
     completion_xp: int = 100
-    perfect_bonus_xp: int = 50
-    violation_penalty_xp: int = 15
-    maximum_xp: int = 150
+    perfect_bonus_xp: int = 0
+    violation_penalty_xp: int = 10
+    maximum_xp: int = 250
     rule_config: ScenarioRuleConfig = field(default_factory=ScenarioRuleConfig)
 
     @property
@@ -314,7 +315,8 @@ class ScenarioManager:
 
         session.finished_players.add(player_id)
         violations = tuple(session.violations.get(player_id, ()))
-        xp = definition.participation_xp + definition.completion_xp
+        completion_xp = 200 if definition.scenario_type == "long" else 100
+        xp = definition.participation_xp + completion_xp
         xp += 0 if violations else definition.perfect_bonus_xp
         xp -= len(violations) * definition.violation_penalty_xp
         session.xp[player_id] = max(0, min(definition.maximum_xp, xp))
