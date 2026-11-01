@@ -18,6 +18,14 @@ DEFAULT_DB_PATH = (
 )
 
 
+def level_for_experience(experience: int) -> int:
+    if experience < 800:
+        return 1
+    if experience < 1500:
+        return 2
+    return 3
+
+
 class Database:
     """SQLite repository. Only this module knows the schema and SQL queries."""
 
@@ -38,6 +46,8 @@ class Database:
                     name TEXT NOT NULL,
                     password_hash TEXT NOT NULL,
                     experience INTEGER NOT NULL DEFAULT 0,
+                    vehicle_color INTEGER NOT NULL DEFAULT 3,
+                    vehicle_type TEXT NOT NULL DEFAULT 'car',
                     safe_x REAL NOT NULL DEFAULT 0,
                     safe_z REAL NOT NULL DEFAULT 0,
                     safe_heading REAL NOT NULL DEFAULT 0
@@ -56,6 +66,8 @@ class Database:
                 ("experience", "INTEGER NOT NULL DEFAULT 0"),
                 ("safe_y", "REAL NOT NULL DEFAULT 0"),
                 ("safe_world", "TEXT NOT NULL DEFAULT ''"),
+                ("vehicle_color", "INTEGER NOT NULL DEFAULT 3"),
+                ("vehicle_type", "TEXT NOT NULL DEFAULT 'car'"),
             ]:
                 if name not in columns:
                     db.execute(f"ALTER TABLE accounts ADD COLUMN {name} {definition}")
@@ -176,8 +188,8 @@ class Database:
         with self._lock, self._connect() as db:
             row = db.execute(
                 """
-                SELECT a.player_id, a.name
-                    , a.experience
+                SELECT a.player_id, a.username, a.name
+                    , a.experience, a.vehicle_color, a.vehicle_type
                 FROM sessions s JOIN accounts a ON a.player_id = s.player_id
                 WHERE s.token_hash = ?
                 """,
@@ -187,9 +199,35 @@ class Database:
             return None
         return {
             "playerId": row["player_id"],
+            "username": row["username"],
             "name": row["name"],
             "experience": int(row["experience"]),
+            "vehicleColor": int(row["vehicle_color"]),
+            "vehicleType": row["vehicle_type"],
         }
+
+    def profile(self, player_id: str) -> dict | None:
+        with self._lock, self._connect() as db:
+            row = db.execute(
+                "SELECT experience, vehicle_color, vehicle_type FROM accounts WHERE player_id = ?",
+                (player_id,),
+            ).fetchone()
+        if row is None:
+            return None
+        experience = int(row["experience"])
+        return {
+            "experience": experience,
+            "level": level_for_experience(experience),
+            "vehicleColor": int(row["vehicle_color"]),
+            "vehicleType": row["vehicle_type"],
+        }
+
+    def update_profile(self, player_id: str, vehicle_color: int, vehicle_type: str) -> None:
+        with self._lock, self._connect() as db:
+            db.execute(
+                "UPDATE accounts SET vehicle_color = ?, vehicle_type = ? WHERE player_id = ?",
+                (vehicle_color, vehicle_type, player_id),
+            )
 
     def delete_session(self, token: str | None) -> str | None:
         if not token:

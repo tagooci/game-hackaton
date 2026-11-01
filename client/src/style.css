@@ -27,6 +27,17 @@ button:disabled { cursor: wait; opacity: 0.6; }
 .auth-tabs { display: flex; gap: 8px; }
 .auth-tabs button { flex: 1; }
 .auth-form [role=alert] { color: #ffb8a8; margin: 0; }
+.garage-screen { position: absolute; inset: 0; display: grid; place-items: center; background: #303047; }
+.garage-form { width: min(420px, calc(100vw - 48px)); display: grid; gap: 16px; }
+.garage-form fieldset { display: grid; gap: 10px; border: 1px solid #777; border-radius: 8px; }
+.color-options { display: flex; justify-content: space-around; }
+.color-options input { position: absolute; opacity: 0; }
+.color-options span { display: block; width: 36px; height: 36px; border-radius: 50%; border: 3px solid transparent; }
+.color-options input:checked + span { border-color: white; }
+.color-0 span { background: #e85d5d; }.color-1 span { background: #e8ba5d; }
+.color-2 span { background: #5da7e8; }.color-3 span { background: #5de887; }
+.color-4 span { background: #b65de8; }
+.garage-error { color: #ffb8a8; min-height: 1.2em; }
 .logout { position: absolute; top: 12px; right: 12px; }
 
 .scenario-queue { position: absolute; transform: translate(-50%, -50%); pointer-events: none; padding: 6px 14px; border-radius: 8px; background: #17212ee6; color: white; font: bold 24px sans-serif; }

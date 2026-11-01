@@ -1,4 +1,10 @@
 export interface Account { playerId: string; name: string }
+export interface Profile {
+  experience: number;
+  level: number;
+  vehicleColor: number;
+  vehicleType: 'car' | 'truck';
+}
 
 export class ApiError extends Error {
   status: number;
@@ -53,6 +59,7 @@ export function showAuth(host: HTMLElement, onLogin: (account: Account) => Promi
       errorText.textContent = 'Пароли не совпадают';
       return;
     }
+
     submit.disabled = true;
     errorText.textContent = '';
     try {
@@ -63,6 +70,59 @@ export function showAuth(host: HTMLElement, onLogin: (account: Account) => Promi
         ? ({ 400: 'Проверьте заполненные поля', 401: 'Неверный логин или пароль', 409: 'Этот логин уже занят' }[error.status] || error.message)
         : 'Сервер недоступен. Попробуйте ещё раз.';
     } finally { submit.disabled = false; }
+  };
+  return () => { disposed = true; panel.remove(); };
+}
+
+export function showGarage(
+  host: HTMLElement,
+  profile: Profile,
+  onStart: (profile: Profile) => Promise<void>,
+): () => void {
+  host.replaceChildren();
+  const panel = document.createElement('section');
+  panel.className = 'garage-screen';
+  panel.innerHTML = `<form class="garage-form">
+    <h1>Гараж</h1>
+    <p>Уровень <strong data-level></strong> · Опыт <strong data-experience></strong></p>
+    <fieldset><legend>Цвет машинки</legend>
+      <div class="color-options">${[0, 1, 2, 3, 4].map(color =>
+        `<label class="color-${color}"><input type="radio" name="vehicleColor" value="${color}"><span></span></label>`).join('')}</div>
+    </fieldset>
+    <fieldset><legend>Машинка</legend>
+      <label class="vehicle-option"><input type="radio" name="vehicleType" value="car"> Легковая</label>
+      <label class="vehicle-option"><input type="radio" name="vehicleType" value="truck"> Грузовая <small>(открывается с 3 уровня)</small></label>
+    </fieldset>
+    <p class="garage-error" role="alert"></p>
+    <button type="submit">Подключиться к карте</button>
+  </form>`;
+  host.append(panel);
+  const form = panel.querySelector('form')!;
+  const error = panel.querySelector<HTMLElement>('[role=alert]')!;
+  panel.querySelector<HTMLElement>('[data-level]')!.textContent = String(profile.level);
+  panel.querySelector<HTMLElement>('[data-experience]')!.textContent = String(profile.experience);
+  form.querySelector<HTMLInputElement>(`[name=vehicleColor][value="${profile.vehicleColor}"]`)!.checked = true;
+  form.querySelector<HTMLInputElement>(`[name=vehicleType][value="${profile.vehicleType}"]`)!.checked = true;
+  form.querySelector<HTMLInputElement>('[value=truck]')!.disabled = profile.level < 3;
+  let disposed = false;
+  form.onsubmit = async event => {
+    event.preventDefault();
+    const data = new FormData(form);
+    const next: Profile = {
+      ...profile,
+      vehicleColor: Number(data.get('vehicleColor')),
+      vehicleType: data.get('vehicleType') as Profile['vehicleType'],
+    };
+    const submit = form.querySelector<HTMLButtonElement>('[type=submit]')!;
+    submit.disabled = true;
+    error.textContent = '';
+    try {
+      const saved = await api<Profile>('profile', next);
+      if (!disposed) await onStart(saved);
+    } catch (reason) {
+      error.textContent = reason instanceof ApiError ? reason.message : 'Не удалось сохранить выбор';
+      submit.disabled = false;
+    }
   };
   return () => { disposed = true; panel.remove(); };
 }

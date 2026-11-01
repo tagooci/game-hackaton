@@ -7,6 +7,7 @@ export interface SceneContext { sceneId: string; epoch: number }
 export interface ScenePrepare extends SceneContext {
   type: 'scene_prepare'; spawn: PlayerState; finish?: PlayerState | null;
   sceneKind: 'world' | 'scenario'; scenarioId: string | null; roleId: string | null;
+  weather: 'clear' | 'rain' | 'fog';
   plan: { mapManifestUrl: string; revision: number; resources: { id: string; url: string; bytes: number }[] };
 }
 export type ServerMessage =
@@ -14,7 +15,7 @@ export type ServerMessage =
   | ScenePrepare
   | ({ type: 'scene_start'; startTick: number; tick: number } & SceneContext)
   | ({ type: 'snapshot'; tick: number; players: PlayerSnapshot[]; scenarioResult?: string | null; scenarioQueue?: { count: number; x: number; y: number; z: number } | null } & SceneContext)
-  | { type: 'agent_feedback'; resultId: string; sessionId: string; playerId: string; feedback: { successful: { category: string; comment: string }[]; errors: { violationId: string; comment: string }[] } }
+  | { type: 'agent_feedback'; resultId: string; sessionId: string; playerId: string; feedback: { successful: { category: string; comment: string }[]; errors: { violationId: string; comment: string }[]; experience: string } }
   | { type: 'agent_feedback_error'; resultId: string; sessionId: string; text: string }
   | { type: 'error'; code: string; text: string };
 
@@ -37,7 +38,7 @@ export function parseServerMessage(text: string): ServerMessage | undefined {
       if (v.v !== 2 || typeof v.playerId !== 'string' || !Number.isInteger(v.inputHz) || Number(v.inputHz) < 1 || Number(v.inputHz) > 60) return;
       break;
     case 'scene_prepare':
-      if (!context(v) || !pose(v.spawn) || !object(v.plan) || typeof v.plan.mapManifestUrl !== 'string' || !Number.isSafeInteger(v.plan.revision) || !Array.isArray(v.plan.resources)
+      if (!context(v) || !pose(v.spawn) || !['clear', 'rain', 'fog'].includes(v.weather as string) || !object(v.plan) || typeof v.plan.mapManifestUrl !== 'string' || !Number.isSafeInteger(v.plan.revision) || !Array.isArray(v.plan.resources)
         || !v.plan.resources.every(r => object(r) && typeof r.id === 'string' && typeof r.url === 'string' && Number.isSafeInteger(r.bytes) && Number(r.bytes) >= 0)) return;
       break;
     case 'scene_start':
@@ -49,7 +50,7 @@ export function parseServerMessage(text: string): ServerMessage | undefined {
           && typeof p.wheelAngle === 'number' && Number.isFinite(p.wheelAngle) && Number.isInteger(p.color) && Number(p.color) >= 0 && Number(p.color) < 5)) return;
       break;
     case 'agent_feedback':
-      if (typeof v.resultId !== 'string' || typeof v.sessionId !== 'string' || typeof v.playerId !== 'string' || !object(v.feedback) || !Array.isArray(v.feedback.successful) || !Array.isArray(v.feedback.errors)) return;
+      if (typeof v.resultId !== 'string' || typeof v.sessionId !== 'string' || typeof v.playerId !== 'string' || !object(v.feedback) || !Array.isArray(v.feedback.successful) || !Array.isArray(v.feedback.errors) || typeof v.feedback.experience !== 'string') return;
       break;
     case 'agent_feedback_error':
       if (typeof v.resultId !== 'string' || typeof v.sessionId !== 'string' || typeof v.text !== 'string') return;
