@@ -3,6 +3,7 @@ import math
 import os
 import secrets
 import sqlite3
+import time
 from dataclasses import replace
 from pathlib import Path
 import asyncio
@@ -347,6 +348,20 @@ async def get_admin_settings(game_session: str | None = Cookie(default=None)):
     return server_settings.get()
 
 
+@app.get("/api/v2/admin/players")
+async def get_admin_players(game_session: str | None = Cookie(default=None)):
+    await _admin_account(game_session)
+    return [
+        {
+            "id": player["id"],
+            "name": player["name"],
+            "ping": player.get("ping"),
+            "lastSeen": round(time.monotonic() - player.get("last_ping_at", time.monotonic()), 1)
+            if player.get("last_ping_at") else None,
+        }
+        for player in v2_players.values()
+    ]
+
 @app.post("/api/v2/admin/settings")
 async def update_admin_settings(
     request: Request, game_session: str | None = Cookie(default=None)
@@ -650,6 +665,12 @@ async def get_v2_websocket(websocket: WebSocket):
                 ping_id = message.get("id")
                 if type(ping_id) is int and 1 <= ping_id <= 9007199254740991:
                     await send(websocket, {"type": "pong", "id": ping_id})
+                continue
+            if msg_type == "ping_result":
+                milliseconds = message.get("milliseconds")
+                if type(milliseconds) is int and 0 <= milliseconds <= 60000:
+                    player["ping"] = milliseconds
+                    player["last_ping_at"] = time.monotonic()
                 continue
             if msg_type == "respawn":
                 if player['sceneKind'] != 'world' or player['sceneId'] != 'world:main':

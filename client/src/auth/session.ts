@@ -175,6 +175,7 @@ export function showGarage(
   });
   host.append(panel);
   let disposed = false;
+  let adminPingTimer: number | undefined;
   const progress = root.querySelector<HTMLElement>('.progress-panel')!;
   root.querySelector<HTMLElement>('.level-value')!.textContent = String(profile.level);
   const progressBar = root.querySelector<HTMLElement>('.progress-bar')!;
@@ -208,6 +209,11 @@ export function showGarage(
         <label><input type="radio" name="admin-agent-style" value="coach"> Тренер</label>
         <label><input type="radio" name="admin-agent-style" value="aggressive"> Прямой</label>
       </fieldset>
+      <div class="admin-pings" aria-live="polite">
+        <h3>Пинг игроков</h3>
+        <p class="admin-pings-status">Загрузка…</p>
+        <ul class="admin-pings-list"></ul>
+      </div>
       <p class="admin-status" role="status" aria-live="polite"></p>
     `;
     controls.append(admin);
@@ -226,11 +232,46 @@ export function showGarage(
       .admin-panel input:focus-visible { outline: none; }
       .admin-status { min-height: 1.4em; margin: 0; color: #555; font-size: 12px; line-height: 1.4; }
       .admin-status.error { color: var(--accent); }
+      .admin-pings { margin: 24px 0; padding-top: 20px; border-top: 2px solid #d5c3b2; }
+      .admin-pings h3 { margin: 0 0 10px; font-size: 15px; }
+      .admin-pings-status { margin: 0 0 8px; color: #555; font-size: 12px; }
+      .admin-pings-list { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+      .admin-pings-list li { display: flex; justify-content: space-between; gap: 12px; padding: 8px 10px; border-radius: 8px; background: #fff9f0; font-size: 12px; }
+      .admin-pings-list strong { font-variant-numeric: tabular-nums; }
       @media (prefers-reduced-motion: reduce) { .admin-panel label { transition: none; } }
     `;
     const weather = admin.querySelectorAll<HTMLInputElement>('input[name="admin-weather"]');
     const agentStyle = admin.querySelectorAll<HTMLInputElement>('input[name="admin-agent-style"]');
+    const pingStatus = admin.querySelector<HTMLElement>('.admin-pings-status')!;
+    const pingList = admin.querySelector<HTMLUListElement>('.admin-pings-list')!;
     const status = admin.querySelector<HTMLElement>('.admin-status')!;
+    const renderPings = (players: { name: string; ping: number | null }[]) => {
+      pingList.replaceChildren();
+      if (!players.length) {
+        pingStatus.textContent = 'Нет подключённых игроков';
+        return;
+      }
+      pingStatus.textContent = '';
+      players.forEach(player => {
+        const item = document.createElement('li');
+        const name = document.createElement('span');
+        const ping = document.createElement('strong');
+        name.textContent = player.name;
+        ping.textContent = player.ping === null ? '—' : `${player.ping} мс`;
+        item.append(name, ping);
+        pingList.append(item);
+      });
+    };
+    const refreshPings = async (): Promise<void> => {
+      try {
+        const players = await api<{ name: string; ping: number | null }[]>('admin/players');
+        if (!disposed) renderPings(players);
+      } catch {
+        if (!disposed) pingStatus.textContent = 'Не удалось получить данные';
+      }
+    };
+    void refreshPings();
+    adminPingTimer = window.setInterval(refreshPings, 2000);
     void (async (): Promise<void> => {
       try {
         const settings = await api<{ weather: string; agentStyle: string }>('admin/settings');
@@ -299,5 +340,10 @@ export function showGarage(
       });
       await onStart(saved);
     });
-  return () => { disposed = true; stopPreview(); panel.remove(); };
+  return () => {
+    disposed = true;
+    if (adminPingTimer !== undefined) window.clearInterval(adminPingTimer);
+    stopPreview();
+    panel.remove();
+  };
 }

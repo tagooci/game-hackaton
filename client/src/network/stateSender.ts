@@ -57,7 +57,11 @@ export function startStateSender(url: string, options: ConnectionOptions): () =>
       if (!message) return;
       if (message.type === 'pong') {
         if (pendingPing?.id === message.id) {
-          options.onPing?.(Math.round(performance.now() - pendingPing.sentAt));
+          const milliseconds = Math.round(performance.now() - pendingPing.sentAt);
+          options.onPing?.(milliseconds);
+          if (connection.readyState === WebSocket.OPEN) {
+            connection.send(JSON.stringify({ type: 'ping_result', milliseconds }));
+          }
           pendingPing = undefined;
         }
         return;
