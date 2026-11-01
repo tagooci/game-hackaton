@@ -48,3 +48,6 @@ button:disabled { cursor: wait; opacity: 0.6; }
 .speedometer-value { position: absolute; bottom: -4px; width: 100%; text-align: center; font: 600 18px system-ui; color: white; }
 .ping-indicator { position: absolute; z-index: 3; top: 50%; left: max(12px, env(safe-area-inset-left)); transform: translateY(-50%); pointer-events: none; white-space: nowrap; color: #fff; font: 600 14px/1.4 system-ui, sans-serif; font-variant-numeric: tabular-nums; text-shadow: 0 1px 4px #000, 0 0 2px #000; }
 .scenario-queue { font: 600 15px/1.4 system-ui, sans-serif; white-space: nowrap; }
+.night-stars { position: absolute; inset: 0 0 70%; z-index: 1; pointer-events: none; overflow: hidden; }
+.night-stars[hidden] { display: none; }
+.night-stars span { position: absolute; background: #ffe477; clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 95%, 50% 73%, 21% 95%, 32% 57%, 2% 35%, 39% 35%); }

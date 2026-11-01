@@ -177,7 +177,20 @@ function startGame(account: Account, profile: Profile): () => void {
   const remotePlayers = createRemotePlayers(scene);
   const minimap = createMinimap(host);
   const roads = new RoadContent(scene, () => {});
-  const streetLights = createStreetLights(scene, roads);
+  const streetLights = createStreetLights(roads);
+  const nightStars = document.createElement('div');
+  nightStars.className = 'night-stars';
+  nightStars.hidden = true;
+  nightStars.setAttribute('aria-hidden', 'true');
+  for (let i = 0; i < 36; i++) {
+    const star = document.createElement('span');
+    star.style.left = `${2 + ((i * 37) % 96)}%`;
+    star.style.top = `${5 + ((i * 29) % 80)}%`;
+    star.style.width = star.style.height = `${4 + (i % 4) * 2}px`;
+    star.style.opacity = `${0.45 + (i % 5) * 0.12}`;
+    nightStars.append(star);
+  }
+  host.append(nightStars);
   if (import.meta.env.DEV) Object.defineProperty(window, 'roadCache', { configurable: true, get: () => roads.stats() });
   let mapReady = false;
   let mapLoading = false;
@@ -269,6 +282,7 @@ function startGame(account: Account, profile: Profile): () => void {
         scene.fogEnd = message.weather === 'fog' ? 42 : 60;
         const isDark = message.weather === 'dark';
         streetLights.setNight(isDark);
+        nightStars.hidden = !isDark;
         scene.fogColor = isDark
           ? new Color3(0.015, 0.02, 0.04)
           : message.weather === 'rain'
@@ -331,7 +345,7 @@ function startGame(account: Account, profile: Profile): () => void {
       vehicleType: targetPose.vehicleType,
     });
     speedometer.update(targetPose.speed ?? 0);
-    streetLights.update(pose.x, pose.z);
+    streetLights.update();
     if (mapReady && !mapLoading && !mapError) {
       const size = roads.manifest.streamStep ?? roads.manifest.chunkSize;
       const key = `${Math.floor(pose.x / size)}:${Math.floor(pose.z / size)}:none`;
@@ -371,7 +385,7 @@ function startGame(account: Account, profile: Profile): () => void {
     events.abort();
     engine.stopRenderLoop();
     if (import.meta.env.DEV) Reflect.deleteProperty(window, 'roadCache');
-    streetLights.dispose();
+    nightStars.remove();
     roads.dispose();
     remotePlayers.dispose();
     minimap.dispose();
