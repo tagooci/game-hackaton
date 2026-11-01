@@ -112,7 +112,7 @@ app = FastAPI(lifespan=lifespan)
 @app.middleware("http")
 async def content_no_store(request: Request, call_next):
     response = await call_next(request)
-    if request.url.path.startswith('/content/'):
+    if request.url.path.startswith(('/content/', '/assets/')):
         response.headers['Cache-Control'] = 'no-store'
     return response
 
@@ -242,7 +242,7 @@ async def logout(game_session: str | None = Cookie(default=None)):
 async def get_content_bootstrap(game_session: str | None = Cookie(default=None)):
     if auth.account_for_session(game_session) is None:
         raise HTTPException(status_code=401, detail="not authenticated")
-    world_bytes = WORLD_MAP["worldBytes"] + sum(resource["bytes"] for resource in world_resources())
+    world_bytes = WORLD_MAP["worldBytes"]
     return {
         "worldId": WORLD_MAP["worldId"],
         "contentVersion": WORLD_MAP["contentVersion"],
@@ -253,11 +253,8 @@ async def get_content_bootstrap(game_session: str | None = Cookie(default=None))
 
 
 def world_resources() -> list[dict]:
-    asset_dir = Path(__file__).resolve().parent.parent / "client" / "public" / "assets"
-    return [
-        {"id": relative, "url": f"/assets/{relative}", "bytes": (asset_dir / relative).stat().st_size}
-        for relative in ("car-kit/sedan.glb", "car-kit/Textures/colormap.png")
-    ]
+    return WORLD_MAP['residentResources']
+
 
 
 def _v2_player_snapshot(player_id: str) -> dict:

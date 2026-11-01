@@ -7,6 +7,7 @@ import json
 import math
 import shutil
 import subprocess
+import struct
 import tempfile
 from pathlib import Path
 
@@ -17,6 +18,7 @@ def main():
     parser=argparse.ArgumentParser()
     parser.add_argument('--scene',type=Path,required=True)
     parser.add_argument('--assets',type=Path,required=True)
+    parser.add_argument('--environment-scene',type=Path)
     parser.add_argument('--blender',required=True)
     args=parser.parse_args()
     spec=importlib.util.spec_from_file_location('road_pack',Path(__file__).with_name('prepare-road-assets.py'))
@@ -24,7 +26,8 @@ def main():
     class Files:
         def read(self,path):return (args.assets/path).read_bytes()
     resources=[];catalog={}
-    for path in (ROOT/'assets/imported').glob('map-*.glb*'):path.unlink()
+    for pattern in ('map-*.glb*','city-*.glb*'):
+        for path in (ROOT/'assets/imported').glob(pattern):path.unlink()
     def publish(id,path,data,kind='data',**extra):
         target=ROOT/path;target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(data)
         resource=dict(id=id,url='/content/'+path,kind=kind,bytes=len(data),sha256=digest(data),**extra)
@@ -32,9 +35,42 @@ def main():
     with tempfile.TemporaryDirectory() as tmp:
         subprocess.run([args.blender,'-b',str(args.scene),'--python-exit-code','1','--python',str(Path(__file__).with_name('export-blender-map.py')),'--',tmp],check=True,stdout=subprocess.DEVNULL)
         scene=json.loads((Path(tmp)/'scene.json').read_text())
+        if args.environment_scene:
+            environment_out=Path(tmp)/'environment'
+            subprocess.run([args.blender,'-b',str(args.environment_scene),'--python-exit-code','1','--python',
+                            str(Path(__file__).with_name('export-environment.py')),'--',str(environment_out)],
+                           check=True,stdout=subprocess.DEVNULL)
+            environment=json.loads((environment_out/'scene.json').read_text())
+            scene['objects'].extend(environment['objects'])
+            scene['colliders'].extend(environment['colliders'])
+            scene['models'].update(environment['models'])
+            for asset in environment['models']:
+                shutil.copy(environment_out/(asset+'.glb'),Path(tmp)/(asset+'.glb'))
         for asset,label in scene['models'].items():
             data=packer.pack((Path(tmp)/(asset+'.glb')).read_bytes(),Files(),'.')
             catalog[asset]=publish(asset,'assets/imported/'+asset+'.glb.bin',gzip.compress(data,mtime=0),'model',encoding='gzip',label=label)
+    # Машина и палитра одним GLB: один общий контейнер для своей и чужих машин.
+    car_dir=ROOT.parent/'assets/car-kit'
+    class CarFiles:
+        def read(self,path):return (car_dir/path).read_bytes()
+    raw=packer.pack((car_dir/'sedan.glb').read_bytes(),CarFiles(),'.',keep_uv=True)
+    length=struct.unpack_from('<I',raw,12)[0]
+    car=json.loads(raw[20:20+length]);binary=bytearray(raw[28+length:])
+    for image in car.get('images',[]):
+        if 'uri' not in image:continue
+        texture=(car_dir/image.pop('uri')).read_bytes()
+        while len(binary)%4:binary.append(0)
+        image.update(bufferView=len(car['bufferViews']),mimeType='image/png')
+        car['bufferViews'].append(dict(buffer=0,byteOffset=len(binary),byteLength=len(texture)))
+        binary.extend(texture)
+    while len(binary)%4:binary.append(0)
+    car['buffers'][0]['byteLength']=len(binary)
+    document=encode(car);document+=b' '*(-len(document)%4)
+    bundled=(struct.pack('<III',0x46546c67,2,28+len(document)+len(binary))+
+             struct.pack('<II',len(document),0x4e4f534a)+document+
+             struct.pack('<II',len(binary),0x004e4942)+binary)
+    car_data=gzip.compress(bundled,mtime=0)
+    (car_dir/'sedan.glb.bin').write_bytes(car_data)
     # Порты из авторской карты уже проверены в Blender. Сохраняем разделение уровней моста.
     nodes=[];ports={};links={}
     for road in scene['roads']:
@@ -70,7 +106,9 @@ def main():
     publish('road-overview','world/overview.json',encode(overview))
     chunks={};size=20
     for obj in scene['objects']:
-        cx,cz=math.floor(obj['x']/size),math.floor(obj['z']/size);id=f'road-{cx}-{cz}'
+        cx=math.floor((obj['bounds']['minX']+obj['bounds']['maxX'])/2/size)
+        cz=math.floor((obj['bounds']['minZ']+obj['bounds']['maxZ'])/2/size)
+        id=f'road-{cx}-{cz}'
         if id not in chunks:chunks[id]=dict(id=id,bounds=dict(minX=cx*size,maxX=(cx+1)*size,minZ=cz*size,maxZ=(cz+1)*size),objects=[],signs=[])
         chunk=chunks[id]
         for name,value in obj['bounds'].items():chunk['bounds'][name]=(min if name.startswith('min') else max)(chunk['bounds'][name],value)
@@ -87,10 +125,21 @@ def main():
     bounds={key:(min if key.startswith('min') else max)(c['bounds'][key] for c in descriptors) for key in ['minX','maxX','minZ','maxZ']}
     manifest=dict(worldId='compact-reference-'+digest(encode(scene['roads']))[:8],contentVersion=digest(encode(resources))[:16],
                   accounting='unique_resource_bytes',worldBytes=world_bytes,cacheBudgetBytes=world_bytes//10,tileSize=10,chunkSize=size,
-                  streamRadius=65,streamStep=2.5,bounds=bounds,spawn=spawn,spawnY=first['ports'][0]['position'][2],groundColor='#35353f',resources=resources,chunks=descriptors,
+                  streamRadius=80,streamStep=2.5,bounds=bounds,spawn=spawn,spawnY=first['ports'][0]['position'][2],groundColor='#77776c',resources=resources,chunks=descriptors,
                   overviewResourceId='road-overview',navigationResourceId='road-navigation',stats=dict(roadTiles=len(scene['roads']),chunks=len(chunks),objects=len(scene['objects']),models=len(catalog)))
+    manifest['residentResources']=[dict(id='car-kit/sedan.glb.bin',url='/assets/car-kit/sedan.glb.bin',
+        bytes=len(car_data),sha256=digest(car_data),encoding='gzip',kind='model')]
+    manifest['contentVersion']=digest(encode(resources+manifest['residentResources']))[:16]
+    manifest['worldBytes']+=len(car_data)
+    # Размер манифеста учитывает собственные поля; несколько проходов дают устойчивый размер.
+    base_bytes=manifest['worldBytes']
+    for _ in range(8):
+        metadata=len((json.dumps(manifest,indent=2)+'\n').encode())
+        manifest['worldBytes']=base_bytes+metadata
+        manifest['cacheBudgetBytes']=manifest['worldBytes']//10
     (ROOT/'world/manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
     previous=json.loads((ROOT/'asset-catalog.json').read_text())
+    previous={key:value for key,value in previous.items() if not key.startswith('city-')}
     previous.update(catalog)
     (ROOT/'asset-catalog.json').write_text(json.dumps(previous,indent=2)+'\n')
     license_text=(args.assets.parent.parent/'License.txt').read_text()

@@ -1,0 +1,1517 @@
+[
+  {
+    "object": "House_01_house_09",
+    "plot": 1,
+    "type": "house",
+    "source_object": "house_09",
+    "center": [
+      -45.0,
+      -5.0
+    ],
+    "footprint": [
+      14.0,
+      10.5
+    ],
+    "height": 6.003634452819824
+  },
+  {
+    "object": "House_02_house_02.001",
+    "plot": 2,
+    "type": "house",
+    "source_object": "house_02.001",
+    "center": [
+      -45.0,
+      25.0
+    ],
+    "footprint": [
+      13.999996185302734,
+      14.0
+    ],
+    "height": 6.457498073577881
+  },
+  {
+    "object": "House_04_house_04.001",
+    "plot": 4,
+    "type": "house",
+    "source_object": "house_04.001",
+    "center": [
+      -15.0,
+      -35.0
+    ],
+    "footprint": [
+      14.0,
+      14.0
+    ],
+    "height": 6.522132396697998
+  },
+  {
+    "object": "House_08_house_01.001",
+    "plot": 8,
+    "type": "house",
+    "source_object": "house_09",
+    "center": [
+      14.5,
+      -30.5
+    ],
+    "footprint": [
+      8.0,
+      6.0
+    ],
+    "height": 3.430648422241211
+  },
+  {
+    "object": "House_09_house_10",
+    "plot": 9,
+    "type": "house",
+    "source_object": "house_10",
+    "center": [
+      15.0,
+      -5.0
+    ],
+    "footprint": [
+      14.0,
+      10.5
+    ],
+    "height": 5.887566089630127
+  },
+  {
+    "object": "House_11_highlivingbuilding_a",
+    "plot": 11,
+    "type": "house",
+    "source_object": "highlivingbuilding_a",
+    "center": [
+      15.0,
+      55.0
+    ],
+    "footprint": [
+      11.415217399597168,
+      9.132174491882324
+    ],
+    "height": 14.34167766571045
+  },
+  {
+    "object": "House_13_house_06",
+    "plot": 13,
+    "type": "house",
+    "source_object": "house_06",
+    "center": [
+      45.0,
+      -5.0
+    ],
+    "footprint": [
+      14.0,
+      10.500000953674316
+    ],
+    "height": 6.061098575592041
+  },
+  {
+    "object": "House_14_highlivingbuilding_b",
+    "plot": 14,
+    "type": "house",
+    "source_object": "highlivingbuilding_b",
+    "center": [
+      45.0,
+      55.0
+    ],
+    "footprint": [
+      14.0,
+      11.199999809265137
+    ],
+    "height": 14.347338676452637
+  },
+  {
+    "object": "ParkBench_00",
+    "plot": 0,
+    "type": "bench",
+    "source_object": "bench_b002_Mesh.001",
+    "center": [
+      -47.1,
+      -38.3
+    ],
+    "footprint": [
+      1.5359115283169107,
+      2.1
+    ],
+    "height": 1.0460656881332397
+  },
+  {
+    "object": "ParkBench_01",
+    "plot": 0,
+    "type": "bench",
+    "source_object": "bench_b002_Mesh.001",
+    "center": [
+      -42.9,
+      -31.7
+    ],
+    "footprint": [
+      1.5359115283169107,
+      2.1
+    ],
+    "height": 1.0460656881332397
+  },
+  {
+    "object": "ParkBench_02",
+    "plot": 3,
+    "type": "bench",
+    "source_object": "bench_b002_Mesh.001",
+    "center": [
+      -42.1,
+      51.7
+    ],
+    "footprint": [
+      1.5359115283169107,
+      2.1
+    ],
+    "height": 1.0460656881332397
+  },
+  {
+    "object": "ParkBench_03",
+    "plot": 3,
+    "type": "bench",
+    "source_object": "bench_b002_Mesh.001",
+    "center": [
+      -37.9,
+      58.3
+    ],
+    "footprint": [
+      1.5359115283169107,
+      2.1
+    ],
+    "height": 1.0460656881332397
+  },
+  {
+    "object": "ParkBench_04",
+    "plot": 5,
+    "type": "bench",
+    "source_object": "bench_b002_Mesh.001",
+    "center": [
+      -12.9,
+      28.3
+    ],
+    "footprint": [
+      1.5359115283169107,
+      2.1
+    ],
+    "height": 1.0460656881332397
+  },
+  {
+    "object": "ParkBench_05",
+    "plot": 6,
+    "type": "bench",
+    "source_object": "bench_b002_Mesh.001",
+    "center": [
+      -12.6,
+      -8.3
+    ],
+    "footprint": [
+      1.5359115283169107,
+      2.1
+    ],
+    "height": 1.0460656881332397
+  },
+  {
+    "object": "ParkBench_06",
+    "plot": 6,
+    "type": "bench",
+    "source_object": "bench_b002_Mesh.001",
+    "center": [
+      -8.4,
+      -1.7000000000000002
+    ],
+    "footprint": [
+      1.5359115283169107,
+      2.1
+    ],
+    "height": 1.0460656881332397
+  },
+  {
+    "object": "ParkBench_07",
+    "plot": 7,
+    "type": "bench",
+    "source_object": "bench_b002_Mesh.001",
+    "center": [
+      -12.1,
+      51.7
+    ],
+    "footprint": [
+      1.5359115283169107,
+      2.1
+    ],
+    "height": 1.0460656881332397
+  },
+  {
+    "object": "ParkBench_08",
+    "plot": 7,
+    "type": "bench",
+    "source_object": "bench_b002_Mesh.001",
+    "center": [
+      -7.9,
+      58.3
+    ],
+    "footprint": [
+      1.5359115283169107,
+      2.1
+    ],
+    "height": 1.0460656881332397
+  },
+  {
+    "object": "ParkBench_09",
+    "plot": 10,
+    "type": "bench",
+    "source_object": "bench_b002_Mesh.001",
+    "center": [
+      32.1,
+      31.8
+    ],
+    "footprint": [
+      1.5359115283169107,
+      2.1
+    ],
+    "height": 1.0460656881332397
+  },
+  {
+    "object": "ParkBench_10",
+    "plot": 12,
+    "type": "bench",
+    "source_object": "bench_b002_Mesh.001",
+    "center": [
+      42.9,
+      -38.3
+    ],
+    "footprint": [
+      1.5359115283169107,
+      2.1
+    ],
+    "height": 1.0460656881332397
+  },
+  {
+    "object": "ParkBench_11",
+    "plot": 12,
+    "type": "bench",
+    "source_object": "bench_b002_Mesh.001",
+    "center": [
+      47.1,
+      -31.7
+    ],
+    "footprint": [
+      1.5359115283169107,
+      2.1
+    ],
+    "height": 1.0460656881332397
+  },
+  {
+    "object": "CityTree_000",
+    "plot": 0,
+    "type": "tree",
+    "source_object": "tree.001",
+    "center": [
+      -51.59678203657039,
+      -31.531129781262404
+    ],
+    "footprint": [
+      1.7562350786605976,
+      1.5922192462532891
+    ],
+    "height": 2.9107041523048034
+  },
+  {
+    "object": "CityTree_001",
+    "plot": 0,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      -49.55940142722317,
+      -39.42383033710979
+    ],
+    "footprint": [
+      2.6227751504211634,
+      2.5730335398550066
+    ],
+    "height": 3.925396590221292
+  },
+  {
+    "object": "CityTree_002",
+    "plot": 0,
+    "type": "tree",
+    "source_object": "tree.001",
+    "center": [
+      -37.463644837743125,
+      -41.5318355642258
+    ],
+    "footprint": [
+      2.5455452053146352,
+      2.807763939802722
+    ],
+    "height": 4.653460267123426
+  },
+  {
+    "object": "CityTree_003",
+    "plot": 0,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      -37.4250466748339,
+      -27.454160468195106
+    ],
+    "footprint": [
+      2.5528330433781234,
+      2.602184140096158
+    ],
+    "height": 3.89457889633472
+  },
+  {
+    "object": "CityTree_004",
+    "plot": 0,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      -41.564907424597116,
+      -39.55724486360982
+    ],
+    "footprint": [
+      2.552156438061229,
+      2.6014944547172827
+    ],
+    "height": 3.893546673410796
+  },
+  {
+    "object": "CityTree_005",
+    "plot": 0,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      -39.57134822079997,
+      -31.51193896196899
+    ],
+    "footprint": [
+      1.833364880156069,
+      1.7985946399851767
+    ],
+    "height": 2.743919641010958
+  },
+  {
+    "object": "CityTree_006",
+    "plot": 0,
+    "type": "tree",
+    "source_object": "tree.001",
+    "center": [
+      -47.562706498913315,
+      -29.48747147781791
+    ],
+    "footprint": [
+      1.6492123792894422,
+      1.8190991218609267
+    ],
+    "height": 3.0148921586811572
+  },
+  {
+    "object": "CityTree_007",
+    "plot": 1,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      -41.46471930571412,
+      2.5522485135993143
+    ],
+    "footprint": [
+      1.3804118951530324,
+      1.4070978710045021
+    ],
+    "height": 2.1059438450382473
+  },
+  {
+    "object": "CityTree_008",
+    "plot": 1,
+    "type": "tree",
+    "source_object": "tree.200",
+    "center": [
+      -51.442089964462824,
+      2.524298423863388
+    ],
+    "footprint": [
+      1.649619131838494,
+      1.70654351043279
+    ],
+    "height": 2.4747922555994375
+  },
+  {
+    "object": "CityTree_009",
+    "plot": 1,
+    "type": "tree",
+    "source_object": "tree.200",
+    "center": [
+      -51.480743762319264,
+      -11.514103599314215
+    ],
+    "footprint": [
+      1.4825938210299003,
+      1.533754558888106
+    ],
+    "height": 2.224217478852325
+  },
+  {
+    "object": "CityTree_010",
+    "plot": 1,
+    "type": "tree",
+    "source_object": "tree.200",
+    "center": [
+      -39.466827203941065,
+      -11.480105457884399
+    ],
+    "footprint": [
+      1.704535159600853,
+      1.64767777263168
+    ],
+    "height": 2.471879788935084
+  },
+  {
+    "object": "CityTree_011",
+    "plot": 1,
+    "type": "tree",
+    "source_object": "tree.001",
+    "center": [
+      -37.51400658170752,
+      -11.587854324757014
+    ],
+    "footprint": [
+      1.2823713269467816,
+      1.1626099104940082
+    ],
+    "height": 2.1253439197828277
+  },
+  {
+    "object": "CityTree_012",
+    "plot": 1,
+    "type": "tree",
+    "source_object": "tree.200",
+    "center": [
+      -37.56720979290327,
+      2.4087353826051854
+    ],
+    "footprint": [
+      2.1919083786455724,
+      2.2675458515518008
+    ],
+    "height": 3.288345640372137
+  },
+  {
+    "object": "CityTree_013",
+    "plot": 1,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      -47.57050868472328,
+      2.600016630208935
+    ],
+    "footprint": [
+      2.2089641911729325,
+      2.1670706127111017
+    ],
+    "height": 3.306063237086401
+  },
+  {
+    "object": "CityTree_014",
+    "plot": 1,
+    "type": "tree",
+    "source_object": "tree.200",
+    "center": [
+      -43.604880610802276,
+      2.4878761899161574
+    ],
+    "footprint": [
+      1.6411003532417558,
+      1.69773076932759
+    ],
+    "height": 2.462012210259591
+  },
+  {
+    "object": "CityTree_015",
+    "plot": 1,
+    "type": "tree",
+    "source_object": "tree.200",
+    "center": [
+      -43.42221571625983,
+      -11.52191920058252
+    ],
+    "footprint": [
+      1.3798719552679894,
+      1.333844207886731
+    ],
+    "height": 2.001060276365315
+  },
+  {
+    "object": "CityTree_016",
+    "plot": 3,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      -37.56223712700636,
+      52.51928434097667
+    ],
+    "footprint": [
+      1.982268869376001,
+      2.0205898802025732
+    ],
+    "height": 3.0241313765341937
+  },
+  {
+    "object": "CityTree_017",
+    "plot": 3,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      -37.406734578120734,
+      62.57264024156914
+    ],
+    "footprint": [
+      2.033385480592543,
+      2.072694672307242
+    ],
+    "height": 3.1021144141685917
+  },
+  {
+    "object": "CityTree_018",
+    "plot": 3,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      -37.54682307510219,
+      48.606438350141836
+    ],
+    "footprint": [
+      2.1242739909997748,
+      2.083986584136415
+    ],
+    "height": 3.179310997981387
+  },
+  {
+    "object": "CityTree_019",
+    "plot": 5,
+    "type": "tree",
+    "source_object": "tree.200",
+    "center": [
+      -21.399307783398676,
+      32.60545457503953
+    ],
+    "footprint": [
+      2.2748694969115033,
+      2.1989877325713927
+    ],
+    "height": 3.2989662314723036
+  },
+  {
+    "object": "CityTree_020",
+    "plot": 5,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      -21.60349710859564,
+      28.41945706905043
+    ],
+    "footprint": [
+      1.8489802176923704,
+      1.884724506489385
+    ],
+    "height": 2.820787420565551
+  },
+  {
+    "object": "CityTree_021",
+    "plot": 5,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      -17.463973240325064,
+      28.417623615698304
+    ],
+    "footprint": [
+      2.0167572743031035,
+      2.0557450113034155
+    ],
+    "height": 3.0767465737347117
+  },
+  {
+    "object": "CityTree_022",
+    "plot": 5,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      -21.61679725170094,
+      22.426363254170816
+    ],
+    "footprint": [
+      1.9198855261963386,
+      1.9570005488714959
+    ],
+    "height": 2.928959914984629
+  },
+  {
+    "object": "CityTree_023",
+    "plot": 5,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      -17.38808503888388,
+      32.53567248934199
+    ],
+    "footprint": [
+      2.4334866625117937,
+      2.480530567695952
+    ],
+    "height": 3.712505142047653
+  },
+  {
+    "object": "CityTree_024",
+    "plot": 6,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      -7.466119605310397,
+      -11.56801378946482
+    ],
+    "footprint": [
+      1.9066223832506302,
+      1.870462795544783
+    ],
+    "height": 2.853561046149839
+  },
+  {
+    "object": "CityTree_025",
+    "plot": 6,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      -13.381925469739764,
+      -11.543479571577219
+    ],
+    "footprint": [
+      1.8534185685397078,
+      1.8892486590629665
+    ],
+    "height": 2.827558528292085
+  },
+  {
+    "object": "CityTree_026",
+    "plot": 6,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      -7.485985964544806,
+      -7.579907566772775
+    ],
+    "footprint": [
+      2.1959835265140657,
+      2.1543361297221533
+    ],
+    "height": 3.2866356255419884
+  },
+  {
+    "object": "CityTree_027",
+    "plot": 6,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      -7.512830442636411,
+      2.581617458460569
+    ],
+    "footprint": [
+      2.066854016222095,
+      2.1068102181058097
+    ],
+    "height": 3.1531737080351405
+  },
+  {
+    "object": "CityTree_028",
+    "plot": 7,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      -7.395062931657542,
+      62.59473887842852
+    ],
+    "footprint": [
+      1.8642914620069613,
+      1.828934691194919
+    ],
+    "height": 2.790206147471567
+  },
+  {
+    "object": "CityTree_029",
+    "plot": 8,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      20.530703532975032,
+      -31.445985872418923
+    ],
+    "footprint": [
+      1.8615223679041197,
+      1.8975091202142722
+    ],
+    "height": 2.8399216109725747
+  },
+  {
+    "object": "CityTree_030",
+    "plot": 8,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      22.59043424179577,
+      -27.38898695750692
+    ],
+    "footprint": [
+      1.9295886037948264,
+      1.892993455763382
+    ],
+    "height": 2.8879336166692684
+  },
+  {
+    "object": "CityTree_031",
+    "plot": 8,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      8.406638267020247,
+      -29.580158785381837
+    ],
+    "footprint": [
+      1.3477701375036748,
+      1.3222093274961382
+    ],
+    "height": 2.0171505366403433
+  },
+  {
+    "object": "CityTree_032",
+    "plot": 8,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      8.438717321945894,
+      -33.50193097530412
+    ],
+    "footprint": [
+      1.8702159474135862,
+      1.8347468172001464
+    ],
+    "height": 2.799073074097071
+  },
+  {
+    "object": "CityTree_033",
+    "plot": 8,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      8.61050369217286,
+      -27.505000301673714
+    ],
+    "footprint": [
+      1.7971559259793035,
+      1.763072398009943
+    ],
+    "height": 2.689727231403093
+  },
+  {
+    "object": "CityTree_034",
+    "plot": 9,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      12.575481951727767,
+      2.5647860165780645
+    ],
+    "footprint": [
+      1.3533528402484094,
+      1.3276861528362502
+    ],
+    "height": 2.025505931617637
+  },
+  {
+    "object": "CityTree_035",
+    "plot": 9,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      16.564564880698434,
+      2.5339054815161304
+    ],
+    "footprint": [
+      2.5241475931570094,
+      2.476276479779198
+    ],
+    "height": 3.777784898489198
+  },
+  {
+    "object": "CityTree_036",
+    "plot": 9,
+    "type": "tree",
+    "source_object": "tree.001",
+    "center": [
+      10.520707059595098,
+      -11.560426911720176
+    ],
+    "footprint": [
+      1.5393407976342641,
+      1.3955808503753433
+    ],
+    "height": 2.551233434480405
+  },
+  {
+    "object": "CityTree_037",
+    "plot": 9,
+    "type": "tree",
+    "source_object": "tree.001",
+    "center": [
+      8.565844074756443,
+      2.503704122198014
+    ],
+    "footprint": [
+      1.9708047758551652,
+      2.173819019392806
+    ],
+    "height": 3.602788785503237
+  },
+  {
+    "object": "CityTree_038",
+    "plot": 9,
+    "type": "tree",
+    "source_object": "tree.200",
+    "center": [
+      20.522231984701737,
+      2.4562090050112273
+    ],
+    "footprint": [
+      1.5394898622497395,
+      1.4881378145433437
+    ],
+    "height": 2.232534690957444
+  },
+  {
+    "object": "CityTree_039",
+    "plot": 9,
+    "type": "tree",
+    "source_object": "tree.001",
+    "center": [
+      22.42296424456252,
+      2.388749833672854
+    ],
+    "footprint": [
+      1.1845884401603863,
+      1.3066138832833576
+    ],
+    "height": 2.1655224301933877
+  },
+  {
+    "object": "CityTree_040",
+    "plot": 10,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      20.493851185878352,
+      30.617087311749064
+    ],
+    "footprint": [
+      1.7933274690905288,
+      1.8279958848742262
+    ],
+    "height": 2.7358840929507764
+  },
+  {
+    "object": "CityTree_041",
+    "plot": 10,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      12.398429207232224,
+      30.571978162121418
+    ],
+    "footprint": [
+      1.8738192414814678,
+      1.9100437156429646
+    ],
+    "height": 2.858681609574701
+  },
+  {
+    "object": "CityTree_042",
+    "plot": 10,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      48.54621723902079,
+      32.560279211469876
+    ],
+    "footprint": [
+      2.110581709749949,
+      2.1513832507513735
+    ],
+    "height": 3.2198842799782295
+  },
+  {
+    "object": "CityTree_043",
+    "plot": 10,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      24.44789196499864,
+      32.43427892271244
+    ],
+    "footprint": [
+      1.8171883349906182,
+      1.8523180264945849
+    ],
+    "height": 2.7722860131718465
+  },
+  {
+    "object": "CityTree_044",
+    "plot": 10,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      36.59385299232997,
+      32.384717302431234
+    ],
+    "footprint": [
+      2.0569763270803922,
+      2.0179652378572057
+    ],
+    "height": 3.078589431957482
+  },
+  {
+    "object": "CityTree_045",
+    "plot": 10,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      44.451275471426705,
+      32.47081283352503
+    ],
+    "footprint": [
+      1.8318325659743664,
+      1.797091386539115
+    ],
+    "height": 2.7416262912119724
+  },
+  {
+    "object": "CityTree_046",
+    "plot": 10,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      40.5161305734472,
+      32.3880085169034
+    ],
+    "footprint": [
+      1.8043181806361126,
+      1.8391990676857604
+    ],
+    "height": 2.752651422624828
+  },
+  {
+    "object": "CityTree_047",
+    "plot": 10,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      52.425932552080454,
+      32.52559477003602
+    ],
+    "footprint": [
+      1.8724103414716895,
+      1.8368995940061381
+    ],
+    "height": 2.802357330832498
+  },
+  {
+    "object": "CityTree_048",
+    "plot": 10,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      16.608185625345385,
+      32.444643544337794
+    ],
+    "footprint": [
+      2.0089666442415384,
+      2.047803773610591
+    ],
+    "height": 3.064861259297238
+  },
+  {
+    "object": "CityTree_049",
+    "plot": 11,
+    "type": "tree",
+    "source_object": "tree.001",
+    "center": [
+      20.433315358246702,
+      48.58423021851043
+    ],
+    "footprint": [
+      1.4553671209532153,
+      1.6052857018038558
+    ],
+    "height": 2.6605275197210676
+  },
+  {
+    "object": "CityTree_050",
+    "plot": 11,
+    "type": "tree",
+    "source_object": "tree.200",
+    "center": [
+      20.588974814311403,
+      62.40771620794623
+    ],
+    "footprint": [
+      1.7307228576343292,
+      1.672991939795151
+    ],
+    "height": 2.509856618643216
+  },
+  {
+    "object": "CityTree_051",
+    "plot": 11,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      14.520341902153984,
+      48.61048925357956
+    ],
+    "footprint": [
+      1.833703785656407,
+      1.8691527520950442
+    ],
+    "height": 2.7974818346507644
+  },
+  {
+    "object": "CityTree_052",
+    "plot": 11,
+    "type": "tree",
+    "source_object": "tree.001",
+    "center": [
+      10.438161774097411,
+      62.6166881058011
+    ],
+    "footprint": [
+      1.6270069647707235,
+      1.4750598223284503
+    ],
+    "height": 2.6965273531597576
+  },
+  {
+    "object": "CityTree_053",
+    "plot": 11,
+    "type": "tree",
+    "source_object": "tree.200",
+    "center": [
+      14.48669828278455,
+      62.44567591218529
+    ],
+    "footprint": [
+      2.3499151940712637,
+      2.2715301652958315
+    ],
+    "height": 3.407795868110126
+  },
+  {
+    "object": "CityTree_054",
+    "plot": 11,
+    "type": "tree",
+    "source_object": "tree.200",
+    "center": [
+      18.390138908364822,
+      62.505260552629956
+    ],
+    "footprint": [
+      1.767055918894918,
+      1.7081130560206184
+    ],
+    "height": 2.5625460332876284
+  },
+  {
+    "object": "CityTree_055",
+    "plot": 11,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      22.537490391904623,
+      52.61735333736887
+    ],
+    "footprint": [
+      1.8303722410426804,
+      1.795658757048283
+    ],
+    "height": 2.7394406846774073
+  },
+  {
+    "object": "CityTree_056",
+    "plot": 11,
+    "type": "tree",
+    "source_object": "tree.001",
+    "center": [
+      22.504890548201267,
+      56.437521717919275
+    ],
+    "footprint": [
+      1.7288712585855774,
+      1.9069637287458556
+    ],
+    "height": 3.160514962375318
+  },
+  {
+    "object": "CityTree_057",
+    "plot": 11,
+    "type": "tree",
+    "source_object": "tree.200",
+    "center": [
+      22.450608006180826,
+      48.57016405870886
+    ],
+    "footprint": [
+      1.3955624945828329,
+      1.3490113651753637
+    ],
+    "height": 2.0238143549722563
+  },
+  {
+    "object": "CityTree_058",
+    "plot": 11,
+    "type": "tree",
+    "source_object": "tree.001",
+    "center": [
+      8.406340726707915,
+      62.419099920613874
+    ],
+    "footprint": [
+      1.1744387699038012,
+      1.2954186870291997
+    ],
+    "height": 2.1469680210378113
+  },
+  {
+    "object": "CityTree_059",
+    "plot": 12,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      48.46145795370443,
+      -37.47242587920123
+    ],
+    "footprint": [
+      2.687327725287117,
+      2.7392788588826784
+    ],
+    "height": 4.099762761057374
+  },
+  {
+    "object": "CityTree_060",
+    "plot": 12,
+    "type": "tree",
+    "source_object": "tree.200",
+    "center": [
+      52.42251062215565,
+      -31.43275179305343
+    ],
+    "footprint": [
+      2.4081032960709012,
+      2.49120113427731
+    ],
+    "height": 3.6126856634827247
+  },
+  {
+    "object": "CityTree_061",
+    "plot": 12,
+    "type": "tree",
+    "source_object": "tree.001",
+    "center": [
+      38.535786634553624,
+      -29.49849419561863
+    ],
+    "footprint": [
+      1.8383930155616952,
+      1.6667044048495727
+    ],
+    "height": 3.0468689806859794
+  },
+  {
+    "object": "CityTree_062",
+    "plot": 12,
+    "type": "tree",
+    "source_object": "tree.001",
+    "center": [
+      48.447987665601694,
+      -41.50417000282256
+    ],
+    "footprint": [
+      1.7397861034488897,
+      1.9190029208811064
+    ],
+    "height": 3.180468171922411
+  },
+  {
+    "object": "CityTree_063",
+    "plot": 12,
+    "type": "tree",
+    "source_object": "tree.001",
+    "center": [
+      42.433611121913906,
+      -27.52370787925185
+    ],
+    "footprint": [
+      1.7936720675988025,
+      1.6261599726591425
+    ],
+    "height": 2.972750515275373
+  },
+  {
+    "object": "CityTree_064",
+    "plot": 12,
+    "type": "tree",
+    "source_object": "tree.001",
+    "center": [
+      38.59700548589233,
+      -41.41854651613455
+    ],
+    "footprint": [
+      2.1873546540656235,
+      1.9830763096026576
+    ],
+    "height": 3.625222130859428
+  },
+  {
+    "object": "CityTree_065",
+    "plot": 12,
+    "type": "tree",
+    "source_object": "tree.001",
+    "center": [
+      52.47315658851175,
+      -37.54959999414023
+    ],
+    "footprint": [
+      1.8983357831868963,
+      1.721049081963825
+    ],
+    "height": 3.14621539777291
+  },
+  {
+    "object": "CityTree_066",
+    "plot": 12,
+    "type": "tree",
+    "source_object": "tree.001",
+    "center": [
+      42.419437655128654,
+      -41.393694685346134
+    ],
+    "footprint": [
+      1.5945722938383409,
+      1.7588305156397384
+    ],
+    "height": 2.9150057115231696
+  },
+  {
+    "object": "CityTree_067",
+    "plot": 12,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      42.53030800738298,
+      -31.49925852187138
+    ],
+    "footprint": [
+      1.9806131565276877,
+      1.9430503146278066
+    ],
+    "height": 2.964299905744021
+  },
+  {
+    "object": "CityTree_068",
+    "plot": 12,
+    "type": "tree",
+    "source_object": "tree.001",
+    "center": [
+      40.399678811555944,
+      -37.565336854885814
+    ],
+    "footprint": [
+      2.0472384134455552,
+      1.8560456075407934
+    ],
+    "height": 3.3929998456234394
+  },
+  {
+    "object": "CityTree_069",
+    "plot": 12,
+    "type": "tree",
+    "source_object": "tree.001",
+    "center": [
+      52.4675952961574,
+      -41.42360044470269
+    ],
+    "footprint": [
+      1.5318084710166677,
+      1.6896013390865452
+    ],
+    "height": 2.800268422590471
+  },
+  {
+    "object": "CityTree_070",
+    "plot": 13,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      52.489787670943116,
+      2.508921510013243
+    ],
+    "footprint": [
+      2.49861228257925,
+      2.451225452985445
+    ],
+    "height": 3.7395672796223716
+  },
+  {
+    "object": "CityTree_071",
+    "plot": 13,
+    "type": "tree",
+    "source_object": "tree.200",
+    "center": [
+      42.57184155287703,
+      -11.490414283335673
+    ],
+    "footprint": [
+      1.6092999881164647,
+      1.6648330502804811
+    ],
+    "height": 2.414304654122318
+  },
+  {
+    "object": "CityTree_072",
+    "plot": 13,
+    "type": "tree",
+    "source_object": "tree.001",
+    "center": [
+      44.404534351320486,
+      2.421143856958957
+    ],
+    "footprint": [
+      1.3551334435634717,
+      1.4947268697150906
+    ],
+    "height": 2.477292339223384
+  },
+  {
+    "object": "CityTree_073",
+    "plot": 13,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      48.40260327802448,
+      -11.609804222496747
+    ],
+    "footprint": [
+      1.6755022795857406,
+      1.6437259445535597
+    ],
+    "height": 2.5076533663732996
+  },
+  {
+    "object": "CityTree_074",
+    "plot": 13,
+    "type": "tree",
+    "source_object": "tree.001",
+    "center": [
+      40.61768332875381,
+      -11.468439351377137
+    ],
+    "footprint": [
+      1.4491037197403318,
+      1.3137710665405093
+    ],
+    "height": 2.401678605227117
+  },
+  {
+    "object": "CityTree_075",
+    "plot": 13,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      38.451486254666484,
+      2.570169542590998
+    ],
+    "footprint": [
+      1.8700441475616336,
+      1.8345782755769175
+    ],
+    "height": 2.7988159485280164
+  },
+  {
+    "object": "CityTree_076",
+    "plot": 13,
+    "type": "tree",
+    "source_object": "tree.001",
+    "center": [
+      40.45694223144285,
+      2.471058294548003
+    ],
+    "footprint": [
+      1.3407792110550834,
+      1.2155630477705368
+    ],
+    "height": 2.222146490729668
+  },
+  {
+    "object": "CityTree_077",
+    "plot": 13,
+    "type": "tree",
+    "source_object": "tree.001",
+    "center": [
+      48.59315737548859,
+      2.562307079205266
+    ],
+    "footprint": [
+      1.567844186893016,
+      1.4214222912579877
+    ],
+    "height": 2.5984736556092773
+  },
+  {
+    "object": "CityTree_078",
+    "plot": 14,
+    "type": "tree",
+    "source_object": "tree.200",
+    "center": [
+      38.59183351251846,
+      62.394471785343825
+    ],
+    "footprint": [
+      2.5923371385711524,
+      2.5058657536823756
+    ],
+    "height": 3.759350895666109
+  },
+  {
+    "object": "CityTree_079",
+    "plot": 14,
+    "type": "tree",
+    "source_object": "tree.001",
+    "center": [
+      44.52469135241878,
+      62.55775305480284
+    ],
+    "footprint": [
+      1.5634352218181549,
+      1.4174250820383618
+    ],
+    "height": 2.5911664373976055
+  },
+  {
+    "object": "CityTree_080",
+    "plot": 14,
+    "type": "tree",
+    "source_object": "tree.010",
+    "center": [
+      50.539554690404366,
+      62.45013460385429
+    ],
+    "footprint": [
+      2.1997378098535267,
+      2.15801921210495
+    ],
+    "height": 3.29225450256127
+  }
+]

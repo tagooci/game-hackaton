@@ -25,7 +25,12 @@ const models = new WeakMap<Scene, Promise<AssetContainer>>();
 function loadModel(scene: Scene): Promise<AssetContainer> {
   let model = models.get(scene);
   if (!model) {
-    model = LoadAssetContainerAsync(`${import.meta.env.BASE_URL}assets/car-kit/sedan.glb`, scene)
+    model = fetch(`${import.meta.env.BASE_URL}assets/car-kit/sedan.glb.bin`, { cache: 'no-store' })
+      .then(async response => {
+        if (!response.ok) throw new Error(`Машина: HTTP ${response.status}`);
+        const decoded = await new Response(response.body!.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
+        return LoadAssetContainerAsync(new Uint8Array(decoded), scene, { pluginExtension: '.glb' });
+      })
       .then(container => {
         if (scene.isDisposed) container.dispose();
         else scene.onDisposeObservable.addOnce(() => container.dispose());
@@ -70,6 +75,7 @@ export function createVehicleView(scene: Scene, length: number, name = 'local-ve
       const model = new TransformNode(`${name}-model`, scene);
       for (const node of instance.rootNodes) node.parent = model;
       for (const mesh of model.getChildMeshes()) {
+        mesh.receiveShadows = true;
         if (mesh.name === `${name}-body`) {
           paintMesh = mesh as Mesh;
           paintMesh.makeGeometryUnique();
@@ -77,6 +83,9 @@ export function createVehicleView(scene: Scene, length: number, name = 'local-ve
         }
         if (mesh.name.includes('wheel-front-')) {
           const wheel = mesh as Mesh;
+          // Деквантизацию впекаем перед pivot: иначе координата центра колеса
+          // в целых единицах GLB превращается в смещение на тысячи метров.
+          wheel.bakeCurrentTransformIntoVertices(false, true);
           wheel.setPivotPoint(wheel.getBoundingInfo().boundingBox.center);
           frontWheels.push(wheel);
         }
