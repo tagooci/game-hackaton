@@ -48,4 +48,5 @@ button:disabled { cursor: wait; opacity: 0.6; }
 .speedometer-value { position: absolute; bottom: -4px; width: 100%; text-align: center; font: 600 18px system-ui; color: white; }
 .scenario-info { position: absolute; top: 16px; left: 16px; width: min(380px, calc(100vw - 220px)); padding: 12px 15px; border-radius: 12px; background: #19333de8; color: #fff8e7; font: 13px/1.55 system-ui, sans-serif; pointer-events: none; }
 .scenario-info:empty { display: none; }
+.ping-indicator { position: absolute; z-index: 3; top: 50%; left: max(12px, env(safe-area-inset-left)); transform: translateY(-50%); pointer-events: none; white-space: nowrap; color: #fff; font: 600 14px/1.4 system-ui, sans-serif; font-variant-numeric: tabular-nums; text-shadow: 0 1px 4px #000, 0 0 2px #000; }
 .scenario-queue { font: 600 15px/1.4 system-ui, sans-serif; white-space: nowrap; }

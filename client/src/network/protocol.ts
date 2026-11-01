@@ -14,6 +14,7 @@ export interface ScenePrepare extends SceneContext {
   plan: { mapManifestUrl: string; revision: number; resources: { id: string; url: string; bytes: number }[] };
 }
 export type ServerMessage =
+  | { type: 'pong'; id: number }
   | { type: 'welcome'; v: 2; playerId: string; inputHz: number }
   | ScenePrepare
   | ({ type: 'scene_start'; startTick: number; tick: number } & SceneContext)
@@ -38,6 +39,9 @@ export function parseServerMessage(text: string): ServerMessage | undefined {
   try { v = JSON.parse(text); } catch { return; }
   if (!object(v)) return;
   switch (v.type) {
+    case 'pong':
+      if (!Number.isSafeInteger(v.id) || Number(v.id) < 1) return;
+      break;
     case 'welcome':
       if (v.v !== 2 || typeof v.playerId !== 'string' || !Number.isInteger(v.inputHz) || Number(v.inputHz) < 1 || Number(v.inputHz) > 60) return;
       break;

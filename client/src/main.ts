@@ -94,6 +94,10 @@ function startGame(account: Account, profile: Profile): () => void {
   canvas.tabIndex = 0;
   const controls = createVehicleControls(canvas);
   const speedometer = createSpeedometer(host);
+  const pingLabel = document.createElement('div');
+  pingLabel.className = 'ping-indicator';
+  pingLabel.textContent = 'Пинг: — мс';
+  host.append(pingLabel);
   const assistant = createScenarioAssistant(host, () => {
     controls.clear();
     if (document.pointerLockElement === canvas) document.exitPointerLock();
@@ -190,6 +194,7 @@ function startGame(account: Account, profile: Profile): () => void {
     });
   }
   const stopStateSender = startStateSender(serverUrl, {
+    onPing: milliseconds => { pingLabel.textContent = `Пинг: ${milliseconds === null ? '—' : milliseconds} мс`; },
     getControls: () => mapError || assistant.isOpen ? neutralControls : controls.getControls(),
     takeRespawn: controls.takeRespawn,
     prepareScene: async message => {
@@ -353,6 +358,7 @@ function startGame(account: Account, profile: Profile): () => void {
     scenarioInfo.remove();
     controls.dispose();
     speedometer.dispose();
+    pingLabel.remove();
     events.abort();
     engine.stopRenderLoop();
     if (import.meta.env.DEV) Reflect.deleteProperty(window, 'roadCache');

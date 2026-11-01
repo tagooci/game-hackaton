@@ -7,6 +7,7 @@ interface ConnectionOptions {
   prepareScene: (message: ScenePrepare) => Promise<void>;
   onMessage: (message: ServerMessage) => void;
   onDisconnect: () => void;
+  onPing?: (milliseconds: number | null) => void;
   onStatus: (status: string) => void;
   onSessionEnd: (code: number) => void;
 }
@@ -24,6 +25,9 @@ export function startStateSender(url: string, options: ConnectionOptions): () =>
   let inputHz = 20;
   let lastTick = -1;
   let startTick = 0;
+  let pingTimer: ReturnType<typeof setInterval> | undefined;
+  let pingId = 0;
+  let pendingPing: { id: number; sentAt: number } | undefined;
 
   function sendInput(): void {
     if (!active || !prepared || lastTick < startTick || socket.readyState !== WebSocket.OPEN || socket.bufferedAmount) return;
@@ -39,6 +43,8 @@ export function startStateSender(url: string, options: ConnectionOptions): () =>
     prepared = undefined;
     active = false;
     lastTick = -1;
+    pendingPing = undefined;
+    options.onPing?.(null);
     const connection = new WebSocket(url);
     socket = connection;
     connection.onopen = () => {
@@ -49,7 +55,30 @@ export function startStateSender(url: string, options: ConnectionOptions): () =>
       if (connection !== socket || stopped || typeof event.data !== 'string') return;
       const message = parseServerMessage(event.data);
       if (!message) return;
-      if (message.type === 'welcome') inputHz = message.inputHz;
+      if (message.type === 'pong') {
+        if (pendingPing?.id === message.id) {
+          options.onPing?.(Math.round(performance.now() - pendingPing.sentAt));
+          pendingPing = undefined;
+        }
+        return;
+      }
+      if (message.type === 'welcome') {
+        inputHz = message.inputHz;
+        const measurePing = () => {
+          if (stopped || connection !== socket || connection.readyState !== WebSocket.OPEN) return;
+          if (pendingPing) {
+            if (performance.now() - pendingPing.sentAt < 5000) return;
+            pendingPing = undefined;
+            options.onPing?.(null);
+          }
+          if (connection.bufferedAmount) return;
+          pendingPing = { id: ++pingId, sentAt: performance.now() };
+          connection.send(JSON.stringify({ type: 'ping', id: pendingPing.id }));
+        };
+        clearInterval(pingTimer);
+        measurePing();
+        pingTimer = setInterval(measurePing, 2000);
+      }
       if (message.type === 'scene_prepare') {
         if (prepared && message.epoch <= prepared.epoch) return;
         active = false;
@@ -90,6 +119,9 @@ export function startStateSender(url: string, options: ConnectionOptions): () =>
       if (connection !== socket) return;
       active = false;
       clearInterval(timer);
+      clearInterval(pingTimer);
+      pendingPing = undefined;
+      options.onPing?.(null);
       clearTimeout(timeout);
       options.onDisconnect();
       if (stopped) return;
@@ -110,6 +142,7 @@ export function startStateSender(url: string, options: ConnectionOptions): () =>
   return () => {
     stopped = true;
     clearInterval(timer);
+    clearInterval(pingTimer);
     clearTimeout(retry);
     clearTimeout(timeout);
     window.removeEventListener('blur', sendInput);

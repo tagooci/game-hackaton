@@ -637,6 +637,11 @@ async def get_v2_websocket(websocket: WebSocket):
                 continue
 
             scene_id, epoch = player["sceneId"], player["epoch"]
+            if msg_type == "ping":
+                ping_id = message.get("id")
+                if type(ping_id) is int and 1 <= ping_id <= 9007199254740991:
+                    await send(websocket, {"type": "pong", "id": ping_id})
+                continue
             if msg_type == "respawn":
                 if player['sceneKind'] != 'world' or player['sceneId'] != 'world:main':
                     await send_v2_error(websocket, "respawn_forbidden", "respawn is only available in the world")
