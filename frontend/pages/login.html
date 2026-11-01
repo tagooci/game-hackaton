@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Войти в Разъезд</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      background: #F2E4D5;
+      color: #000000;
+      font-family: "Montserrat", sans-serif;
+    }
+
+    main {
+      width: 100%;
+      padding-top: clamp(24px, 7vh, 64px);
+    }
+
+    .page {
+      width: calc(100% - 32px);
+      max-width: 440px;
+      margin: 0 auto;
+      padding-bottom: 36px;
+    }
+
+    .page[hidden] {
+      display: none;
+    }
+
+    .logo {
+      display: block;
+      width: 280px;
+      height: 116px;
+      max-width: 100%;
+      object-fit: contain;
+      margin: 0 auto 36px;
+    }
+
+    h1 {
+      margin: 0 0 30px;
+      text-align: center;
+      font-size: 42px;
+      line-height: 1.2;
+      font-weight: 700;
+    }
+
+    .field {
+      margin-bottom: 25px;
+    }
+
+    .field__label {
+      display: block;
+      margin: 0 0 8px 2px;
+      font-size: 26px;
+      line-height: 1.3;
+      font-weight: 500;
+    }
+
+    .field input {
+      display: block;
+      width: 100%;
+      height: 46px;
+      padding: 0 18px;
+      border: 0;
+      border-radius: 14px;
+      outline-color: #292B2B;
+      background: #FFFFFF;
+      color: #000000;
+      font: 500 16px "Montserrat", sans-serif;
+    }
+
+    .field input::placeholder {
+      color: #666666;
+      opacity: 1;
+    }
+
+    .password-field {
+      position: relative;
+    }
+
+    .password-field input {
+      padding-right: 54px;
+    }
+
+    .password-toggle {
+      position: absolute;
+      top: 50%;
+      right: 12px;
+      display: grid;
+      width: 32px;
+      height: 32px;
+      padding: 5px;
+      transform: translateY(-50%);
+      place-items: center;
+      border: 0;
+      border-radius: 6px;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .password-toggle:focus-visible {
+      outline: 2px solid #292B2B;
+      outline-offset: 2px;
+    }
+
+    .password-toggle img {
+      display: block;
+      width: 22px;
+      height: 22px;
+    }
+
+    .submit-button {
+      width: 100%;
+      min-height: 57px;
+      margin-top: 15px;
+      padding: 8px 16px;
+      border: 0;
+      border-radius: 14px;
+      background: #292B2B;
+      color: #FFFFFF;
+      cursor: pointer;
+      font: 500 25px "Montserrat", sans-serif;
+    }
+
+    .switch-text {
+      margin: 22px 0 0;
+      text-align: center;
+      color: #777777;
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .switch-link {
+      color: #E9422B;
+      text-decoration: none;
+    }
+
+    .switch-link:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 480px) {
+      main {
+        padding-top: 24px;
+      }
+
+      .logo {
+        width: 240px;
+        height: 100px;
+        margin-bottom: 28px;
+      }
+
+      h1 {
+        font-size: 34px;
+      }
+
+      .field__label {
+        font-size: 22px;
+      }
+    }
+
+    @media (max-height: 700px) {
+      main {
+        padding-top: 24px;
+      }
+
+      .logo {
+        margin-bottom: 24px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <section class="page" id="login-page">
+      <img class="logo" src="./assets/razezd-logo.svg" alt="Логотип Разъезда">
+
+      <h1>Войти в Разъезд</h1>
+
+      <form id="login-form">
+        <div class="field">
+          <label class="field__label" for="login-nickname">Ник</label>
+          <input
+            id="login-nickname"
+            name="nickname"
+            type="text"
+            placeholder="введите ник"
+            autocomplete="username"
+          >
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="login-password">Пароль</label>
+          <div class="password-field">
+            <input
+              id="login-password"
+              name="password"
+              type="password"
+              placeholder="••••••••"
+              autocomplete="current-password"
+            >
+            <button
+              class="password-toggle"
+              type="button"
+              data-password-toggle="login-password"
+              aria-label="Показать пароль"
+              aria-pressed="false"
+            >
+              <img src="./assets/eye-icons/eye.svg" alt="">
+            </button>
+          </div>
+        </div>
+
+        <button class="submit-button" type="button">Войти</button>
+      </form>
+
+      <p class="switch-text">
+        Нет аккаунта?
+        <a class="switch-link" href="#register">Зарегистрируйся!</a>
+      </p>
+    </section>
+
+    <section class="page" id="register-page" hidden>
+      <img class="logo" src="./assets/razezd-logo.svg" alt="Логотип Разъезда">
+
+      <h1>Регистрация</h1>
+
+      <form id="register-form">
+        <div class="field">
+          <label class="field__label" for="register-email">Почта</label>
+          <input
+            id="register-email"
+            name="email"
+            type="email"
+            placeholder="введите почту"
+            autocomplete="email"
+          >
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="register-nickname">Ник</label>
+          <input
+            id="register-nickname"
+            name="nickname"
+            type="text"
+            placeholder="введите ник"
+            autocomplete="username"
+          >
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="register-password">Пароль</label>
+          <div class="password-field">
+            <input
+              id="register-password"
+              name="password"
+              type="password"
+              placeholder="••••••••"
+              autocomplete="new-password"
+            >
+            <button
+              class="password-toggle"
+              type="button"
+              data-password-toggle="register-password"
+              aria-label="Показать пароль"
+              aria-pressed="false"
+            >
+              <img src="./assets/eye-icons/eye.svg" alt="">
+            </button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="repeat-password">Повторите пароль</label>
+          <div class="password-field">
+            <input
+              id="repeat-password"
+              name="repeat-password"
+              type="password"
+              placeholder="••••••••"
+              autocomplete="new-password"
+            >
+            <button
+              class="password-toggle"
+              type="button"
+              data-password-toggle="repeat-password"
+              aria-label="Показать пароль"
+              aria-pressed="false"
+            >
+              <img src="./assets/eye-icons/eye.svg" alt="">
+            </button>
+          </div>
+        </div>
+
+        <button class="submit-button" type="submit">Зарегистрироваться</button>
+      </form>
+
+      <p class="switch-text">
+        Уже есть аккаунт?
+        <a class="switch-link" href="#login">Войти</a>
+      </p>
+    </section>
+  </main>
+
+  <script>
+    const loginPage = document.querySelector("#login-page");
+    const registerPage = document.querySelector("#register-page");
+
+    function showCurrentPage() {
+      const showRegistration = window.location.hash === "#register";
+
+      loginPage.hidden = showRegistration;
+      registerPage.hidden = !showRegistration;
+
+      document.title = showRegistration
+        ? "Регистрация — Разъезд"
+        : "Войти в Разъезд";
+    }
+
+    window.addEventListener("hashchange", showCurrentPage);
+    showCurrentPage();
+
+    document.querySelectorAll("[data-password-toggle]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const input = document.getElementById(button.dataset.passwordToggle);
+        const icon = button.querySelector("img");
+        const showPassword = input.type === "password";
+
+        input.type = showPassword ? "text" : "password";
+        icon.src = showPassword
+          ? "./assets/eye-icons/eye-off.svg"
+          : "./assets/eye-icons/eye.svg";
+
+        button.setAttribute(
+          "aria-label",
+          showPassword ? "Скрыть пароль" : "Показать пароль"
+        );
+        button.setAttribute("aria-pressed", String(showPassword));
+      });
+    });
+
+    const registerForm = document.querySelector("#register-form");
+    const registrationPassword = document.querySelector("#register-password");
+    const repeatPassword = document.querySelector("#repeat-password");
+
+    function checkPasswordsMatch() {
+      if (
+        repeatPassword.value &&
+        registrationPassword.value !== repeatPassword.value
+      ) {
+        repeatPassword.setCustomValidity("Пароли не совпадают");
+      } else {
+        repeatPassword.setCustomValidity("");
+      }
+    }
+
+    registrationPassword.addEventListener("input", checkPasswordsMatch);
+    repeatPassword.addEventListener("input", checkPasswordsMatch);
+
+    registerForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      checkPasswordsMatch();
+
+      if (!registerForm.reportValidity()) {
+        return;
+      }
+
+      // Пароли совпадают. Отправку данных можно подключить позже.
+    });
+  </script>
+</body>
+</html>
