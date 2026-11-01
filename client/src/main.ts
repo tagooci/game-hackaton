@@ -10,6 +10,7 @@ import { createRoundaboutSigns } from './world/scenarioSigns';
 import { createFinishArch } from './world/finishArch';
 import { RoadContent } from './world/road-content.js';
 import { createStreetLights } from './world/streetLights.js';
+import { createNightSky } from './world/nightSky';
 import { Engine } from '@babylonjs/core/Engines/engine';
 import { Scene } from '@babylonjs/core/scene';
 import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera';
@@ -178,19 +179,7 @@ function startGame(account: Account, profile: Profile): () => void {
   const minimap = createMinimap(host);
   const roads = new RoadContent(scene, () => {});
   const streetLights = createStreetLights(roads);
-  const nightStars = document.createElement('div');
-  nightStars.className = 'night-stars';
-  nightStars.hidden = true;
-  nightStars.setAttribute('aria-hidden', 'true');
-  for (let i = 0; i < 36; i++) {
-    const star = document.createElement('span');
-    star.style.left = `${2 + ((i * 37) % 96)}%`;
-    star.style.top = `${5 + ((i * 29) % 80)}%`;
-    star.style.width = star.style.height = `${4 + (i % 4) * 2}px`;
-    star.style.opacity = `${0.45 + (i % 5) * 0.12}`;
-    nightStars.append(star);
-  }
-  host.append(nightStars);
+  const nightSky = createNightSky(scene);
   if (import.meta.env.DEV) Object.defineProperty(window, 'roadCache', { configurable: true, get: () => roads.stats() });
   let mapReady = false;
   let mapLoading = false;
@@ -282,7 +271,7 @@ function startGame(account: Account, profile: Profile): () => void {
         scene.fogEnd = message.weather === 'fog' ? 42 : 60;
         const isDark = message.weather === 'dark';
         streetLights.setNight(isDark);
-        nightStars.hidden = !isDark;
+        nightSky.setNight(isDark);
         scene.fogColor = isDark
           ? new Color3(0.015, 0.02, 0.04)
           : message.weather === 'rain'
@@ -364,7 +353,7 @@ function startGame(account: Account, profile: Profile): () => void {
     // Одна карта теней вокруг игрока; выгруженные meshes автоматически исчезают из списка.
     sun.position.set(pose.x + 32, 80, pose.z + 24);
     shadows.getShadowMap()!.renderList = scene.meshes.filter(mesh =>
-      mesh !== ground && mesh.isEnabled() && mesh.isVisible && mesh.getTotalVertices() > 0);
+      mesh !== ground && !mesh.infiniteDistance && mesh.isEnabled() && mesh.isVisible && mesh.getTotalVertices() > 0);
     scene.render();
   });
 
@@ -385,7 +374,7 @@ function startGame(account: Account, profile: Profile): () => void {
     events.abort();
     engine.stopRenderLoop();
     if (import.meta.env.DEV) Reflect.deleteProperty(window, 'roadCache');
-    nightStars.remove();
+    nightSky.dispose();
     roads.dispose();
     remotePlayers.dispose();
     minimap.dispose();
