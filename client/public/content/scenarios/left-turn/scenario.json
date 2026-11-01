@@ -34,12 +34,11 @@
       "heading": 3.141592653589793
     }
   },
-  "version": 2,
+  "version": 3,
   "type": "short",
   "rules": {
     "coverage": {
       "roadMarkings": true,
-      "laneChanges": true,
       "rightOfWay": true,
       "trafficSigns": true,
       "collisions": true
@@ -88,116 +87,6 @@
         ]
       }
     ],
-    "laneZones": [
-      {
-        "id": "straight-approach",
-        "roles": [
-          "straight"
-        ],
-        "zone": [
-          55,
-          26,
-          65,
-          45
-        ],
-        "allowed": [
-          57,
-          -10,
-          60,
-          50
-        ]
-      },
-      {
-        "id": "left-approach",
-        "roles": [
-          "left-turn"
-        ],
-        "zone": [
-          55,
-          -5,
-          65,
-          14
-        ],
-        "allowed": [
-          60,
-          -10,
-          63,
-          50
-        ]
-      },
-      {
-        "id": "straight-exit",
-        "roles": [
-          "straight"
-        ],
-        "zone": [
-          55,
-          -5,
-          65,
-          14
-        ],
-        "allowed": [
-          57,
-          -10,
-          60,
-          50
-        ]
-      },
-      {
-        "id": "left-turn-exit",
-        "roles": [
-          "left-turn"
-        ],
-        "zone": [
-          45,
-          15,
-          54.99,
-          25
-        ],
-        "allowed": [
-          40,
-          20,
-          55,
-          23
-        ]
-      },
-      {
-        "id": "straight-wrong-exit",
-        "roles": [
-          "straight"
-        ],
-        "zone": [
-          45,
-          15,
-          54.99,
-          25
-        ],
-        "allowed": [
-          0,
-          0,
-          0,
-          0
-        ]
-      },
-      {
-        "id": "left-wrong-exit",
-        "roles": [
-          "left-turn"
-        ],
-        "zone": [
-          55,
-          26,
-          65,
-          45
-        ],
-        "allowed": [
-          0,
-          0,
-          0,
-          0
-        ]
-      }
-    ],
     "signs": [
       {
         "id": "priority-A",
@@ -235,6 +124,37 @@
       "heading": 0,
       "halfWidth": 1.5,
       "halfLength": 2.5
+    },
+    "firstRole": "straight",
+    "exitGates": {
+      "left-turn": {
+        "point": [
+          55,
+          20
+        ],
+        "direction": [
+          -1,
+          0
+        ],
+        "span": [
+          -5,
+          5
+        ]
+      },
+      "straight": {
+        "point": [
+          60,
+          15
+        ],
+        "direction": [
+          0,
+          -1
+        ],
+        "span": [
+          -5,
+          5
+        ]
+      }
     }
   }
 }

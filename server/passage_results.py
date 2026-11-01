@@ -5,7 +5,7 @@ import uuid
 from dataclasses import replace
 from .world_physics import CAR_WIDTH, CAR_LENGTH, CAR_HEIGHT, penetration
 
-CATEGORIES = ('roadMarkings', 'laneChanges', 'rightOfWay', 'trafficSigns', 'collisions')
+CATEGORIES = ('roadMarkings', 'rightOfWay', 'trafficSigns', 'collisions')
 
 
 def corners(state):
@@ -50,6 +50,8 @@ class PassageResults:
         self.events = {p['id']:[] for p in players}
         self.active = set()
         self.emitted = set()
+        self.passed = {}
+        self.observed_at = now
         self.result_ids = {p['id']:str(uuid.uuid4()) for p in players}
 
     def event(self, player, category, rule, key, now, details, related=(), sign=None):
@@ -63,7 +65,40 @@ class PassageResults:
         self.active.add(token)
         return token
 
+    def observe_passage(self, players, now):
+        gates = self.definition.get('rules', {}).get('exitGates', {})
+        for player in players:
+            pid=player['id']
+            if pid in self.passed or pid in self.emitted:
+                continue
+            gate=gates.get(player['roleId'])
+            if not gate:
+                continue
+            nx,nz=gate['direction'];gx,gz=gate['point']
+            def clearance(state):
+                return min((x-gx)*nx+(z-gz)*nz for x,z in corners(state))
+            previous,current=self.previous[pid],player['vehicle']
+            if clearance(previous)>0 or clearance(current)<=0:
+                continue
+            # Два выхода за один такт сравниваем по времени пересечения,
+            # а не по порядку игроков в словаре.
+            angle=math.atan2(math.sin(current.heading-previous.heading),math.cos(current.heading-previous.heading))
+            low,high=0.,1.
+            for _ in range(24):
+                t=(low+high)/2
+                sample=replace(current,x=previous.x+(current.x-previous.x)*t,
+                               z=previous.z+(current.z-previous.z)*t,heading=previous.heading+angle*t)
+                if clearance(sample)>0:high=t
+                else:low=t
+            crossing_x=previous.x+(current.x-previous.x)*high
+            crossing_z=previous.z+(current.z-previous.z)*high
+            lateral=(crossing_x-gx)*(-nz)+(crossing_z-gz)*nx
+            if not gate['span'][0] <= lateral <= gate['span'][1]:
+                continue
+            self.passed[pid]=self.observed_at+(now-self.observed_at)*high
+
     def observe(self, players, now):
+        self.observe_passage(players, now)
         current_active = set()
         rules = self.definition.get('rules', {})
         for player in players:
@@ -81,15 +116,6 @@ class PassageResults:
                     continue
                 if any(intersects_line(p,marking['line']) for p in path):
                     record('roadMarkings','forbidden-marking-crossing',marking['id'],'Пересечение запрещённой разметки')
-            for lane in rules.get('laneZones',[]):
-                if player['roleId'] not in lane['roles']:
-                    continue
-                zone=lane['zone'];allowed=lane['allowed']
-                for p in path:
-                    if zone[0] <= p.x <= zone[2] and zone[1] <= p.z <= zone[3]:
-                        if any(not (allowed[0]-.05 <= x <= allowed[2]+.05 and allowed[1]-.05 <= z <= allowed[3]+.05) for x,z in corners(p)):
-                            record('laneChanges','incorrect-lane',lane['id'],'Кузов вышел за границы разрешённой полосы')
-                            break
             for sign in rules.get('signs',[]):
                 if player['roleId'] not in sign.get('roles', self.roles.values()):
                     continue
@@ -133,20 +159,18 @@ class PassageResults:
                     continue
                 if other['id'] in player.get('contact_players',set()) or pid in other.get('contact_players',set()):
                     record('collisions','vehicle-contact',other['id'],'Столкновение с автомобилем',(other['id'],))
-                if player['roleId'] != 'left-turn' or other['roleId'] != 'straight':
-                    continue
-                conflict=rules.get('conflict')
-                if conflict and any(penetration(p.x,p.z,p.heading,conflict) for p in path):
-                    b=other['vehicle']
-                    # Встречный ещё не освободил область; прогнозируем время его подхода
-                    # и время освобождения полосы поворачивающим автомобилем.
-                    arrival=max(0,b.z-25.65)/max(abs(b.speed),.01)
-                    clearing=max(0,state.x-55.3)/max(abs(state.speed),1)+.5
-                    if b.z+CAR_LENGTH/2>19 and (penetration(b.x,b.z,b.heading,conflict) or b.speed>.5 and arrival<clearing):
-                        record('rightOfWay','yield-to-oncoming','oncoming','Не уступили встречному автомобилю',(other['id'],))
+            priority_role=rules.get('firstRole')
+            if priority_role and player['roleId'] != priority_role and pid in self.passed:
+                priority_id=next((other_id for other_id,role in self.roles.items() if role==priority_role),None)
+                if priority_id is not None and self.passed[pid] <= self.passed.get(priority_id,float('inf')):
+                    # За одно прохождение порядок нарушается только один раз.
+                    if not any(e['ruleId']=='incorrect-passage-order' for e in self.events[pid]):
+                        record('rightOfWay','incorrect-passage-order','passage-order',
+                               'Перекрёсток покинут раньше автомобиля с преимуществом',(priority_id,))
             self.previous[pid]=state
         # Длительное нарушение даёт одно событие; после прекращения новое считается отдельно.
         self.active=current_active
+        self.observed_at=now
 
     def finish(self, pid, status, now):
         if pid in self.emitted:
@@ -158,6 +182,9 @@ class PassageResults:
         report=dict(schemaVersion=1,resultId=self.result_ids[pid],sessionId=self.session_id,
                     scenario=dict(id=self.definition['id'],version=self.definition.get('version',1),type=self.definition.get('type','short')),
                     playerId=pid,roleId=self.roles[pid],status=status,durationMs=max(0,round((now-self.started)*1000)),
+                    passageOrder=[dict(playerId=other_id,roleId=self.roles[other_id],
+                                       timeMs=max(0,round((time-self.started)*1000)))
+                                  for other_id,time in sorted(self.passed.items(),key=lambda item:(item[1],item[0]))],
                     checks={category:dict(checked=coverage.get(category,False),
                             violationCount=sum(v['category']==category for v in events) if coverage.get(category,False) else None)
                             for category in CATEGORIES},violations=events)
