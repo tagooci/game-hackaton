@@ -33,5 +33,94 @@
       "z": 2,
       "heading": 3.141592653589793
     }
+  },
+  "version": 1,
+  "type": "short",
+  "rules": {
+    "coverage": {
+      "roadMarkings": false,
+      "laneChanges": false,
+      "rightOfWay": true,
+      "trafficSigns": true,
+      "collisions": true
+    },
+    "markings": [],
+    "laneZones": [
+      {
+        "id": "straight-approach",
+        "roles": [
+          "straight"
+        ],
+        "zone": [
+          55,
+          26,
+          65,
+          45
+        ],
+        "allowed": [
+          57,
+          -10,
+          60,
+          50
+        ]
+      },
+      {
+        "id": "left-approach",
+        "roles": [
+          "left-turn"
+        ],
+        "zone": [
+          55,
+          -5,
+          65,
+          14
+        ],
+        "allowed": [
+          60,
+          -10,
+          63,
+          50
+        ]
+      },
+      {
+        "id": "straight-exit",
+        "roles": [
+          "straight"
+        ],
+        "zone": [
+          55,
+          -5,
+          65,
+          14
+        ],
+        "allowed": [
+          57,
+          -10,
+          60,
+          50
+        ]
+      }
+    ],
+    "signs": [
+      {
+        "id": "priority-A",
+        "kind": "priority"
+      },
+      {
+        "id": "priority-B",
+        "kind": "priority"
+      },
+      {
+        "id": "yield-C",
+        "kind": "priority"
+      }
+    ],
+    "conflict": {
+      "x": 58.5,
+      "z": 21.5,
+      "heading": 0,
+      "halfWidth": 1.5,
+      "halfLength": 2.5
+    }
   }
 }

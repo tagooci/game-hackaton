@@ -137,6 +137,7 @@ class VehicleWorld:
         return VerticalState(y,velocity,body.pitch,False)
 
     def step(self,previous,proposed,body,dt,other_cars=()):
+        self.contact_players = set()
         if not body.grounded:
             # В воздухе машина сохраняет горизонтальную скорость и направление.
             proposed = replace(proposed,x=previous.x+math.sin(previous.heading)*previous.speed*dt,
@@ -175,6 +176,8 @@ class VehicleWorld:
                         continue
                     hit = penetration(candidate.x,candidate.z,candidate.heading,box)
                     if hit:
+                        if box.get("playerId"):
+                            self.contact_players.add(box["playerId"])
                         depth,nx,nz = hit
                         candidate = replace(candidate,x=candidate.x+nx*(depth+.0001),z=candidate.z+nz*(depth+.0001))
                         resolved = collided = True

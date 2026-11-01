@@ -41,11 +41,12 @@ async def physics_loop():
             controls = player["controls"] if now - player["input_time"] <= 0.25 else Controls(brake=1)
             state = step_vehicle(player["vehicle"], controls, VEHICLE_CONFIG, dt)
             if player.get('v2'):
-                others = [vehicle_world.car_box(other['vehicle'],other['vertical']) for other in v2_players.values()
+                others = [{**vehicle_world.car_box(other['vehicle'],other['vertical']), 'playerId': other['id']} for other in v2_players.values()
                           if other['id'] != player['id'] and other['id'] in v2_scene_ready
                           and other['sceneId'] == player['sceneId']]
                 world = scenario_world if player['sceneKind'] == 'scenario' else vehicle_world
                 state,player['vertical'] = world.step(player['vehicle'],state,player['vertical'],dt,others)
+                player['contact_players'] = world.contact_players
             player["vehicle"] = state
             player["applied_seq"] = player.get("seq", 0)
             player.update(x=round(state.x, 2), z=round(state.z, 2), heading=round(state.heading, 2))
