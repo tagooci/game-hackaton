@@ -15,6 +15,7 @@ from .state import players, add_player, remove_player, public_view, others_view,
 from .vehicle import Controls, VehicleConfig, VehicleState, step_vehicle, steering_angle
 from .auth import AuthService
 from .db import Database
+from .scenarios import ScenarioSessions, SCENARIO, WORLD as scenario_world
 from .world_physics import VehicleWorld
 
 TICK_RATE = 20
@@ -41,11 +42,14 @@ async def physics_loop():
             state = step_vehicle(player["vehicle"], controls, VEHICLE_CONFIG, dt)
             if player.get('v2'):
                 others = [vehicle_world.car_box(other['vehicle'],other['vertical']) for other in v2_players.values()
-                          if other['id'] != player['id'] and other['id'] in v2_scene_ready]
-                state,player['vertical'] = vehicle_world.step(player['vehicle'],state,player['vertical'],dt,others)
+                          if other['id'] != player['id'] and other['id'] in v2_scene_ready
+                          and other['sceneId'] == player['sceneId']]
+                world = scenario_world if player['sceneKind'] == 'scenario' else vehicle_world
+                state,player['vertical'] = world.step(player['vehicle'],state,player['vertical'],dt,others)
             player["vehicle"] = state
             player["applied_seq"] = player.get("seq", 0)
             player.update(x=round(state.x, 2), z=round(state.z, 2), heading=round(state.heading, 2))
+        await scenarios.update(v2_players, v2_scene_ready, now, move_scene, send_prepare)
 
 PROTOCOL_VERSION = 1
 V2_PROTOCOL_VERSION = 2
@@ -59,6 +63,7 @@ auth = AuthService(database)
 v2_connections: dict[str, WebSocket] = {}
 v2_scene_ready: set[str] = set()
 v2_players: dict[str, dict] = {}
+scenarios = ScenarioSessions()
 
 async def snapshot_loop():
     global tick
@@ -79,8 +84,11 @@ async def snapshot_loop():
                 "sceneId": v2_players[player_id]["sceneId"],
                 "epoch": v2_players[player_id]["epoch"],
                 "tick": tick,
-                "players": [_v2_player_snapshot(pid) for pid in v2_players if pid in v2_scene_ready],
+                "players": [_v2_player_snapshot(pid) for pid in v2_players if pid in v2_scene_ready and v2_players[pid]["sceneId"] == v2_players[player_id]["sceneId"]],
                 "signals": [],
+                "scenarioResult": v2_players[player_id].get("scenario_result"),
+                "scenarioQueue": {"count": scenarios.count, "x": 60, "y": 5, "z": 20}
+                    if v2_players[player_id]["sceneKind"] == "world" else None,
             })
 
 
@@ -102,8 +110,7 @@ async def lifespan(app: FastAPI):
         v2_connections.clear()
         v2_scene_ready.clear()
         for player in v2_players.values():
-            state = player["vehicle"]
-            database.save_safe_position(player["id"], state.x, state.z, state.heading, player["vertical"].y, WORLD_MAP["worldId"])
+            save_position(player)
         v2_players.clear()
         database.close()
 
@@ -261,7 +268,7 @@ def _v2_player_snapshot(player_id: str) -> dict:
     player = v2_players[player_id]
     state = player["vehicle"]
     return {
-        "id": player_id, "name": player["name"], "vehicleType": "car", "roleId": None,
+        "id": player_id, "name": player["name"], "vehicleType": "car", "roleId": player.get("roleId"),
         **{key: round(getattr(state, key), 3) for key in ("x", "z", "heading", "speed", "steering")},
         "lastInputSeq": player.get("applied_seq", 0),
         "y": round(player["vertical"].y, 4), "pitch": round(player["vertical"].pitch, 4),
@@ -278,14 +285,47 @@ def world_scene_prepare(player):
     state, body = player['vehicle'], player['vertical']
     return {
         "type": "scene_prepare", "sceneId": player['sceneId'], "epoch": player['epoch'],
-        "sceneKind": player['sceneKind'], "mapId": WORLD_MAP['worldId'],
-        "scenarioId": None, "roleId": None, "vehicleType": "car",
+        "sceneKind": player['sceneKind'], "mapId": WORLD_MAP['worldId'] + (':left-turn' if player['sceneKind'] == 'scenario' else ''),
+        "scenarioId": SCENARIO["id"] if player["sceneKind"] == "scenario" else None, "roleId": player.get("roleId"), "vehicleType": "car",
         "spawn": {"x": state.x, "z": state.z, "heading": state.heading, "y": body.y, "pitch": body.pitch},
-        "participants": [],
+        "participants": [{"playerId": p["id"], "roleId": p.get("roleId"), "vehicleType": "car"}
+                         for p in v2_players.values() if p["sceneId"] == player["sceneId"]]
+                        if player["sceneKind"] == "scenario" else [],
         "plan": {"revision": 1, "chunkIds": [], "resources": world_resources(),
-                 "mapManifestUrl": "/content/world/manifest.json"},
+                 "mapManifestUrl": SCENARIO["manifestUrl"] if player["sceneKind"] == "scenario" else "/content/world/manifest.json"},
+        "finish": ({**SCENARIO["finishes"][player["roleId"]],
+                    "y": max(h for h, _ in scenario_world.floors(
+                        SCENARIO["finishes"][player["roleId"]]["x"], SCENARIO["finishes"][player["roleId"]]["z"],
+                        SCENARIO["finishes"][player["roleId"]]["heading"], []))}
+                   if player["sceneKind"] == "scenario" else None),
         "timeoutMs": 30000,
     }
+
+
+async def move_scene(player, scene_id, role):
+    v2_scene_ready.discard(player['id'])
+    if scene_id:
+        player['return_state'] = (player['vehicle'], player['vertical'])
+        state = VehicleState(**SCENARIO['spawns'][role])
+        body = scenario_world.restore(state.x, state.z, state.heading, .1)
+    else:
+        state, body = player.pop('return_state')
+    player.update(vehicle=VehicleState(state.x, state.z, state.heading), vertical=body,
+                  sceneId=scene_id or 'world:main', sceneKind='scenario' if scene_id else 'world',
+                  scenario_result=None, roleId=('left-turn' if role == 0 else 'straight') if scene_id else None,
+                  epoch=player['epoch']+1, seq=0, applied_seq=0, input_time=0,
+                  controls=Controls(brake=1))
+    if not scene_id:
+        await send(player['ws'], world_scene_prepare(player))
+
+
+async def send_prepare(player):
+    await send(player['ws'], world_scene_prepare(player))
+
+
+def save_position(player):
+    state, body = player.get('return_state', (player['vehicle'], player['vertical']))
+    database.save_safe_position(player['id'], state.x, state.z, state.heading, body.y, WORLD_MAP['worldId'])
 
 
 @app.websocket("/ws/v2")
@@ -315,6 +355,8 @@ async def get_v2_websocket(websocket: WebSocket):
     v2_connections[player_id] = websocket
     v2_scene_ready.discard(player_id)
     old = v2_players.get(player_id)
+    if old and old.get("return_state"):
+        old["vehicle"], old["vertical"] = old.pop("return_state")
     state = old["vehicle"] if old else VehicleState(*database.safe_position(player_id))
     saved_world, elevation = database.safe_context(player_id)
     if not old and saved_world != WORLD_MAP['worldId']:
@@ -387,6 +429,7 @@ async def get_v2_websocket(websocket: WebSocket):
                 await send(websocket, world_scene_prepare(player))
                 continue
 
+            scene_id, epoch = player["sceneId"], player["epoch"]
             if msg_type == "respawn":
                 if player['sceneKind'] != 'world' or player['sceneId'] != 'world:main':
                     await send_v2_error(websocket, "respawn_forbidden", "respawn is only available in the world")
@@ -411,18 +454,17 @@ async def get_v2_websocket(websocket: WebSocket):
                     and type(message.get("revision")) is int and message.get("revision") == 1
                     and player_id not in v2_scene_ready
                 ):
+                    player["start_tick"] = float("inf")
                     v2_scene_ready.add(player_id)
-                    player["start_tick"] = tick + 1
-                    await send(
-                        websocket,
-                        {
-                            "type": "scene_start",
-                            "sceneId": scene_id,
-                            "epoch": epoch,
-                            "startTick": tick + 1,
-                            "tick": tick,
-                        },
-                    )
+                    participants = (scenarios.start(scene_id, v2_scene_ready)
+                                    if player['sceneKind'] == 'scenario' else [player_id])
+                    for pid in participants:
+                        participant = v2_players[pid]
+                        participant['start_tick'] = tick + 1
+                        await send(participant['ws'], {
+                            'type': 'scene_start', 'sceneId': participant['sceneId'],
+                            'epoch': participant['epoch'], 'startTick': tick+1, 'tick': tick,
+                        })
                 continue
             if msg_type == "input":
                 if (player_id not in v2_scene_ready or tick < player.get("start_tick", 0)
@@ -445,8 +487,7 @@ async def get_v2_websocket(websocket: WebSocket):
             v2_connections.pop(player_id, None)
             v2_scene_ready.discard(player_id)
         if v2_players.get(player_id) is player:
-            state = player["vehicle"]
-            database.save_safe_position(player_id, state.x, state.z, state.heading, player["vertical"].y, WORLD_MAP["worldId"])
+            save_position(player)
             v2_players.pop(player_id, None)
 
 

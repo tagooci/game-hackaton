@@ -1,0 +1,18 @@
+[
+  {
+    "id": "sign-priority",
+    "kind": "model",
+    "url": "/content/assets/imported/sign-priority.glb.bin",
+    "bytes": 47724,
+    "sha256": "a1f22790de1cd5a90c4ee1723a3f43a8c8ad82241cbcfcba1862bcb03af9f29d",
+    "encoding": "gzip"
+  },
+  {
+    "id": "sign-yield",
+    "kind": "model",
+    "url": "/content/assets/imported/sign-yield.glb.bin",
+    "bytes": 74722,
+    "sha256": "5dbef7991b21abffef3a5ada4d339d707f37c6eb63a09fed7a7ddad626fc8795",
+    "encoding": "gzip"
+  }
+]
