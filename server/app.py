@@ -310,6 +310,8 @@ def _v2_player_snapshot(player_id: str) -> dict:
         "y": round(player["vertical"].y, 4), "pitch": round(player["vertical"].pitch, 4),
         "wheelAngle": round(steering_angle(state.speed, state.steering, VEHICLE_CONFIG), 4),
         "color": player["color"],
+        "throttle": player["controls"].throttle if asyncio.get_running_loop().time()-player["input_time"] <= .25 else 0,
+        "grounded": player["vertical"].grounded,
     }
 
 

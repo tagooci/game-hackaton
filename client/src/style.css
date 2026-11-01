@@ -30,3 +30,8 @@ button:disabled { cursor: wait; opacity: 0.6; }
 .logout { position: absolute; top: 12px; right: 12px; }
 
 .scenario-queue { position: absolute; transform: translate(-50%, -50%); pointer-events: none; padding: 6px 14px; border-radius: 8px; background: #17212ee6; color: white; font: bold 24px sans-serif; }
+
+.speedometer { position: absolute; z-index: 3; bottom: 18px; left: 18px; width: clamp(180px, 24vw, 300px); aspect-ratio: 480 / 256; pointer-events: none; filter: drop-shadow(0 2px 4px #000b); }
+.speedometer img { position: absolute; width: 100%; height: 100%; }
+.speedometer-needle { transform-origin: 50% 93.75%; }
+.speedometer-value { position: absolute; bottom: -4px; width: 100%; text-align: center; font: 600 18px system-ui; color: white; }

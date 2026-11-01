@@ -1,3 +1,4 @@
+import { createVehicleEffects } from './vehicleEffects';
 import '@babylonjs/loaders/glTF/2.0/glTFLoader.js';
 import { LoadAssetContainerAsync } from '@babylonjs/core/Loading/sceneLoader.js';
 import { VertexBuffer } from '@babylonjs/core/Buffers/buffer.js';
@@ -17,6 +18,9 @@ export interface VehiclePose {
   pitch?: number;
   wheelAngle?: number;
   color?: number;
+  speed?: number;
+  throttle?: number;
+  grounded?: boolean;
 }
 
 // Одна загрузка на сцену; текстура и материалы общие для всех машин.
@@ -45,6 +49,7 @@ function loadModel(scene: Scene): Promise<AssetContainer> {
 export function createVehicleView(scene: Scene, length: number, name = 'local-vehicle') {
   // Начало координат — центр основания на земле, как в протоколе v2.
   const root = new TransformNode(name, scene);
+  const effects = createVehicleEffects(scene, root, length);
   // Отдельная точка, за которой следит камера.
   const body = new TransformNode(`${name}-camera-target`, scene);
   body.parent = root;
@@ -98,12 +103,13 @@ export function createVehicleView(scene: Scene, length: number, name = 'local-ve
       const scale = length / (max.z - min.z);
       model.scaling.setAll(scale);
       model.position.set(-(min.x + max.x) * scale / 2, -min.y * scale, -(min.z + max.z) * scale / 2);
-      model.parent = root;
+      model.parent = effects.visual;
       body.position.y = (max.y - min.y) * scale / 2;
     });
   ready.catch(error => console.error('Не удалось загрузить модель машины:', error));
 
   function setPose(pose: VehiclePose): void {
+    effects.setMotion(pose.throttle ?? 0, pose.grounded ?? true);
     root.position.set(pose.x, pose.y ?? 0, pose.z);
     root.rotation.x = pose.pitch ?? 0;
     root.rotation.y = pose.heading;
@@ -124,6 +130,7 @@ export function createVehicleView(scene: Scene, length: number, name = 'local-ve
   }
 
   function dispose(): void {
+    effects.dispose();
     root.dispose();
     instance?.dispose();
   }
