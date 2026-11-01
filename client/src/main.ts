@@ -136,7 +136,7 @@ function startGame(account: Account, profile: Profile): () => void {
   shadows.normalBias = 0.08;
   shadows.setDarkness(0.25);
 
-  // Тёмно-зелёная подложка значительно шире карты во всех направлениях.
+  // Подложка шире карты; тёмно-зелёный цвет используется только ночью.
   const ground = MeshBuilder.CreateGround(
     'ground',
     { width: 2700, height: 2300 },
@@ -144,17 +144,12 @@ function startGame(account: Account, profile: Profile): () => void {
   );
 
   const groundMaterial = new StandardMaterial('ground-material', scene);
-  // Fallback terrain stays green even at night and beyond the map's fog.
-  groundMaterial.disableLighting = true;
-  groundMaterial.diffuseColor = Color3.Black();
-  groundMaterial.emissiveColor = Color3.FromHexString('#244f32').toLinearSpace();
-  groundMaterial.fogEnabled = false;
+  groundMaterial.diffuseColor = Color3.FromHexString('#77776c').toLinearSpace();
   groundMaterial.backFaceCulling = false;
   groundMaterial.specularColor = Color3.Black();
   ground.position.y = -0.12;
   ground.material = groundMaterial;
-  ground.receiveShadows = false;
-  ground.applyFog = false;
+  ground.receiveShadows = true;
   const overlay = document.createElement('div');
   overlay.className = 'loading-screen';
   overlay.textContent = 'Подключение…';
@@ -220,6 +215,15 @@ function startGame(account: Account, profile: Profile): () => void {
       minimap.setReady(false);
       overlay.textContent = 'Загрузка карты…';
       await roads.init(message.plan.mapManifestUrl);
+      const nightGround = message.weather === 'dark';
+      groundMaterial.disableLighting = nightGround;
+      groundMaterial.diffuseColor = nightGround ? Color3.Black()
+        : Color3.FromHexString(roads.manifest.groundColor ?? '#77776c').toLinearSpace();
+      groundMaterial.emissiveColor = nightGround
+        ? Color3.FromHexString('#244f32').toLinearSpace() : Color3.Black();
+      groundMaterial.fogEnabled = !nightGround;
+      ground.applyFog = !nightGround;
+      ground.receiveShadows = !nightGround;
       const bounds = roads.manifest.bounds;
       ground.position.x = (bounds.minX + bounds.maxX) / 2;
       ground.position.z = (bounds.minZ + bounds.maxZ) / 2;
