@@ -1,14 +1,15 @@
-"""Two independent, slow clockwise lane loops in the shared world only."""
+"""Four slow lane loops, yielding and collision recovery in the shared world."""
 from bisect import bisect_right
 from dataclasses import dataclass, replace
 import math
 
 from .vehicle import VehicleState, approach
-from .world_physics import VerticalState, penetration
+from .world_physics import CAR_LENGTH, CAR_WIDTH, VerticalState, penetration
 
 CRUISE_SPEED = 3.0  # m/s, approximately 11 km/h
 BRAKING = 5.0
 LANE_OFFSET = 1.7  # right side of the road, with room for the full vehicle body
+RESPAWN_DISTANCE = 60.0
 
 
 class LaneLoop:
@@ -56,15 +57,20 @@ class TrafficCar:
     vertical: VerticalState
     color: int
     waiting: float = 0
+    spawn_version: int = 0
+    respawn_pending: bool = False
+    respawn_retry: float = 0
 
 
 class NpcTraffic:
     def __init__(self, world):
         self.world = world
         self.cars = []
-        # Neither loop crosses another loop or any scenario gathering zone.
-        for index, (south, north) in enumerate(((20, 50), (-70, -40))):
-            route = LaneLoop(-60, -30, south, north)
+        # Adjacent loops share roads only in opposite lanes. No scenario zones.
+        self.routes = [LaneLoop(*bounds) for bounds in (
+            (-60, -30, 20, 50), (-60, -30, -70, -40),
+            (-30, 0, 20, 50), (-30, 0, -10, 20))]
+        for index, route in enumerate(self.routes):
             distance = route.length * 0.2
             state = route.pose(distance)
             y, _ = world.surface.sample(state.x, state.z, state.heading, .1)
@@ -74,6 +80,58 @@ class NpcTraffic:
     def boxes(self):
         return [{**self.world.car_box(car.vehicle, car.vertical), 'playerId': car.id}
                 for car in self.cars]
+
+    def _respawn(self, car, players):
+        obstacles = [self.world.car_box(p['vehicle'], p['vertical']) for p in players]
+        obstacles += [self.world.car_box(other.vehicle, other.vertical)
+                      for other in self.cars if other is not car]
+        candidates = []
+        for route in self.routes:
+            for index in range(24):
+                distance = route.length*index/24
+                state = route.pose(distance)
+                separation = math.hypot(state.x-car.vehicle.x, state.z-car.vehicle.z)
+                if separation >= RESPAWN_DISTANCE:
+                    candidates.append((separation, route, distance, state))
+        candidates.sort(key=lambda candidate: candidate[0], reverse=True)
+        for _, route, distance, state in candidates:
+            y, _ = self.world.surface.sample(state.x, state.z, state.heading, .1)
+            body = self.world.restore(state.x, state.z, state.heading, y)
+            box = self.world.car_box(state, body)
+            # Leave generous clearance around humans and other NPCs at spawn.
+            if not body.grounded or any(overlaps(box, obstacle, 4) for obstacle in obstacles):
+                continue
+            checked, checked_body = self.world.step(state, state, body, 1/30)
+            if (math.hypot(checked.x-state.x, checked.z-state.z) > .01
+                    or not checked_body.grounded):
+                continue
+            car.route, car.distance = route, distance
+            car.vehicle, car.vertical = checked, checked_body
+            car.waiting = 0
+            car.spawn_version += 1
+            car.respawn_pending = False
+            return True
+        return False
+
+    def _recover_collisions(self, dt, players):
+        collided = set()
+        for i, car in enumerate(self.cars):
+            for other in self.cars[i+1:]:
+                if overlaps(self.world.car_box(car.vehicle, car.vertical),
+                            self.world.car_box(other.vehicle, other.vertical)):
+                    collided.update((car.id, other.id))
+        for car in self.cars:
+            if car.id in collided and not car.respawn_pending:
+                car.respawn_pending = True
+                car.respawn_retry = 0
+            if not car.respawn_pending:
+                continue
+            car.vehicle = replace(car.vehicle, speed=0)
+            car.respawn_retry -= dt
+            if car.respawn_retry <= 0:
+                self._respawn(car, players)
+                # If every distant spawn is blocked, wait rather than spawn on a user.
+                car.respawn_retry = .5
 
     def _blocked_ahead(self, car, players):
         if not players:
@@ -87,6 +145,14 @@ class NpcTraffic:
             eta = min(3, distance/max(car.vehicle.speed, 1.5))
             for player in players:
                 state, body = player['vehicle'], player['vertical']
+                # Rear traffic must not make the leading NPC brake. Only the
+                # swept hitbox check below keeps a minimal 12 cm rear clearance.
+                along = ((state.x-car.vehicle.x)*math.sin(car.vehicle.heading)
+                         + (state.z-car.vehicle.z)*math.cos(car.vehicle.heading))
+                angle = state.heading-car.vehicle.heading
+                extent = abs(math.cos(angle))*CAR_LENGTH/2 + abs(math.sin(angle))*CAR_WIDTH/2
+                if along < 0 and along+extent <= -CAR_LENGTH/2+.12:
+                    continue
                 obstacle = self.world.car_box(state, body)
                 obstacle['halfLength'] += 1.2  # bumper clearance, also at rest
                 if overlaps(box, obstacle, .25):
@@ -102,10 +168,15 @@ class NpcTraffic:
         if not math.isfinite(dt) or not 0 < dt <= .1:
             raise ValueError('Invalid NPC timestep')
         players = list(players)
+        self._recover_collisions(dt, players)
         player_boxes = [{**self.world.car_box(p['vehicle'], p['vertical']), 'playerId': p['id']}
                         for p in players]
         for car in self.cars:
-            target = 0 if self._blocked_ahead(car, players) else CRUISE_SPEED
+            if car.respawn_pending:
+                continue
+            traffic = [dict(vehicle=other.vehicle, vertical=other.vertical)
+                       for other in self.cars if other is not car]
+            target = 0 if self._blocked_ahead(car, players+traffic) else CRUISE_SPEED
             speed = approach(car.vehicle.speed, target, (BRAKING if target == 0 else 1.2)*dt)
             travel = (car.vehicle.speed+speed)*.5*dt
             obstacles = player_boxes + [box for box in self.boxes() if box['playerId'] != car.id]
@@ -139,6 +210,7 @@ class NpcTraffic:
             future = car.route.pose(car.distance+.5)
             turn = math.atan2(math.sin(future.heading-state.heading), math.cos(future.heading-state.heading))
             result.append(dict(id=car.id, name=f'NPC {car.color+1}', npc=True,
+                               spawnVersion=car.spawn_version,
                                trafficMessage='Пропустите, пожалуйста' if car.waiting >= 5 else None,
                                vehicleType='car', color=car.color, x=round(state.x, 3), z=round(state.z, 3),
                                heading=state.heading, speed=state.speed, steering=0, lastInputSeq=0,

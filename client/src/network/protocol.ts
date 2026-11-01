@@ -1,7 +1,7 @@
 export interface PlayerState { x: number; z: number; heading: number; y?: number; pitch?: number }
 export interface VehicleControls { throttle: number; steering: number; brake: number }
 export interface PlayerSnapshot extends PlayerState {
-  npc?: boolean; trafficMessage?: string | null;
+  npc?: boolean; trafficMessage?: string | null; spawnVersion?: number;
   id: string; name: string; vehicleType: string; speed: number; steering: number; lastInputSeq: number; wheelAngle: number; color: number; throttle?: number; grounded?: boolean;
 }
 export interface SceneContext { sceneId: string; epoch: number }
@@ -58,6 +58,7 @@ export function parseServerMessage(text: string): ServerMessage | undefined {
         || !v.players.every(p => object(p) && typeof p.id === 'string' && typeof p.name === 'string' && pose(p)
           && typeof p.wheelAngle === 'number' && Number.isFinite(p.wheelAngle) && Number.isInteger(p.color) && Number(p.color) >= 0 && Number(p.color) < 5
           && (p.npc === undefined || typeof p.npc === 'boolean')
+          && (p.spawnVersion === undefined || Number.isSafeInteger(p.spawnVersion) && Number(p.spawnVersion) >= 0)
           && (p.trafficMessage == null || typeof p.trafficMessage === 'string' && p.trafficMessage.length <= 80))) return;
       break;
     case 'scenario_reward':

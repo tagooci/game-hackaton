@@ -62,6 +62,10 @@ export function createRemotePlayers(scene: Scene, createView = createVehicleView
           addPlayer(state, now);
           const player = players.get(state.id);
           if (!player) continue; // Своя машина отображается отдельно.
+          if (state.npc && state.spawnVersion !== player.samples[player.samples.length - 1]?.spawnVersion) {
+            // A respawn is a teleport, not a movement to interpolate across the map.
+            player.samples.length = 0;
+          }
           player.label.textContent = state.name;
           player.samples.push({ ...state, time: now });
           if (player.samples.length > MAX_SAMPLES) player.samples.shift();
