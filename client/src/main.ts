@@ -144,11 +144,17 @@ function startGame(account: Account, profile: Profile): () => void {
   );
 
   const groundMaterial = new StandardMaterial('ground-material', scene);
-  groundMaterial.diffuseColor = Color3.FromHexString('#183d28').toLinearSpace();
+  // Fallback terrain stays green even at night and beyond the map's fog.
+  groundMaterial.disableLighting = true;
+  groundMaterial.diffuseColor = Color3.Black();
+  groundMaterial.emissiveColor = Color3.FromHexString('#244f32').toLinearSpace();
+  groundMaterial.fogEnabled = false;
+  groundMaterial.backFaceCulling = false;
   groundMaterial.specularColor = Color3.Black();
   ground.position.y = -0.12;
   ground.material = groundMaterial;
-  ground.receiveShadows = true;
+  ground.receiveShadows = false;
+  ground.applyFog = false;
   const overlay = document.createElement('div');
   overlay.className = 'loading-screen';
   overlay.textContent = 'Подключение…';
