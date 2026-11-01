@@ -15,6 +15,7 @@ from .state import players, add_player, remove_player, public_view, others_view,
 from .vehicle import Controls, VehicleConfig, VehicleState, step_vehicle, steering_angle
 from .auth import AuthService
 from .db import Database
+from .agent import AgentService, FeedbackGenerationError, ResultParseError
 from .scenarios import ScenarioSessions, SCENARIO, WORLD as scenario_world
 from .world_physics import VehicleWorld
 
@@ -60,6 +61,7 @@ NAVIGATION = json.loads((Path(__file__).resolve().parent.parent / 'client/public
 vehicle_world = VehicleWorld(NAVIGATION['surfaces'],NAVIGATION.get('colliders',()),NAVIGATION.get('ceilings',()))
 SESSION_COOKIE = "game_session"
 database = Database()
+agent_service = AgentService(database)
 auth = AuthService(database)
 v2_connections: dict[str, WebSocket] = {}
 v2_scene_ready: set[str] = set()
@@ -446,6 +448,43 @@ async def get_v2_websocket(websocket: WebSocket):
                               seq=0, applied_seq=0, input_time=0.0, epoch=epoch)
                 database.save_safe_position(player_id, state.x, state.z, state.heading, body.y, WORLD_MAP['worldId'])
                 await send(websocket, world_scene_prepare(player))
+                continue
+
+            if msg_type == "agent_result":
+                result_payload = message.get("result")
+                if not isinstance(result_payload, dict):
+                    await send_v2_error(websocket, "bad_value", "result must be an object")
+                    continue
+                if result_payload.get("playerId") != player_id:
+                    await send_v2_error(websocket, "forbidden", "result playerId does not match the session")
+                    continue
+                try:
+                    ingested = agent_service.ingest_object(result_payload)
+                    existing = database.agent_feedback(ingested.result.result_id)
+                    if existing is not None:
+                        from .agent.feedback import parse_feedback
+
+                        feedback = parse_feedback(existing, ingested.result)
+                    else:
+                        from .agent.feedback import OllamaFeedbackGenerator
+
+                        generator = OllamaFeedbackGenerator()
+                        feedback = await generator.generate(ingested.result)
+                        database.save_agent_feedback(
+                            ingested.result.result_id,
+                            ingested.result.player_id,
+                            feedback.to_json(),
+                            generator.model,
+                        )
+                except (ResultParseError, FeedbackGenerationError, ValueError) as error:
+                    await send_v2_error(websocket, "agent_result_error", str(error))
+                    continue
+                await send(websocket, {
+                    "type": "agent_feedback",
+                    "resultId": ingested.result.result_id,
+                    "isNew": ingested.is_new,
+                    "feedback": feedback.to_dict(),
+                })
                 continue
 
             if msg_type == "scene_ready":

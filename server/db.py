@@ -1,11 +1,16 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import os
 import secrets
 import sqlite3
 import threading
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .agent.parser import ScenarioResult
 
 
 DEFAULT_DB_PATH = (
@@ -67,6 +72,38 @@ class Database:
                     violation_ids TEXT NOT NULL,
                     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
                     PRIMARY KEY (result_id, player_id)
+                );
+                CREATE TABLE IF NOT EXISTS agent_results (
+                    result_id TEXT PRIMARY KEY,
+                    session_id TEXT NOT NULL,
+                    scenario_id TEXT NOT NULL,
+                    scenario_version INTEGER NOT NULL,
+                    scenario_type TEXT NOT NULL,
+                    player_id TEXT NOT NULL REFERENCES accounts(player_id),
+                    role_id TEXT NOT NULL,
+                    status TEXT NOT NULL,
+                    duration_ms INTEGER NOT NULL,
+                    checks_json TEXT NOT NULL,
+                    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+                );
+                CREATE TABLE IF NOT EXISTS agent_violations (
+                    violation_id TEXT NOT NULL,
+                    result_id TEXT NOT NULL REFERENCES agent_results(result_id),
+                    category TEXT NOT NULL,
+                    rule_id TEXT NOT NULL,
+                    time_ms INTEGER NOT NULL,
+                    position_json TEXT,
+                    related_player_ids_json TEXT NOT NULL,
+                    sign_id TEXT,
+                    details TEXT NOT NULL,
+                    PRIMARY KEY (result_id, violation_id)
+                );
+                CREATE TABLE IF NOT EXISTS agent_feedback (
+                    result_id TEXT PRIMARY KEY REFERENCES agent_results(result_id),
+                    player_id TEXT NOT NULL REFERENCES accounts(player_id),
+                    feedback TEXT NOT NULL,
+                    model TEXT NOT NULL,
+                    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
                 );
                 """
             )
@@ -234,6 +271,97 @@ class Database:
                 (player_id,),
             ).fetchone()
         return int(row["experience"]) if row else 0
+
+    def save_agent_result(self, result: "ScenarioResult") -> bool:
+        """Persist a parsed result once, including all of its violations."""
+        with self._lock, self._connect() as db:
+            cursor = db.execute(
+                """
+                INSERT OR IGNORE INTO agent_results
+                    (result_id, session_id, scenario_id, scenario_version,
+                     scenario_type, player_id, role_id, status, duration_ms,
+                     checks_json)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    result.result_id,
+                    result.session_id,
+                    result.scenario_id,
+                    result.scenario_version,
+                    result.scenario_type.value,
+                    result.player_id,
+                    result.role_id,
+                    result.status.value,
+                    result.duration_ms,
+                    json.dumps(
+                        {
+                            name.value: {
+                                "checked": check.checked,
+                                "violationCount": check.violation_count,
+                            }
+                            for name, check in result.checks.items()
+                        },
+                        separators=(",", ":"),
+                    ),
+                ),
+            )
+            if cursor.rowcount == 0:
+                return False
+
+            for violation in result.violations:
+                db.execute(
+                    """
+                    INSERT INTO agent_violations
+                        (violation_id, result_id, category, rule_id, time_ms,
+                         position_json, related_player_ids_json, sign_id, details)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        violation.id,
+                        result.result_id,
+                        violation.category.value,
+                        violation.rule_id,
+                        violation.time_ms,
+                        json.dumps(
+                            {
+                                "x": violation.position.x,
+                                "y": violation.position.y,
+                                "z": violation.position.z,
+                            },
+                            separators=(",", ":"),
+                        )
+                        if violation.position
+                        else None,
+                        json.dumps(list(violation.related_player_ids), separators=(",", ":")),
+                        violation.sign_id,
+                        violation.details,
+                    ),
+                )
+            return True
+
+    def save_agent_feedback(
+        self, result_id: str, player_id: str, text: str, model: str
+    ) -> bool:
+        if not text.strip():
+            raise ValueError("feedback text must not be empty")
+        with self._lock, self._connect() as db:
+            cursor = db.execute(
+                """
+                INSERT OR IGNORE INTO agent_feedback
+                    (result_id, player_id, feedback, model)
+                VALUES (?, ?, ?, ?)
+                """,
+                (result_id, player_id, text, model),
+            )
+            return cursor.rowcount > 0
+
+    def agent_feedback(self, result_id: str) -> str | None:
+        with self._lock, self._connect() as db:
+            row = db.execute(
+                "SELECT feedback FROM agent_feedback WHERE result_id = ?",
+                (result_id,),
+            ).fetchone()
+        return str(row["feedback"]) if row else None
 
     def close(self) -> None:
         """Connections are short-lived; kept as an explicit lifecycle hook."""
