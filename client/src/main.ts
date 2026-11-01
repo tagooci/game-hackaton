@@ -1,4 +1,5 @@
 import './style.css';
+import { createScenarioAssistant, showAssistantPreview } from './assistant/scenarioAssistant';
 import { api, ApiError, showAuth } from './auth/session';
 import type { Account } from './auth/session';
 
@@ -82,6 +83,9 @@ function startGame(account: Account): () => void {
   scene.activeCamera = camera;
   canvas.tabIndex = 0;
   const controls = createVehicleControls(canvas);
+  const assistant = createScenarioAssistant(host);
+  let lastScenarioResult = '';
+  let inScenario = false;
   let ownId = '';
   let targetPose: VehiclePose = vehicle.getPose();
 
@@ -118,9 +122,11 @@ function startGame(account: Account): () => void {
   const overlay = document.createElement('div');
   overlay.className = 'loading-screen';
   overlay.textContent = 'Подключение…';
-  canvas.addEventListener('click', () => {
+  canvas.addEventListener('click', async () => {
     if (!overlay.hidden || document.pointerLockElement === canvas) return;
-    canvas.requestPointerLock().catch(error => console.warn('Не удалось захватить курсор:', error));
+    canvas.focus({ preventScroll: true });
+    try { if (!assistant.isOpen) await canvas.requestPointerLock?.(); }
+    catch { /* Keyboard controls also work in browsers without pointer lock. */ }
   }, eventOptions);
   const logout = document.createElement('button');
   logout.className = 'logout';
@@ -188,6 +194,14 @@ function startGame(account: Account): () => void {
       }
       if (message.type === 'welcome') ownId = message.playerId;
       if (message.type === 'scene_prepare') {
+        const returnedFromScenario = inScenario && message.sceneKind === 'world';
+        inScenario = message.sceneKind === 'scenario';
+        if (inScenario) {
+          lastScenarioResult = '';
+          assistant.hide();
+        } else if (returnedFromScenario && lastScenarioResult) {
+          assistant.result(lastScenarioResult);
+        } else if (!lastScenarioResult) assistant.hide();
         queuePosition = undefined; queueLabel.hidden = true;
         finishArch?.dispose();
         finishArch = message.finish ? createFinishArch(scene, message.finish) : undefined;
@@ -195,7 +209,11 @@ function startGame(account: Account): () => void {
         vehicle.setPose(message.spawn);
         targetPose = message.spawn;
       }
+
       if (message.type === 'snapshot') {
+        if (inScenario && typeof message.scenarioResult === 'string' && message.scenarioResult && message.scenarioResult !== lastScenarioResult) {
+          lastScenarioResult = message.scenarioResult;
+        }
         const queue = message.scenarioQueue;
         queuePosition = queue ? new Vector3(queue.x, queue.y, queue.z) : undefined;
         queueLabel.textContent = queue ? `${queue.count}/2` : '';
@@ -206,6 +224,7 @@ function startGame(account: Account): () => void {
     },
     onDisconnect: () => {
       mapReady = false;
+      assistant.hide(); lastScenarioResult = ''; inScenario = false;
       remotePlayers.clear(); controls.clear(); targetPose = vehicle.getPose();
     },
   });
@@ -255,6 +274,7 @@ function startGame(account: Account): () => void {
   function dispose(): void {
     if (document.pointerLockElement === canvas) document.exitPointerLock();
     stopStateSender();
+    assistant.dispose();
     controls.dispose();
     events.abort();
     engine.stopRenderLoop();
@@ -270,10 +290,14 @@ function startGame(account: Account): () => void {
   return () => { dispose(); overlay.remove(); logout.remove(); queueLabel.remove(); finishArch?.dispose(); };
 }
 
+if (new URLSearchParams(location.search).has('assistant-preview')) {
+  stopScreen = showAssistantPreview(host);
+} else {
 host.textContent = 'Проверка сессии…';
 api<Account>('me').then(enterGame).catch(error => {
   if (!disposed) authScreen(error instanceof ApiError && error.status === 401 ? '' : 'Не удалось подключиться к серверу');
 });
+}
 function disposeApplication(): void { disposed = true; stopScreen(); }
 import.meta.hot?.dispose(disposeApplication);
 window.addEventListener('pagehide', event => { if (!event.persisted) disposeApplication(); });
