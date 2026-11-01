@@ -173,9 +173,6 @@ function startGame(account: Account, profile: Profile): () => void {
   let finishArch: ReturnType<typeof createFinishArch> | undefined;
   let queuePosition: Vector3 | undefined;
   let scenarioSigns: ReturnType<typeof createRoundaboutSigns> | undefined;
-  const scenarioInfo = document.createElement('div');
-  scenarioInfo.className = 'scenario-info';
-  host.append(scenarioInfo);
   const remotePlayers = createRemotePlayers(scene);
   const minimap = createMinimap(host);
   const roads = new RoadContent(scene, () => {});
@@ -258,7 +255,6 @@ function startGame(account: Account, profile: Profile): () => void {
         } else if (returnedFromScenario) {
           assistant.waiting(agentExperience);
         } else if (!lastScenarioResult) assistant.hide();
-        scenarioInfo.textContent = inScenario ? `${message.scenarioTitle ?? 'Сценарий'} · ${message.objective ?? ''} ${message.finishMode === 'pass' ? 'Проедьте через свою арку, останавливаться не нужно.' : 'Остановитесь под своей финишной аркой на секунду.'}` : 'Короткие: №1 — поворот (60, 20), №2 — перекрёсток (30, −10), №4 — круг (0, −40), по 3 игрока. Длинный: №5 — мост (35, −40), 4 игрока. Остановитесь у маркера и дождитесь участников.';
         scenarioSigns?.dispose();
         scenarioSigns = createRoundaboutSigns(scene, message.scenarioSigns ?? []);
         queuePosition = undefined; queueLabel.hidden = true;
@@ -295,7 +291,6 @@ function startGame(account: Account, profile: Profile): () => void {
         const own = message.players.find(player => player.id === ownId);
         if (own) {
           targetPose = own;
-          if (!inScenario) scenarioInfo.textContent = `Вы: X ${own.x.toFixed(0)}, Z ${own.z.toFixed(0)}. №1: X 60, Z 20 (3 игрока). №2: X 30, Z −10 (3). №4: X 0, Z −40 (3). №5: сбор X 35, Z −40 (4). Остановитесь на дороге у маркера нужной группы.`;
         }
       }
       remotePlayers.handleMessage(message);
@@ -366,7 +361,6 @@ function startGame(account: Account, profile: Profile): () => void {
     assistant.dispose();
     musicPlayer.dispose();
     scenarioSigns?.dispose();
-    scenarioInfo.remove();
     controls.dispose();
     speedometer.dispose();
     performanceLabel.remove();
