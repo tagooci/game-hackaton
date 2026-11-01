@@ -4,6 +4,7 @@ import { createScenarioAssistant, showAssistantPreview } from './assistant/scena
 import { api, ApiError, showAuth, showGarage } from './auth/session';
 import type { Account, Profile } from './auth/session';
 
+import { createRoundaboutSigns } from './world/scenarioSigns';
 import { createFinishArch } from './world/finishArch';
 import { RoadContent } from './world/road-content.js';
 import { Engine } from '@babylonjs/core/Engines/engine';
@@ -159,6 +160,10 @@ function startGame(account: Account, profile: Profile): () => void {
   host.append(queueLabel);
   let finishArch: ReturnType<typeof createFinishArch> | undefined;
   let queuePosition: Vector3 | undefined;
+  let scenarioSigns: ReturnType<typeof createRoundaboutSigns> | undefined;
+  const scenarioInfo = document.createElement('div');
+  scenarioInfo.className = 'scenario-info';
+  host.append(scenarioInfo);
   const remotePlayers = createRemotePlayers(scene);
   const roads = new RoadContent(scene, () => {});
   if (import.meta.env.DEV) Object.defineProperty(window, 'roadCache', { configurable: true, get: () => roads.stats() });
@@ -223,6 +228,7 @@ function startGame(account: Account, profile: Profile): () => void {
       }
       if (message.type === 'welcome') ownId = message.playerId;
       if (message.type === 'scene_prepare') {
+        if (typeof message.scenarioResult === 'string' && message.scenarioResult) lastScenarioResult = message.scenarioResult;
         const returnedFromScenario = inScenario && message.sceneKind === 'world';
         inScenario = message.sceneKind === 'scenario';
         if (inScenario) {
@@ -236,12 +242,15 @@ function startGame(account: Account, profile: Profile): () => void {
         } else if (returnedFromScenario) {
           assistant.waiting(agentExperience);
         } else if (!lastScenarioResult) assistant.hide();
+        scenarioInfo.textContent = inScenario ? `${message.scenarioTitle ?? 'Сценарий'} · ${message.objective ?? ''} ${message.finishMode === 'pass' ? 'Проедьте через свою арку, останавливаться не нужно.' : 'Остановитесь под своей финишной аркой на секунду.'}` : 'Короткие: №1 — поворот (60, 20), №2 — перекрёсток (30, −10), №4 — круг (0, −40), по 3 игрока. Длинный: №5 — мост (35, −40), 4 игрока. Остановитесь у маркера и дождитесь участников.';
+        scenarioSigns?.dispose();
+        scenarioSigns = createRoundaboutSigns(scene, message.scenarioSigns ?? []);
         queuePosition = undefined; queueLabel.hidden = true;
         finishArch?.dispose();
         finishArch = message.finish ? createFinishArch(scene, message.finish) : undefined;
         controls.clear();
-        vehicle.setPose(message.spawn);
-        targetPose = message.spawn;
+        vehicle.setPose({ ...message.spawn, vehicleType: message.vehicleType });
+        targetPose = { ...message.spawn, vehicleType: message.vehicleType };
         scene.fogStart = message.weather === 'fog' ? 18 : 40;
         scene.fogEnd = message.weather === 'fog' ? 42 : 60;
         scene.fogColor = message.weather === 'rain'
@@ -259,9 +268,12 @@ function startGame(account: Account, profile: Profile): () => void {
         }
         const queue = message.scenarioQueue;
         queuePosition = queue ? new Vector3(queue.x, queue.y, queue.z) : undefined;
-        queueLabel.textContent = queue ? `${queue.count}/2` : '';
+        queueLabel.textContent = queue ? `${queue.title ?? 'Сценарий'} · ${queue.count}/${queue.required ?? 2}` : '';
         const own = message.players.find(player => player.id === ownId);
-        if (own) targetPose = own;
+        if (own) {
+          targetPose = own;
+          if (!inScenario) scenarioInfo.textContent = `Вы: X ${own.x.toFixed(0)}, Z ${own.z.toFixed(0)}. №1: X 60, Z 20 (3 игрока). №2: X 30, Z −10 (3). №4: X 0, Z −40 (3). №5: сбор X 35, Z −40 (4). Остановитесь на дороге у маркера нужной группы.`;
+        }
       }
       remotePlayers.handleMessage(message);
     },
@@ -288,6 +300,7 @@ function startGame(account: Account, profile: Profile): () => void {
       wheelAngle: (pose.wheelAngle ?? 0) + ((targetPose.wheelAngle ?? 0) - (pose.wheelAngle ?? 0)) * blend,
       color: targetPose.color,
       throttle: targetPose.throttle, grounded: targetPose.grounded,
+      vehicleType: targetPose.vehicleType,
     });
     speedometer.update(targetPose.speed ?? 0);
     if (mapReady && !mapLoading && !mapError) {
@@ -321,6 +334,8 @@ function startGame(account: Account, profile: Profile): () => void {
     if (document.pointerLockElement === canvas) document.exitPointerLock();
     stopStateSender();
     assistant.dispose();
+    scenarioSigns?.dispose();
+    scenarioInfo.remove();
     controls.dispose();
     speedometer.dispose();
     events.abort();
