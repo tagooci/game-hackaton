@@ -10,7 +10,7 @@ export function createStreetLights(scene, roads) {
     const light = new SpotLight(`street-lamp-${i}`, Vector3.Zero(), Vector3.Down(), Math.PI * 0.8, 2, scene);
     light.diffuse = new Color3(1, 0.78, 0.45);
     light.specular = new Color3(0.35, 0.25, 0.12);
-    light.intensity = 3;
+    light.intensity = 18;
     light.range = 22;
     light.setEnabled(false);
     return light;
@@ -39,7 +39,7 @@ export function createStreetLights(scene, roads) {
       const material = mesh.material;
       if (material?.emissiveColor) {
         if (!originalEmission.has(material)) originalEmission.set(material, material.emissiveColor.clone());
-        material.emissiveColor.set(1, 0.78, 0.45);
+        material.emissiveColor.set(6, 4.68, 2.7);
       }
     }
     if (!Number.isFinite(min.x)) return;
