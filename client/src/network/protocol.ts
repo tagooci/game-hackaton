@@ -3,9 +3,13 @@ export interface VehicleControls { throttle: number; steering: number; brake: nu
 export interface PlayerSnapshot extends PlayerState {
   id: string; name: string; vehicleType: string; speed: number; steering: number; lastInputSeq: number; wheelAngle: number; color: number;
 }
+export interface TrafficSnapshot {
+  id: string; model: string; x: number; y: number; z: number; heading: number; pitch: number; speed: number;
+}
 export interface SceneContext { sceneId: string; epoch: number }
 export interface ScenePrepare extends SceneContext {
-  type: 'scene_prepare'; spawn: PlayerState; finish?: PlayerState | null;
+  type: 'scene_prepare'; vehicleType?: string; spawn: PlayerState; finish?: PlayerState | null;
+  finishMode?: 'stop' | 'pass';
   scenarioResult?: string | null; scenarioTitle?: string | null; objective?: string | null;
   scenarioSigns?: { x: number; z: number; heading: number }[];
   sceneKind: 'world' | 'scenario'; scenarioId: string | null; roleId: string | null;
@@ -15,7 +19,7 @@ export type ServerMessage =
   | { type: 'welcome'; v: 2; playerId: string; inputHz: number }
   | ScenePrepare
   | ({ type: 'scene_start'; startTick: number; tick: number } & SceneContext)
-  | ({ type: 'snapshot'; tick: number; players: PlayerSnapshot[]; scenarioResult?: string | null; scenarioQueue?: { count: number; required?: number; title?: string; x: number; y: number; z: number } | null } & SceneContext)
+  | ({ type: 'snapshot'; tick: number; players: PlayerSnapshot[]; traffic?: TrafficSnapshot[]; scenarioResult?: string | null; scenarioQueue?: { count: number; required?: number; title?: string; x: number; y: number; z: number } | null } & SceneContext)
   | { type: 'error'; code: string; text: string };
 
 function object(value: unknown): value is Record<string, unknown> {
@@ -27,6 +31,10 @@ function pose(value: unknown): boolean {
 }
 function context(value: Record<string, unknown>): boolean {
   return typeof value.sceneId === 'string' && Number.isSafeInteger(value.epoch);
+}
+function trafficCar(value: unknown): value is TrafficSnapshot {
+  return object(value) && typeof value.id === 'string' && typeof value.model === 'string'
+    && ['x', 'y', 'z', 'heading', 'pitch', 'speed'].every(key => typeof value[key] === 'number' && Number.isFinite(value[key]));
 }
 export function parseServerMessage(text: string): ServerMessage | undefined {
   let v: unknown;
@@ -46,7 +54,8 @@ export function parseServerMessage(text: string): ServerMessage | undefined {
     case 'snapshot':
       if (!context(v) || !Number.isSafeInteger(v.tick) || !Array.isArray(v.players)
         || !v.players.every(p => object(p) && typeof p.id === 'string' && typeof p.name === 'string' && pose(p)
-          && typeof p.wheelAngle === 'number' && Number.isFinite(p.wheelAngle) && Number.isInteger(p.color) && Number(p.color) >= 0 && Number(p.color) < 5)) return;
+          && typeof p.wheelAngle === 'number' && Number.isFinite(p.wheelAngle) && Number.isInteger(p.color) && Number(p.color) >= 0 && Number(p.color) < 5)
+        || (v.traffic !== undefined && (!Array.isArray(v.traffic) || !v.traffic.every(trafficCar)))) return;
       break;
     case 'error':
       if (typeof v.code !== 'string' || typeof v.text !== 'string') return;

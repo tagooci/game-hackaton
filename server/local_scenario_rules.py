@@ -48,8 +48,10 @@ def check_new_passage(session, players, definition, world):
             violation(a,'столкновение');violation(b,'столкновение')
     if definition['kind']=='equal':
         check_equal(active, definition, tracks)
-    else:
+    elif definition['kind']=='roundabout':
         check_ring(active, definition, tracks)
+    else:
+        check_junction(active, definition, tracks)
 
 
 def check_equal(players, definition, tracks):
@@ -106,3 +108,48 @@ def check_ring(players, definition, tracks):
 def finished_route(player, session):
     track=session.get('tracks',{}).get(player['id'])
     return bool(track and track['maxProgress']>=track['total']-4)
+
+
+_CONFLICT_WINDOWS = {}
+
+def conflict_windows(definition):
+    """Shared swept-route regions, including an outbound merge; opposite lanes do not conflict."""
+    key=definition['id']
+    if key in _CONFLICT_WINDOWS:return _CONFLICT_WINDOWS[key]
+    roles={r['id']:r for r in definition['roles']}
+    result={}
+    for own,priorities in definition.get('yieldsTo',{}).items():
+        route=roles[own]['route'];own_lengths=[0.]
+        for a,b in zip(route,route[1:]):own_lengths.append(own_lengths[-1]+math.dist(a,b))
+        for other in priorities:
+            peer_route=roles[other]['route'];peer_lengths=[0.]
+            for a,b in zip(peer_route,peer_route[1:]):peer_lengths.append(peer_lengths[-1]+math.dist(a,b))
+            near=[(own_lengths[i],peer_lengths[j]) for i,a in enumerate(route) for j,b in enumerate(peer_route) if math.dist(a,b)<2.2]
+            if near:
+                result[own,other]=(max(0,min(a for a,b in near)-CAR_LENGTH/2),max(a for a,b in near)+CAR_LENGTH/2,
+                                   max(0,min(b for a,b in near)-CAR_LENGTH/2),max(b for a,b in near)+CAR_LENGTH/2)
+    _CONFLICT_WINDOWS[key]=result
+    return result
+
+
+def check_junction(players,definition,tracks):
+    windows=conflict_windows(definition)
+    by_role={p['roleId']:p for p in players}
+    for player in players:
+        state=player['vehicle'];track=tracks[player['id']]
+        for priority in definition.get('yieldsTo',{}).get(player['roleId'],[]):
+            other=by_role.get(priority);window=windows.get((player['roleId'],priority))
+            if not other or not window:continue
+            start,end,other_start,other_end=window
+            if not start<=track['progress']<=end or state.speed<=.35:continue
+            checked=track.setdefault('priority_checked',set())
+            if priority in checked:continue
+            checked.add(priority)
+            peer=tracks[other['id']];o=other['vehicle']
+            if peer['progress']>other_end:continue
+            distance=max(0,other_start-peer['progress'])
+            clear_time=min(4.,max(.8,(end-track['progress'])/max(state.speed,2.)))
+            occupying=other_start<=peer['progress']<=other_end
+            approaching=o.speed>.5 and distance/o.speed<clear_time
+            if occupying or approaching:
+                violation(player,'не уступили автомобилю с преимуществом')

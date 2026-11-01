@@ -16,8 +16,9 @@ from .vehicle import Controls, VehicleConfig, VehicleState, step_vehicle, steeri
 from .auth import AuthService
 from .db import Database
 from .scenarios import ScenarioSessions
-from .scenario_registry import definition_for, world_for
+from .scenario_registry import definition_for, world_for, body_at
 from .world_physics import VehicleWorld
+from .traffic import WorldTraffic
 
 TICK_RATE = 20
 tick = 0
@@ -34,6 +35,7 @@ async def physics_loop():
         now = loop.time()
         if now - deadline > 0.2:
             deadline = now
+        world_traffic.step(dt)
         for player in [*players.values(), *v2_players.values()]:
             if "vehicle" not in player:
                 continue
@@ -58,6 +60,7 @@ STATIC_DIR = Path(__file__).resolve().parent.parent / 'client' / 'dist'
 WORLD_MAP = json.loads((Path(__file__).resolve().parent.parent / 'client/public/content/world/manifest.json').read_text())
 NAVIGATION = json.loads((Path(__file__).resolve().parent.parent / 'client/public/content/world/navigation.json').read_text())
 vehicle_world = VehicleWorld(NAVIGATION['surfaces'],NAVIGATION.get('colliders',()),NAVIGATION.get('ceilings',()))
+world_traffic = WorldTraffic(NAVIGATION['lanes'])
 SESSION_COOKIE = "game_session"
 database = Database()
 auth = AuthService(database)
@@ -86,6 +89,7 @@ async def snapshot_loop():
                 "epoch": v2_players[player_id]["epoch"],
                 "tick": tick,
                 "players": [_v2_player_snapshot(pid) for pid in v2_players if pid in v2_scene_ready and v2_players[pid]["sceneId"] == v2_players[player_id]["sceneId"]],
+                "traffic": world_traffic.snapshot() if v2_players[player_id]["sceneKind"] == "world" else [],
                 "signals": [],
                 "scenarioResult": v2_players[player_id].get("scenario_result"),
                 "scenarioQueues": scenarios.queues() if v2_players[player_id]["sceneKind"] == "world" else [],
@@ -270,7 +274,7 @@ def _v2_player_snapshot(player_id: str) -> dict:
     player = v2_players[player_id]
     state = player["vehicle"]
     return {
-        "id": player_id, "name": player["name"], "vehicleType": "car", "roleId": player.get("roleId"),
+        "id": player_id, "name": player["name"], "vehicleType": player.get("vehicleType", "car"), "roleId": player.get("roleId"),
         **{key: round(getattr(state, key), 3) for key in ("x", "z", "heading", "speed", "steering")},
         "lastInputSeq": player.get("applied_seq", 0),
         "y": round(player["vertical"].y, 4), "pitch": round(player["vertical"].pitch, 4),
@@ -290,19 +294,20 @@ def world_scene_prepare(player):
     return {
         "type": "scene_prepare", "sceneId": player['sceneId'], "epoch": player['epoch'],
         "sceneKind": player['sceneKind'], "mapId": WORLD_MAP['worldId'] + ((':'+definition['id']) if player['sceneKind'] == 'scenario' else ''),
-        "scenarioId": definition["id"] if player["sceneKind"] == "scenario" else None, "roleId": player.get("roleId"), "vehicleType": "car",
+        "scenarioId": definition["id"] if player["sceneKind"] == "scenario" else None, "roleId": player.get("roleId"), "vehicleType": player.get("vehicleType", "car"),
         "spawn": {"x": state.x, "z": state.z, "heading": state.heading, "y": body.y, "pitch": body.pitch},
-        "participants": [{"playerId": p["id"], "roleId": p.get("roleId"), "vehicleType": "car"}
+        "participants": [{"playerId": p["id"], "roleId": p.get("roleId"), "vehicleType": p.get("vehicleType", "car")}
                          for p in v2_players.values() if p["sceneId"] == player["sceneId"]]
                         if player["sceneKind"] == "scenario" else [],
         "plan": {"revision": 1, "chunkIds": [], "resources": world_resources(),
                  "mapManifestUrl": definition["manifestUrl"] if player["sceneKind"] == "scenario" else "/content/world/manifest.json"},
         "finish": ({**definition["finishes"][player["roleId"]],
-                    "y": scenario_world.restore(**{k: definition["finishes"][player["roleId"]][k] for k in ("x", "z", "heading")}, y=.1).y}
+                    "y": body_at(scenario_world, definition["finishes"][player["roleId"]]).y}
                    if player["sceneKind"] == "scenario" else None),
+        "finishMode": definition.get("finishMode", "stop") if player["sceneKind"] == "scenario" else None,
         "scenarioTitle": definition["title"] if player["sceneKind"] == "scenario" else None,
         "objective": next((r["description"] for r in definition["roles"] if r["id"] == player.get("roleId")), None) if player["sceneKind"] == "scenario" else None,
-        "scenarioSigns": definition.get("signs", []) if player["sceneKind"] == "scenario" else [],
+        "scenarioSigns": definition.get("signs", []) if player["sceneKind"] == "scenario" and definition.get("kind") == "roundabout" else [],
         "scenarioResult": player.get("scenario_report"),
         "timeoutMs": 30000,
     }
@@ -316,7 +321,8 @@ async def move_scene(player, scene_id, role):
         player['scenario_report'] = None
         player['return_state'] = (player['vehicle'], player['vertical'])
         state = VehicleState(**definition['spawns'][role])
-        body = scenario_world.restore(state.x, state.z, state.heading, .1)
+        body = body_at(scenario_world, definition['spawns'][role])
+        player['vehicleType'] = definition['roles'][role].get('vehicleType', 'car')
     else:
         player['scenario_report'] = player.get('scenario_result')
         state, body = player.pop('return_state')
@@ -327,6 +333,7 @@ async def move_scene(player, scene_id, role):
                   controls=Controls(brake=1))
     if not scene_id:
         player['scenarioKey'] = None
+        player['vehicleType'] = 'car'
         save_position(player)
         await send(player['ws'], world_scene_prepare(player))
 

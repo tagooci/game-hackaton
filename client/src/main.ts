@@ -204,15 +204,15 @@ function startGame(account: Account): () => void {
         } else if (returnedFromScenario && lastScenarioResult) {
           assistant.result(lastScenarioResult);
         } else if (!lastScenarioResult) assistant.hide();
-        scenarioInfo.textContent = inScenario ? `${message.scenarioTitle ?? 'Сценарий'} · ${message.objective ?? ''} Остановитесь под своей финишной аркой на секунду.` : 'Сценарии: №2 — перекрёсток (X 30, Z −10), №4 — круг (X 0, Z −40). Для каждого нужны 3 игрока. Остановитесь рядом с маркером и дождитесь участников.';
+        scenarioInfo.textContent = inScenario ? `${message.scenarioTitle ?? 'Сценарий'} · ${message.objective ?? ''} ${message.finishMode === 'pass' ? 'Проедьте через свою арку, останавливаться не нужно.' : 'Остановитесь под своей финишной аркой на секунду.'}` : 'Сценарии: №2 — перекрёсток (X 30, Z −10), №4 — круг (X 0, Z −40). Для каждого нужны 3 игрока. Остановитесь рядом с маркером и дождитесь участников.';
         scenarioSigns?.dispose();
         scenarioSigns = createRoundaboutSigns(scene, message.scenarioSigns ?? []);
         queuePosition = undefined; queueLabel.hidden = true;
         finishArch?.dispose();
         finishArch = message.finish ? createFinishArch(scene, message.finish) : undefined;
         controls.clear();
-        vehicle.setPose(message.spawn);
-        targetPose = message.spawn;
+        vehicle.setPose({ ...message.spawn, vehicleType: message.vehicleType });
+        targetPose = { ...message.spawn, vehicleType: message.vehicleType };
       }
 
       if (message.type === 'snapshot') {
@@ -225,7 +225,7 @@ function startGame(account: Account): () => void {
         const own = message.players.find(player => player.id === ownId);
         if (own) {
           targetPose = own;
-          if (!inScenario) scenarioInfo.textContent = `Вы: X ${own.x.toFixed(0)}, Z ${own.z.toFixed(0)}. №2: X 30, Z −10. №4: X 0, Z −40. Для входа остановитесь на дороге у маркера втроём.`;
+          if (!inScenario) scenarioInfo.textContent = `Вы: X ${own.x.toFixed(0)}, Z ${own.z.toFixed(0)}. №1: X 60, Z 20 (3 игрока). №2: X 30, Z −10 (3). №4: X 0, Z −40 (3). №5: сбор X 35, Z −40 (4). Остановитесь на дороге у маркера нужной группы.`;
         }
       }
       remotePlayers.handleMessage(message);
@@ -251,6 +251,7 @@ function startGame(account: Account): () => void {
       pitch: (pose.pitch ?? 0) + ((targetPose.pitch ?? 0) - (pose.pitch ?? 0)) * blend,
       wheelAngle: (pose.wheelAngle ?? 0) + ((targetPose.wheelAngle ?? 0) - (pose.wheelAngle ?? 0)) * blend,
       color: targetPose.color,
+      vehicleType: targetPose.vehicleType,
     });
     if (mapReady && !mapLoading && !mapError) {
       const size = roads.manifest.streamStep ?? roads.manifest.chunkSize;

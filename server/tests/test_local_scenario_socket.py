@@ -10,7 +10,7 @@ import server.app as game
 from server.auth import AuthService
 from server.db import Database
 from server.scenarios import ScenarioSessions
-from server.scenario_registry import DEFINITIONS,WORLDS
+from server.scenario_registry import DEFINITIONS,WORLDS,body_at
 from server.vehicle import VehicleState,Controls
 
 
@@ -41,8 +41,12 @@ class SocketTests(unittest.TestCase):
                 peers.append((welcome['playerId'],ws))
             async def stage():
                 for index,(pid,_) in enumerate(peers):
-                    player=game.v2_players[pid];spawn=definition['roles'][index]['spawn'];state=VehicleState(**spawn)
-                    player.update(vehicle=state,vertical=game.vehicle_world.restore(state.x,state.z,state.heading,.1),controls=Controls(brake=1))
+                    player=game.v2_players[pid];spawn=definition['roles'][index]['spawn']
+                    if key=='bridge-junction':
+                        x,z,h=[(28,-38.5,-1.5708),(34,-38.5,-1.5708),(40,-38.5,-1.5708),(32,-41.5,1.5708)][index]
+                        spawn=dict(x=x,z=z,heading=h)
+                    state=VehicleState(**spawn)
+                    player.update(vehicle=state,vertical=body_at(game.vehicle_world,spawn),controls=Controls(brake=1))
             client.portal.call(stage)
             assignments=[]
             for pid,ws in peers:
@@ -50,7 +54,9 @@ class SocketTests(unittest.TestCase):
                 self.assertEqual(prepare['scenarioId'],key)
                 self.assertEqual(len(prepare['participants']),definition['requiredPlayers'])
                 self.assertEqual(prepare['plan']['mapManifestUrl'],definition['manifestUrl'])
-                self.assertAlmostEqual(prepare['finish']['y'],.1,places=2)
+                assigned=next(r for r in definition['roles'] if r['id']==prepare['roleId'])
+                self.assertAlmostEqual(prepare['finish']['y'],body_at(WORLDS[key],assigned['finish']).y,places=2)
+                self.assertEqual(prepare['vehicleType'],assigned.get('vehicleType','car'))
                 assignments.append((pid,ws,prepare))
                 ws.send_json(dict(type='scene_ready',sceneId=prepare['sceneId'],epoch=prepare['epoch'],revision=1))
             self.assertEqual(len({p['roleId'] for _,_,p in assignments}),definition['requiredPlayers'])
@@ -75,9 +81,9 @@ class SocketTests(unittest.TestCase):
             # Finish transition itself: emulate already completed route progress on the test loop.
             async def at_finish():
                 player=game.v2_players[pid];role=next(r for r in definition['roles'] if r['id']==player['roleId']);state=VehicleState(**role['finish'])
-                player.update(vehicle=state,vertical=WORLDS[key].restore(state.x,state.z,state.heading,.1),controls=Controls(brake=1),input_time=0,scenario_result='Проезд выполнен правильно')
+                player.update(vehicle=state,vertical=body_at(WORLDS[key],role['finish']),controls=Controls(brake=1),input_time=0,scenario_result='Проезд выполнен правильно')
                 scene=game.scenarios.sessions[player['sceneId']]
-                if key!='left-turn':
+                if True:
                     from server.local_scenario_rules import project
                     *_,total=project(role['route'],state.x,state.z)
                     scene.setdefault('tracks',{})[pid]=dict(progress=total,maxProgress=total,total=total,entered=True,cleared=True)
@@ -89,9 +95,10 @@ class SocketTests(unittest.TestCase):
             self.assertEqual(returned['epoch'],prepare['epoch']+1)
             # Survivor remains in isolated scenario after personal finish.
             other=game.v2_players[assignments[1][0]];self.assertEqual(other['sceneKind'],'scenario')
+    def test_bridge_four_clients(self):self.run_scenario('bridge-junction')
     def test_equal_priority_three_clients(self):self.run_scenario('equal-priority')
     def test_roundabout_three_clients(self):self.run_scenario('roundabout')
-    def test_original_two_player_scenario(self):self.run_scenario('left-turn')
+    def test_first_three_player_scenario(self):self.run_scenario('left-turn')
 
 if __name__=='__main__':unittest.main()
 

@@ -1,7 +1,6 @@
 """Independent multiplayer queues and scene lifecycle for all local scenarios."""
 import math
 import secrets
-from .legacy_left_turn import check_passage
 from .scenario_registry import DEFINITIONS, WORLDS
 from .local_scenario_rules import check_new_passage, finished_route
 from .world_physics import CAR_WIDTH, CAR_LENGTH, CAR_HEIGHT
@@ -28,10 +27,10 @@ class ScenarioSessions:
         self.sessions={};self.counter=0;self.pair_since={};self.now=0.
 
     @property
-    def count(self):return min(2,len(self.waiters['left-turn']))
+    def count(self):return min(DEFINITIONS['left-turn']['requiredPlayers'],len(self.waiters['left-turn']))
 
     def queues(self):
-        return [dict(id=key,title=d['title'],number=d['number'],required=d['requiredPlayers'],count=min(len(self.waiters[key]),d['requiredPlayers']),x=d['center'][0],y=5,z=d['center'][1]) for key,d in DEFINITIONS.items()]
+        return [dict(id=key,title=d['title'],number=d['number'],required=d['requiredPlayers'],count=min(len(self.waiters[key]),d['requiredPlayers']),x=d.get('queuePoint',d['center'])[0],y=5,z=d.get('queuePoint',d['center'])[1]) for key,d in DEFINITIONS.items()]
 
     def queue_for(self,player):
         state=player['vehicle']
@@ -54,13 +53,11 @@ class ScenarioSessions:
                             previous=player.get('scenario_result')
                             player['scenario_result']=(previous+'; ' if previous else '')+'Время сценария истекло'
                         else: player['scenario_result']='Сценарий отменён: участник отключился или не загрузил сцену'
-                        player.setdefault('scenarioQueueBlocked',set()).add(definition['id'])
+                        player.setdefault('scenarioQueueBlocked',set()).update(DEFINITIONS)
                         await move(player,None,None)
                 continue
             if not session['started']:continue
-            if definition['id']=='left-turn':
-                if len(active)==2:check_passage(session,players)
-            else:check_new_passage(session,players,definition,WORLDS[definition['id']])
+            check_new_passage(session,players,definition,WORLDS[definition['id']])
             for pid in active:
                 player=players[pid];state=player['vehicle'];body=player['vertical']
                 finish=definition['finishes'][player['roleId']]
@@ -69,16 +66,20 @@ class ScenarioSessions:
                          and abs(dx*math.sin(angle)+dz*math.cos(angle))<=1.5
                          and abs(state.speed)<=.5 and body.grounded
                          and math.cos(state.heading-angle)>.8)
+                if definition.get('finishMode')=='pass':
+                    forward=dx*math.sin(angle)+dz*math.cos(angle)
+                    sideways=dx*math.cos(angle)-dz*math.sin(angle)
+                    stopped=0<=forward<=3 and abs(sideways)<=1.5 and body.grounded and math.cos(state.heading-angle)>.8
                 if not stopped:session['finish_times'].pop(pid,None);continue
                 session['finish_times'].setdefault(pid,now)
-                if now-session['finish_times'][pid]<1:continue
-                if definition['id']!='left-turn' and not finished_route(player,session):
+                if now-session['finish_times'][pid]<(0 if definition.get('finishMode')=='pass' else 1):continue
+                if not finished_route(player,session):
                     player['scenario_result']='Нарушение: маршрут не пройден полностью'
                 player['scenario_result']=player.get('scenario_result') or 'Проезд выполнен правильно'
                 session['finished'].add(pid)
                 # World and scene share coordinates: finished vehicle returns at its actual exit.
                 player['return_state']=(state,body)
-                player.setdefault('scenarioQueueBlocked',set()).add(definition['id'])
+                player.setdefault('scenarioQueueBlocked',set()).update(DEFINITIONS)
                 await move(player,None,None)
             if len(session['finished'])==len(session['players']):self.sessions.pop(scene_id,None)
         for key,definition in DEFINITIONS.items():
@@ -102,7 +103,7 @@ class ScenarioSessions:
                 group,candidates=candidates[:required],candidates[required:]
                 self.counter+=1;scene_id=f'scenario:{key}:{self.counter}'
                 ids=[pid for _,pid in group]
-                if key!='left-turn':secrets.SystemRandom().shuffle(ids)
+                secrets.SystemRandom().shuffle(ids)
                 self.sessions[scene_id]=dict(id=scene_id,scenarioKey=key,players=ids,finished=set(),finish_times={},deadline=now+30,started=False)
                 for role,pid in enumerate(ids):
                     queue.pop(pid,None);players[pid]['scenarioKey']=key
