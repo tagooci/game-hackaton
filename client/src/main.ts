@@ -1,5 +1,6 @@
 import { createSpeedometer } from './vehicle/speedometer';
 import './style.css';
+import { createMusicPlayer } from './hud/musicPlayer.js';
 import { createScenarioAssistant, showAssistantPreview } from './assistant/scenarioAssistant';
 import { api, ApiError, showAuth, showGarage } from './auth/session';
 import type { Account, Profile } from './auth/session';
@@ -143,9 +144,10 @@ function startGame(account: Account, profile: Profile): () => void {
     catch { /* Keyboard controls also work in browsers without pointer lock. */ }
   }, eventOptions);
   const logout = document.createElement('button');
-  logout.className = 'logout';
+  logout.className = 'logout logout--with-player';
   logout.textContent = `Выйти (${account.name})`;
   host.append(overlay, logout);
+  const musicPlayer = createMusicPlayer(host);
   logout.onclick = async () => {
     logout.disabled = true;
     try { await api('logout', {}); authScreen(); }
@@ -321,6 +323,7 @@ function startGame(account: Account, profile: Profile): () => void {
     if (document.pointerLockElement === canvas) document.exitPointerLock();
     stopStateSender();
     assistant.dispose();
+    musicPlayer.dispose();
     controls.dispose();
     speedometer.dispose();
     events.abort();
