@@ -1,7 +1,7 @@
 export interface PlayerState { x: number; z: number; heading: number; y?: number; pitch?: number }
 export interface VehicleControls { throttle: number; steering: number; brake: number }
 export interface PlayerSnapshot extends PlayerState {
-  id: string; name: string; vehicleType: string; speed: number; steering: number; lastInputSeq: number; wheelAngle: number; color: number;
+  id: string; name: string; vehicleType: string; speed: number; steering: number; lastInputSeq: number; wheelAngle: number; color: number; throttle?: number; grounded?: boolean;
 }
 export interface SceneContext { sceneId: string; epoch: number }
 export interface ScenePrepare extends SceneContext {

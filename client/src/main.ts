@@ -1,3 +1,4 @@
+import { createSpeedometer } from './vehicle/speedometer';
 import './style.css';
 import { createScenarioAssistant, showAssistantPreview } from './assistant/scenarioAssistant';
 import { api, ApiError, showAuth } from './auth/session';
@@ -83,6 +84,7 @@ function startGame(account: Account): () => void {
   scene.activeCamera = camera;
   canvas.tabIndex = 0;
   const controls = createVehicleControls(canvas);
+  const speedometer = createSpeedometer(host);
   const assistant = createScenarioAssistant(host, () => {
     controls.clear();
     if (document.pointerLockElement === canvas) document.exitPointerLock();
@@ -241,7 +243,7 @@ function startGame(account: Account): () => void {
     onDisconnect: () => {
       mapReady = false;
       assistant.hide(); lastScenarioResult = ''; agentReplies = []; feedbackSession = ''; inScenario = false;
-      remotePlayers.clear(); controls.clear(); targetPose = vehicle.getPose();
+      remotePlayers.clear(); controls.clear(); targetPose = { ...vehicle.getPose(), speed: 0, throttle: 0 };
     },
   });
 
@@ -260,7 +262,9 @@ function startGame(account: Account): () => void {
       pitch: (pose.pitch ?? 0) + ((targetPose.pitch ?? 0) - (pose.pitch ?? 0)) * suspensionBlend,
       wheelAngle: (pose.wheelAngle ?? 0) + ((targetPose.wheelAngle ?? 0) - (pose.wheelAngle ?? 0)) * blend,
       color: targetPose.color,
+      throttle: targetPose.throttle, grounded: targetPose.grounded,
     });
+    speedometer.update(targetPose.speed ?? 0);
     if (mapReady && !mapLoading && !mapError) {
       const size = roads.manifest.streamStep ?? roads.manifest.chunkSize;
       const key = `${Math.floor(pose.x / size)}:${Math.floor(pose.z / size)}:none`;
@@ -293,6 +297,7 @@ function startGame(account: Account): () => void {
     stopStateSender();
     assistant.dispose();
     controls.dispose();
+    speedometer.dispose();
     events.abort();
     engine.stopRenderLoop();
     if (import.meta.env.DEV) Reflect.deleteProperty(window, 'roadCache');

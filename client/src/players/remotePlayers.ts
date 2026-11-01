@@ -84,6 +84,7 @@ export function createRemotePlayers(scene: Scene, createView = createVehicleView
         pitch: (from.pitch ?? 0) + ((to.pitch ?? 0) - (from.pitch ?? 0)) * t,
         wheelAngle: (from.wheelAngle ?? 0) + ((to.wheelAngle ?? 0) - (from.wheelAngle ?? 0)) * t,
         color: to.color,
+        throttle: to.throttle, grounded: to.grounded,
       });
       const camera = scene.activeCamera;
       const engine = scene.getEngine();
