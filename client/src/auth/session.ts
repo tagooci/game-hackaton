@@ -194,14 +194,21 @@ export function showGarage(
     `;
     controls.append(admin);
     style.textContent += `
-      .admin-panel { width: 100%; margin-top: 24px; padding: 18px; border-radius: 16px; background: rgba(255,255,255,.5); color: var(--ink); }
-      .admin-panel h2 { margin: 0 0 14px; font-size: 20px; }
-      .admin-panel fieldset { display: flex; flex-wrap: wrap; gap: 8px 14px; margin: 0 0 14px; padding: 10px 12px; border: 2px solid rgba(41,43,43,.35); border-radius: 10px; }
-      .admin-panel legend { padding: 0 5px; font-size: 13px; font-weight: 700; }
-      .admin-panel label { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; cursor: pointer; }
-      .admin-panel input { accent-color: var(--accent); }
-      .admin-status { min-height: 1.2em; margin: 0; color: #555; font-size: 12px; }
+      .admin-panel { width: 100%; margin-top: 28px; padding: 20px; border: 3px solid var(--ink); border-radius: 18px; background: #f8eee2; color: var(--ink); box-shadow: 4px 4px 0 var(--ink); }
+      .admin-panel h2 { margin: 0 0 22px; font-size: 20px; line-height: 1.2; font-weight: 700; }
+      .admin-panel fieldset { min-width: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 115px), 1fr)); gap: 10px; margin: 0 0 20px; padding: 0; border: 0; }
+      .admin-panel legend { margin-bottom: 10px; padding: 0; font-size: 13px; line-height: 1.4; font-weight: 700; }
+      .admin-panel label { min-height: 44px; display: flex; align-items: center; gap: 8px; padding: 10px; border: 2px solid var(--ink); border-radius: 10px; background: #fff9f0; color: var(--ink); font-size: 12px; line-height: 1.3; font-weight: 600; cursor: pointer; transition: background 160ms ease, color 160ms ease, transform 160ms ease, box-shadow 160ms ease; }
+      .admin-panel label:hover { background: #f2e4d5; transform: translateY(-2px); }
+      .admin-panel label:active { transform: translateY(1px); }
+      .admin-panel label:has(input:checked) { background: var(--accent); color: #fff; box-shadow: 2px 2px 0 var(--ink); }
+      .admin-panel input { appearance: none; flex: 0 0 16px; width: 16px; height: 16px; margin: 0; border: 2px solid currentColor; border-radius: 50%; background: transparent; cursor: pointer; }
+      .admin-panel input:checked { background: #fff; box-shadow: inset 0 0 0 3px var(--accent); }
+      .admin-panel label:has(input:focus-visible) { outline: 3px solid var(--ink); outline-offset: 4px; }
+      .admin-panel input:focus-visible { outline: none; }
+      .admin-status { min-height: 1.4em; margin: 0; color: #555; font-size: 12px; line-height: 1.4; }
       .admin-status.error { color: var(--accent); }
+      @media (prefers-reduced-motion: reduce) { .admin-panel label { transition: none; } }
     `;
     const weather = admin.querySelectorAll<HTMLInputElement>('input[name="admin-weather"]');
     const agentStyle = admin.querySelectorAll<HTMLInputElement>('input[name="admin-agent-style"]');
