@@ -315,7 +315,11 @@ async def get_profile(game_session: str | None = Cookie(default=None)):
     profile = database.profile(account["playerId"])
     if profile is None:
         raise HTTPException(status_code=404, detail="account not found")
-    return {**profile, "vehicles": vehicle_profile(profile["level"])}
+    return {
+        **profile,
+        "vehicles": vehicle_profile(profile["level"]),
+        "isAdmin": server_settings.is_admin(account["username"]),
+    }
 
 
 async def _admin_account(game_session: str | None) -> dict:

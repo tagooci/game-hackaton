@@ -12,6 +12,9 @@ SCENARIO = json.loads((CONTENT / 'scenario.json').read_text())
 NAVIGATION = json.loads((CONTENT / 'navigation.json').read_text())
 WORLD = VehicleWorld(NAVIGATION['surfaces'], NAVIGATION['colliders'], NAVIGATION['ceilings'])
 
+FINISH_LATERAL_TOLERANCE = 1.5
+FINISH_LONGITUDINAL_TOLERANCE = 2.5
+
 
 def waiting(player):
     state, body = player['vehicle'], player['vertical']
@@ -32,6 +35,13 @@ class ScenarioSessions:
         self.sessions = {}
         self.count = 0
         self.pair_since = None
+
+    def _players_in_sessions(self):
+        return {
+            pid
+            for session in self.sessions.values()
+            for pid in session['players']
+        }
 
     async def update(self, players, ready, now, move, prepare):
         for scene_id, session in list(self.sessions.items()):
@@ -54,8 +64,8 @@ class ScenarioSessions:
                     finish = SCENARIO['finishes'][player['roleId']]
                     dx, dz = state.x-finish['x'], state.z-finish['z']
                     angle = finish['heading']
-                    stopped = (abs(dx*math.cos(angle)-dz*math.sin(angle)) <= .6
-                               and abs(dx*math.sin(angle)+dz*math.cos(angle)) <= 1.5
+                    stopped = (abs(dx*math.cos(angle)-dz*math.sin(angle)) <= FINISH_LATERAL_TOLERANCE
+                               and abs(dx*math.sin(angle)+dz*math.cos(angle)) <= FINISH_LONGITUDINAL_TOLERANCE
                                and abs(state.speed) <= .5 and body.grounded
                                and math.cos(state.heading-angle) > .8)
                     timers = session.setdefault('finish_times', {})
@@ -79,7 +89,18 @@ class ScenarioSessions:
         for pid, player in players.items():
             if pid in ready and player['sceneKind'] == 'world' and waiting(player):
                 self.waiters.setdefault(pid, now)
-        candidates = sorted((time, pid) for pid, time in self.waiters.items() if now-time >= 1)
+        # A player can briefly remain in ``waiters`` while an old room is being
+        # cleaned up (for example during reconnect). Never reuse that player
+        # for a new room until the old room is gone.
+        players_in_sessions = self._players_in_sessions()
+        candidates = sorted(
+            (time, pid)
+            for pid, time in self.waiters.items()
+            if now - time >= 1
+            and pid not in players_in_sessions
+            and pid in players
+            and players[pid]['sceneKind'] == 'world'
+        )
         self.count = min(2, len(candidates))
         if len(candidates) < 2:
             self.pair_since = None

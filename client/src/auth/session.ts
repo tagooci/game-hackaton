@@ -9,6 +9,7 @@ export interface Profile {
   level: number;
   vehicleColor: number;
   vehicleType: 'car' | 'truck' | 'super-sedan';
+  isAdmin?: boolean;
   vehicles?: { id: string; unlocked: boolean }[];
 }
 
@@ -169,6 +170,87 @@ export function showGarage(
     image.src = image.getAttribute('src')!.replace('./assets/', '/assets/menu/');
   });
   host.append(panel);
+  let disposed = false;
+  if (profile.isAdmin) {
+    const controls = root.querySelector<HTMLElement>('.controls')!;
+    const admin = document.createElement('section');
+    admin.className = 'admin-panel';
+    admin.innerHTML = `
+      <h2>Настройки сервера</h2>
+      <fieldset>
+        <legend>Погода</legend>
+        <label><input type="radio" name="admin-weather" value="clear"> Ясно</label>
+        <label><input type="radio" name="admin-weather" value="rain"> Дождь</label>
+        <label><input type="radio" name="admin-weather" value="fog"> Туман</label>
+        <label><input type="radio" name="admin-weather" value="dark"> Ночь</label>
+      </fieldset>
+      <fieldset>
+        <legend>Режим агента</legend>
+        <label><input type="radio" name="admin-agent-style" value="normal"> Обычный</label>
+        <label><input type="radio" name="admin-agent-style" value="coach"> Тренер</label>
+        <label><input type="radio" name="admin-agent-style" value="aggressive"> Прямой</label>
+      </fieldset>
+      <p class="admin-status" role="status" aria-live="polite"></p>
+    `;
+    controls.append(admin);
+    style.textContent += `
+      .admin-panel { width: 100%; margin-top: 24px; padding: 18px; border-radius: 16px; background: rgba(255,255,255,.5); color: var(--ink); }
+      .admin-panel h2 { margin: 0 0 14px; font-size: 20px; }
+      .admin-panel fieldset { display: flex; flex-wrap: wrap; gap: 8px 14px; margin: 0 0 14px; padding: 10px 12px; border: 2px solid rgba(41,43,43,.35); border-radius: 10px; }
+      .admin-panel legend { padding: 0 5px; font-size: 13px; font-weight: 700; }
+      .admin-panel label { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; cursor: pointer; }
+      .admin-panel input { accent-color: var(--accent); }
+      .admin-status { min-height: 1.2em; margin: 0; color: #555; font-size: 12px; }
+      .admin-status.error { color: var(--accent); }
+    `;
+    const weather = admin.querySelectorAll<HTMLInputElement>('input[name="admin-weather"]');
+    const agentStyle = admin.querySelectorAll<HTMLInputElement>('input[name="admin-agent-style"]');
+    const status = admin.querySelector<HTMLElement>('.admin-status')!;
+    void (async (): Promise<void> => {
+      try {
+        const settings = await api<{ weather: string; agentStyle: string }>('admin/settings');
+        if (disposed) return;
+        const select = (inputs: NodeListOf<HTMLInputElement>, value: string) => {
+          const input = Array.from(inputs).find(item => item.value === value);
+          if (input) input.checked = true;
+        };
+        select(weather, settings.weather);
+        select(agentStyle, settings.agentStyle);
+      } catch {
+        if (!disposed) {
+          status.className = 'admin-status error';
+          status.textContent = 'Не удалось загрузить настройки';
+        }
+        return;
+      }
+      let saving = false;
+      const save = async (): Promise<void> => {
+        if (saving || disposed) return;
+        const selectedWeather = admin.querySelector<HTMLInputElement>('input[name="admin-weather"]:checked');
+        const selectedAgentStyle = admin.querySelector<HTMLInputElement>('input[name="admin-agent-style"]:checked');
+        if (!selectedWeather || !selectedAgentStyle) return;
+        saving = true;
+        status.className = 'admin-status';
+        status.textContent = 'Сохраняем…';
+        try {
+          await api('admin/settings', {
+            weather: selectedWeather.value,
+            agentStyle: selectedAgentStyle.value,
+          });
+          if (!disposed) status.textContent = 'Настройки сохранены';
+        } catch {
+          if (!disposed) {
+            status.className = 'admin-status error';
+            status.textContent = 'Не удалось сохранить настройки';
+          }
+        } finally {
+          saving = false;
+        }
+      };
+      weather.forEach(input => input.addEventListener('change', save));
+      agentStyle.forEach(input => input.addEventListener('change', save));
+    })();
+  }
   const order = [3, 0, 4, 1, 2];
   root.querySelectorAll<HTMLButtonElement>('.color-option').forEach((button, index) => {
     const paint = VEHICLE_PAINTS[order[index]];
@@ -191,5 +273,5 @@ export function showGarage(
       });
       await onStart(saved);
     });
-  return () => { stopPreview(); panel.remove(); };
+  return () => { disposed = true; stopPreview(); panel.remove(); };
 }
