@@ -23,6 +23,7 @@ import logging
 from .scenarios import ScenarioSessions
 from .scenario_registry import definition_for, world_for, body_at
 from .world_physics import VehicleWorld
+from .npc_traffic import NpcTraffic
 
 TICK_RATE = 20
 tick = 0
@@ -54,11 +55,15 @@ async def physics_loop():
                           if other['id'] != player['id'] and other['id'] in v2_scene_ready
                           and other['sceneId'] == player['sceneId']]
                 world = world_for(player) if player['sceneKind'] == 'scenario' else vehicle_world
+                if player['sceneKind'] == 'world':
+                    others.extend(npc_traffic.boxes())
                 state,player['vertical'] = world.step(player['vehicle'],state,player['vertical'],dt,others)
                 player['contact_players'] = world.contact_players
             player["vehicle"] = state
             player["applied_seq"] = player.get("seq", 0)
             player.update(x=round(state.x, 2), z=round(state.z, 2), heading=round(state.heading, 2))
+        npc_traffic.step(dt, [p for p in v2_players.values()
+                             if p['sceneKind'] == 'world' and p['id'] in v2_scene_ready])
         await scenarios.update(v2_players, v2_scene_ready, now, move_scene, send_prepare)
 
 PROTOCOL_VERSION = 1
@@ -67,6 +72,7 @@ STATIC_DIR = Path(__file__).resolve().parent.parent / 'client' / 'dist'
 WORLD_MAP = json.loads((Path(__file__).resolve().parent.parent / 'client/public/content/world/manifest.json').read_text())
 NAVIGATION = json.loads((Path(__file__).resolve().parent.parent / 'client/public/content/world/navigation.json').read_text())
 vehicle_world = VehicleWorld(NAVIGATION['surfaces'],NAVIGATION.get('colliders',()),NAVIGATION.get('ceilings',()))
+npc_traffic = NpcTraffic(vehicle_world)
 SESSION_COOKIE = "game_session"
 database = Database()
 auth = AuthService(database)
@@ -152,7 +158,8 @@ async def snapshot_loop():
                 "sceneId": v2_players[player_id]["sceneId"],
                 "epoch": v2_players[player_id]["epoch"],
                 "tick": tick,
-                "players": [_v2_player_snapshot(pid) for pid in v2_players if pid in v2_scene_ready and v2_players[pid]["sceneId"] == v2_players[player_id]["sceneId"]],
+                "players": ([_v2_player_snapshot(pid) for pid in v2_players if pid in v2_scene_ready and v2_players[pid]["sceneId"] == v2_players[player_id]["sceneId"]]
+                            + (npc_traffic.snapshots() if v2_players[player_id]['sceneKind'] == 'world' else [])),
                 "signals": [],
                 "scenarioResult": v2_players[player_id].get("scenario_result"),
                 "scenarioQueues": scenarios.queues() if v2_players[player_id]["sceneKind"] == "world" else [],

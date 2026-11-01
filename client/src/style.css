@@ -48,3 +48,5 @@ button:disabled { cursor: wait; opacity: 0.6; }
 .speedometer-value { position: absolute; bottom: -4px; width: 100%; text-align: center; font: 600 18px system-ui; color: white; }
 .ping-indicator { position: absolute; z-index: 3; top: 50%; left: max(12px, env(safe-area-inset-left)); transform: translateY(-50%); pointer-events: none; white-space: nowrap; color: #fff; font: 600 14px/1.4 system-ui, sans-serif; font-variant-numeric: tabular-nums; text-shadow: 0 1px 4px #000, 0 0 2px #000; }
 .scenario-queue { font: 600 15px/1.4 system-ui, sans-serif; white-space: nowrap; }
+.npc-traffic-message { position: absolute; z-index: 5; transform: translate(-50%, calc(-100% - 24px)); padding: 8px 12px; border: 2px solid #292b2b; border-radius: 12px 12px 12px 2px; background: #f8eee2; color: #292b2b; box-shadow: 2px 2px 0 #292b2b; font: 600 12px/1.4 system-ui, sans-serif; white-space: nowrap; pointer-events: none; }
+.npc-traffic-message[hidden] { display: none; }

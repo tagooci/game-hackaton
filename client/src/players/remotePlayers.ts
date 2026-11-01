@@ -12,7 +12,7 @@ interface Sample extends PlayerSnapshot {
 
 /** Rendering only: the network module supplies events, Babylon renders the meshes. */
 export function createRemotePlayers(scene: Scene, createView = createVehicleView) {
-  const players = new Map<string, { vehicle: ReturnType<typeof createVehicleView>; samples: Sample[]; label: HTMLDivElement }>();
+  const players = new Map<string, { vehicle: ReturnType<typeof createVehicleView>; samples: Sample[]; label: HTMLDivElement; message: HTMLDivElement }>();
   let ownId: string | undefined;
   let lastTick = -1;
 
@@ -25,12 +25,15 @@ export function createRemotePlayers(scene: Scene, createView = createVehicleView
     label.className = 'player-name';
     label.textContent = player.name;
     label.hidden = true;
-    scene.getEngine().getRenderingCanvas()?.parentElement?.append(label);
-    players.set(player.id, { vehicle, label, samples: [{ ...player, time: now }] });
+    const message = document.createElement('div');
+    message.className = 'npc-traffic-message';
+    message.hidden = true;
+    scene.getEngine().getRenderingCanvas()?.parentElement?.append(label, message);
+    players.set(player.id, { vehicle, label, message, samples: [{ ...player, time: now }] });
   }
 
   function clear(): void {
-    for (const { vehicle, label } of players.values()) { vehicle.dispose(); label.remove(); }
+    for (const { vehicle, label, message } of players.values()) { vehicle.dispose(); label.remove(); message.remove(); }
     players.clear();
     ownId = undefined;
     lastTick = -1;
@@ -53,7 +56,7 @@ export function createRemotePlayers(scene: Scene, createView = createVehicleView
         lastTick = message.tick;
         const visible = new Set(message.players.map(player => player.id));
         for (const [id, player] of players) {
-          if (!visible.has(id)) { player.vehicle.dispose(); player.label.remove(); players.delete(id); }
+          if (!visible.has(id)) { player.vehicle.dispose(); player.label.remove(); player.message.remove(); players.delete(id); }
         }
         for (const state of message.players) {
           addPlayer(state, now);
@@ -69,7 +72,7 @@ export function createRemotePlayers(scene: Scene, createView = createVehicleView
 
   function update(now = performance.now()): void {
     const renderTime = now - INTERPOLATION_DELAY_MS;
-    for (const { vehicle, samples, label } of players.values()) {
+    for (const { vehicle, samples, label, message } of players.values()) {
       while (samples.length > 2 && samples[1].time <= renderTime) samples.shift();
       const from = samples[0];
       const to = samples[1] ?? from;
@@ -98,6 +101,11 @@ export function createRemotePlayers(scene: Scene, createView = createVehicleView
         label.hidden = screen.z < 0 || screen.z > 1 || Vector3.Distance(camera.position, point) > 55;
         label.style.left = `${screen.x / engine.getRenderWidth() * canvas.clientWidth}px`;
         label.style.top = `${screen.y / engine.getRenderHeight() * canvas.clientHeight}px`;
+        const text = to.npc ? to.trafficMessage ?? '' : '';
+        if (message.textContent !== text) message.textContent = text;
+        message.hidden = label.hidden || !text;
+        message.style.left = label.style.left;
+        message.style.top = label.style.top;
       }
     }
   }
