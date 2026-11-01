@@ -1,5 +1,7 @@
 import { createSpeedometer } from './vehicle/speedometer';
 import './style.css';
+import { createMinimap } from './hud/minimap.js';
+import { createMusicPlayer } from './hud/musicPlayer.js';
 import { createScenarioAssistant, showAssistantPreview } from './assistant/scenarioAssistant';
 import { api, ApiError, showAuth, showGarage } from './auth/session';
 import type { Account, Profile } from './auth/session';
@@ -143,9 +145,10 @@ function startGame(account: Account, profile: Profile): () => void {
     catch { /* Keyboard controls also work in browsers without pointer lock. */ }
   }, eventOptions);
   const logout = document.createElement('button');
-  logout.className = 'logout';
+  logout.className = 'logout logout--with-player';
   logout.textContent = `Выйти (${account.name})`;
   host.append(overlay, logout);
+  const musicPlayer = createMusicPlayer(host);
   logout.onclick = async () => {
     logout.disabled = true;
     try { await api('logout', {}); authScreen(); }
@@ -160,6 +163,7 @@ function startGame(account: Account, profile: Profile): () => void {
   let finishArch: ReturnType<typeof createFinishArch> | undefined;
   let queuePosition: Vector3 | undefined;
   const remotePlayers = createRemotePlayers(scene);
+  const minimap = createMinimap(host);
   const roads = new RoadContent(scene, () => {});
   if (import.meta.env.DEV) Object.defineProperty(window, 'roadCache', { configurable: true, get: () => roads.stats() });
   let mapReady = false;
@@ -189,6 +193,7 @@ function startGame(account: Account, profile: Profile): () => void {
         throw new Error('Неподдерживаемый план сцены');
       }
       mapReady = false;
+      minimap.setReady(false);
       overlay.textContent = 'Загрузка карты…';
       await roads.init(message.plan.mapManifestUrl);
       if (roads.manifest.groundColor) groundMaterial.diffuseColor = Color3.FromHexString(roads.manifest.groundColor).toLinearSpace();
@@ -198,6 +203,7 @@ function startGame(account: Account, profile: Profile): () => void {
       overlay.textContent = 'Подготовка сцены…';
       await scene.whenReadyAsync();
       mapReady = true;
+      minimap.setReady(true);
     },
     onStatus: text => { if (!mapLoading && !mapError) { overlay.hidden = !text; overlay.textContent = text; } },
     onSessionEnd: code => authScreen(code === 4001 ? 'Аккаунт уже подключён в другом окне' : 'Войдите в аккаунт снова'),
@@ -244,16 +250,23 @@ function startGame(account: Account, profile: Profile): () => void {
         targetPose = message.spawn;
         scene.fogStart = message.weather === 'fog' ? 18 : 40;
         scene.fogEnd = message.weather === 'fog' ? 42 : 60;
-        scene.fogColor = message.weather === 'rain'
-          ? new Color3(0.35, 0.4, 0.48)
-          : new Color3(0.86, 0.83, 0.76);
-        scene.clearColor = message.weather === 'rain'
-          ? new Color4(0.35, 0.4, 0.48, 1)
-          : new Color4(0.86, 0.83, 0.76, 1);
-        sun.intensity = message.weather === 'rain' ? 0.55 : 1.0;
+        const isDark = message.weather === 'dark';
+        scene.fogColor = isDark
+          ? new Color3(0.015, 0.02, 0.04)
+          : message.weather === 'rain'
+            ? new Color3(0.35, 0.4, 0.48)
+            : new Color3(0.86, 0.83, 0.76);
+        scene.clearColor = isDark
+          ? new Color4(0.015, 0.02, 0.04, 1)
+          : message.weather === 'rain'
+            ? new Color4(0.35, 0.4, 0.48, 1)
+            : new Color4(0.86, 0.83, 0.76, 1);
+        ambient.intensity = isDark ? 0 : 0.6;
+        sun.intensity = isDark ? 0 : message.weather === 'rain' ? 0.55 : 1.0;
       }
 
       if (message.type === 'snapshot') {
+        minimap.update(ownId, message.players);
         if (inScenario && typeof message.scenarioResult === 'string' && message.scenarioResult && message.scenarioResult !== lastScenarioResult) {
           lastScenarioResult = message.scenarioResult;
         }
@@ -267,6 +280,7 @@ function startGame(account: Account, profile: Profile): () => void {
     },
     onDisconnect: () => {
       mapReady = false;
+      minimap.setReady(false);
       assistant.hide(); lastScenarioResult = ''; agentReplies = []; agentExperience = ''; feedbackSession = ''; inScenario = false;
       remotePlayers.clear(); controls.clear(); targetPose = { ...vehicle.getPose(), speed: 0, throttle: 0 };
     },
@@ -321,6 +335,7 @@ function startGame(account: Account, profile: Profile): () => void {
     if (document.pointerLockElement === canvas) document.exitPointerLock();
     stopStateSender();
     assistant.dispose();
+    musicPlayer.dispose();
     controls.dispose();
     speedometer.dispose();
     events.abort();
@@ -328,6 +343,7 @@ function startGame(account: Account, profile: Profile): () => void {
     if (import.meta.env.DEV) Reflect.deleteProperty(window, 'roadCache');
     roads.dispose();
     remotePlayers.dispose();
+    minimap.dispose();
     vehicle.dispose();
     scene.dispose();
     engine.dispose();

@@ -5,8 +5,8 @@ import os
 import threading
 
 
-AGENT_STYLES = frozenset({"normal", "coach"})
-WEATHERS = frozenset({"clear", "rain", "fog"})
+AGENT_STYLES = frozenset({"normal", "coach", "aggressive"})
+WEATHERS = frozenset({"clear", "rain", "fog", "dark"})
 
 
 @dataclass
@@ -34,6 +34,13 @@ class ServerSettingsStore:
             raise ValueError(f"unsupported weather: {weather}")
         with self._lock:
             self._settings = ServerSettings(agent_style, weather)
+        return self.get()
+
+    def update_weather(self, weather: str) -> dict[str, str]:
+        if weather not in WEATHERS:
+            raise ValueError(f"unsupported weather: {weather}")
+        with self._lock:
+            self._settings = ServerSettings(self._settings.agent_style, weather)
         return self.get()
 
     def is_admin(self, username: str) -> bool:
