@@ -95,7 +95,8 @@ function startGame(account: Account, profile: Profile): () => void {
   camera.attachControl(canvas, false);
   scene.activeCamera = camera;
   canvas.tabIndex = 0;
-  const controls = createVehicleControls(canvas);
+  let targetPose: VehiclePose = vehicle.getPose();
+  const controls = createVehicleControls(canvas, () => targetPose.speed ?? 0);
   const speedometer = createSpeedometer(host);
   const performanceLabel = document.createElement('div');
   performanceLabel.className = 'ping-indicator';
@@ -118,8 +119,6 @@ function startGame(account: Account, profile: Profile): () => void {
   let lastScenarioResult = '';
   let inScenario = false;
   let ownId = '';
-  let targetPose: VehiclePose = vehicle.getPose();
-
   // Освещение сверху.
   const ambient = new HemisphericLight('sky', Vector3.Up(), scene);
   ambient.intensity = 0.6;

@@ -52,10 +52,13 @@ button:disabled { cursor: wait; opacity: 0.6; }
 .touch-controls button { width: clamp(58px, 12vw, 82px); height: clamp(58px, 12vw, 82px); padding: 0; border: 2px solid #fff; border-radius: 18px; background: #17212eb8; color: #fff; box-shadow: 0 2px 8px #0008; font: 700 clamp(24px, 5vw, 36px)/1 system-ui, sans-serif; touch-action: none; -webkit-user-select: none; }
 .touch-controls button.is-pressed { background: #e9422bcc; transform: scale(.94); }
 .touch-pedals button { width: clamp(72px, 15vw, 106px); height: clamp(82px, 18vw, 122px); border-radius: 22px; font-size: clamp(13px, 2.5vw, 18px); }
-.touch-pedals button:first-child { background: #4b9e45cc; }
-.touch-pedals button:last-child { background: #b94135cc; }
+.touch-pedals .touch-brake { background: #b94135cc; }
+.touch-pedals .touch-throttle { background: #4b9e45cc; }
 @media (min-width: 851px) and (pointer: fine) { .touch-controls { display: none; } }
 @media (max-width: 480px) { .touch-controls { gap: 8px; } .touch-arrows, .touch-pedals { gap: 8px; } .touch-controls button { border-radius: 14px; } }
+@media (pointer: coarse) and (max-width: 1200px) {
+  .speedometer { left: 50%; transform: translateX(-50%); }
+}
 .scenario-queue { font: 600 15px/1.4 system-ui, sans-serif; white-space: nowrap; }
 .npc-traffic-message { position: absolute; z-index: 5; transform: translate(-50%, calc(-100% - 24px)); padding: 8px 12px; border: 2px solid #292b2b; border-radius: 12px 12px 12px 2px; background: #f8eee2; color: #292b2b; box-shadow: 2px 2px 0 #292b2b; font: 600 12px/1.4 system-ui, sans-serif; white-space: nowrap; pointer-events: none; }
 .npc-traffic-message[hidden] { display: none; }

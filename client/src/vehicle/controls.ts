@@ -1,6 +1,6 @@
 import type { VehicleControls } from '../network/protocol';
 
-export function createVehicleControls(canvas: HTMLCanvasElement) {
+export function createVehicleControls(canvas: HTMLCanvasElement, getSpeed: () => number = () => 0) {
   const keys = new Set<string>();
   const touchKeys = new Set<string>();
   let respawn = false;
@@ -37,8 +37,8 @@ export function createVehicleControls(canvas: HTMLCanvasElement) {
       <button type="button" data-touch-key="ArrowRight" aria-label="Повернуть направо">→</button>
     </div>
     <div class="touch-pedals" aria-label="Педали">
-      <button type="button" data-touch-key="KeyW" aria-label="Газ">Газ</button>
-      <button type="button" data-touch-key="Space" aria-label="Тормоз">Тормоз</button>
+      <button type="button" data-touch-key="Space" class="touch-brake" aria-label="Тормоз и задний ход">Тормоз</button>
+      <button type="button" data-touch-key="KeyW" class="touch-throttle" aria-label="Газ">Газ</button>
     </div>
   `;
   canvas.parentElement?.append(touchControls);
@@ -65,10 +65,14 @@ export function createVehicleControls(canvas: HTMLCanvasElement) {
     if ((!hasGameFocus() && touchKeys.size === 0) || !document.hasFocus() || document.hidden) {
       return { throttle: 0, steering: 0, brake: 1 };
     }
+    const touchBrake = touchKeys.has('Space');
+    const reversingFromStop = touchBrake && Math.abs(getSpeed()) < 0.05;
     return {
-      throttle: Number(keys.has('KeyW') || touchKeys.has('KeyW')) - Number(keys.has('KeyS')),
+      throttle: Number(keys.has('KeyW') || touchKeys.has('KeyW'))
+        - Number(keys.has('KeyS'))
+        - Number(reversingFromStop),
       steering: Number(keys.has('KeyD') || touchKeys.has('ArrowRight')) - Number(keys.has('KeyA') || touchKeys.has('ArrowLeft')),
-      brake: Number(keys.has('Space') || touchKeys.has('Space')),
+      brake: Number(keys.has('Space') && !reversingFromStop),
     };
   }
 
