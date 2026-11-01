@@ -5,7 +5,10 @@ export interface PlayerSnapshot extends PlayerState {
 }
 export interface SceneContext { sceneId: string; epoch: number }
 export interface ScenePrepare extends SceneContext {
-  type: 'scene_prepare'; spawn: PlayerState; finish?: PlayerState | null;
+  type: 'scene_prepare'; vehicleType?: string; spawn: PlayerState; finish?: PlayerState | null;
+  finishMode?: 'stop' | 'pass';
+  scenarioResult?: string | null; scenarioTitle?: string | null; objective?: string | null;
+  scenarioSigns?: { x: number; z: number; heading: number }[];
   sceneKind: 'world' | 'scenario'; scenarioId: string | null; roleId: string | null;
   weather: 'clear' | 'rain' | 'fog' | 'dark';
   plan: { mapManifestUrl: string; revision: number; resources: { id: string; url: string; bytes: number }[] };
@@ -14,7 +17,7 @@ export type ServerMessage =
   | { type: 'welcome'; v: 2; playerId: string; inputHz: number }
   | ScenePrepare
   | ({ type: 'scene_start'; startTick: number; tick: number } & SceneContext)
-  | ({ type: 'snapshot'; tick: number; players: PlayerSnapshot[]; scenarioResult?: string | null; scenarioQueue?: { count: number; x: number; y: number; z: number } | null } & SceneContext)
+  | ({ type: 'snapshot'; tick: number; players: PlayerSnapshot[]; scenarioResult?: string | null; scenarioQueue?: { count: number; required?: number; title?: string; x: number; y: number; z: number } | null } & SceneContext)
   | { type: 'scenario_reward'; resultId: string; sessionId: string; experience: number }
   | { type: 'agent_feedback'; resultId: string; sessionId: string; playerId: string; feedback: { successful: { category: string; comment: string }[]; errors: { violationId: string; comment: string }[]; experience: string } }
   | { type: 'agent_feedback_error'; resultId: string; sessionId: string; text: string }

@@ -1,5 +1,8 @@
 import { VEHICLE_PAINTS } from './vehiclePaint';
 import { createVehicleEffects } from './vehicleEffects';
+import { MeshBuilder } from '@babylonjs/core/Meshes/meshBuilder';
+import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial';
+import { Color3 } from '@babylonjs/core/Maths/math.color';
 import '@babylonjs/loaders/glTF/2.0/glTFLoader.js';
 import { LoadAssetContainerAsync } from '@babylonjs/core/Loading/sceneLoader.js';
 import { VertexBuffer } from '@babylonjs/core/Buffers/buffer.js';
@@ -22,6 +25,7 @@ export interface VehiclePose {
   speed?: number;
   throttle?: number;
   grounded?: boolean;
+  vehicleType?: string;
 }
 
 // Одна загрузка на сцену; текстура и материалы общие для всех машин.
@@ -55,6 +59,28 @@ export function createVehicleView(scene: Scene, length: number, name = 'local-ve
   const body = new TransformNode(`${name}-camera-target`, scene);
   body.parent = root;
   let instance: InstantiatedEntries | undefined;
+  let sedanModel: TransformNode | undefined;
+  let vehicleType = 'car';
+  // Compact prototype truck: same 3.3 x 1.95 x 1.6875 m envelope as server physics.
+  const truck = new TransformNode(`${name}-truck`, scene);
+  truck.parent = root; truck.setEnabled(false);
+  const truckPaint = new StandardMaterial(`${name}-truck-paint`, scene);
+  truckPaint.diffuseColor = Color3.FromHexString('#e6a53b');
+  const truckDark = new StandardMaterial(`${name}-truck-dark`, scene);
+  truckDark.diffuseColor = Color3.FromHexString('#283e48');
+  for (const [part, width, height, depth, y, z] of [
+    ['cargo', 1.85, 1.4, 1.9, .98, -.6],
+    ['cab', 1.8, 1.05, 1.0, .77, 1.05],
+    ['windshield', 1.55, .45, .03, 1.0, 1.565],
+  ] as const) {
+    const mesh = MeshBuilder.CreateBox(`${name}-${part}`, { width, height, depth }, scene);
+    mesh.parent = truck; mesh.position.set(0, y, z);
+    mesh.material = part === 'windshield' ? truckDark : truckPaint;
+  }
+  for (const x of [-.87, .87]) for (const z of [-1.05, 1.05]) {
+    const wheel = MeshBuilder.CreateCylinder(`${name}-truck-wheel`, { diameter: .6, height: .2, tessellation: 10 }, scene);
+    wheel.parent = truck; wheel.position.set(x, .3, z); wheel.rotation.z = Math.PI / 2; wheel.material = truckDark;
+  }
   let wheelAngle = 0;
   let color = 3; // До первого snapshot — исходный красный кузов.
   let paintMesh: Mesh | undefined;
@@ -79,6 +105,7 @@ export function createVehicleView(scene: Scene, length: number, name = 'local-ve
       if (root.isDisposed()) return;
       instance = container.instantiateModelsToScene(meshName => `${name}-${meshName}`, false, { doNotInstantiate: true });
       const model = new TransformNode(`${name}-model`, scene);
+      sedanModel = model; model.setEnabled(vehicleType !== 'truck');
       for (const node of instance.rootNodes) node.parent = model;
       for (const mesh of model.getChildMeshes()) {
         mesh.receiveShadows = true;
@@ -111,6 +138,9 @@ export function createVehicleView(scene: Scene, length: number, name = 'local-ve
 
   function setPose(pose: VehiclePose): void {
     effects.setMotion(pose.throttle ?? 0, pose.grounded ?? true);
+    vehicleType = pose.vehicleType ?? vehicleType;
+    truck.setEnabled(vehicleType === 'truck');
+    sedanModel?.setEnabled(vehicleType !== 'truck');
     root.position.set(pose.x, pose.y ?? 0, pose.z);
     root.rotation.x = pose.pitch ?? 0;
     root.rotation.y = pose.heading;
@@ -127,13 +157,14 @@ export function createVehicleView(scene: Scene, length: number, name = 'local-ve
   }
 
   function getPose(): VehiclePose {
-    return { x: root.position.x, y: root.position.y, pitch: root.rotation.x, z: root.position.z, heading: root.rotation.y, wheelAngle, color };
+    return { x: root.position.x, y: root.position.y, pitch: root.rotation.x, z: root.position.z, heading: root.rotation.y, wheelAngle, color, vehicleType };
   }
 
   function dispose(): void {
     effects.dispose();
     root.dispose();
     instance?.dispose();
+    truckPaint.dispose(); truckDark.dispose();
   }
 
   return { root, body, ready, setPose, getPose, dispose };
