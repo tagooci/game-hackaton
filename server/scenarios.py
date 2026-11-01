@@ -11,6 +11,7 @@ import math
 import secrets
 from typing import Any
 
+from .scenario_rules import ScenarioRuleConfig
 
 class ScenarioState(StrEnum):
     WAITING = "waiting"
@@ -53,12 +54,14 @@ class ScenarioDefinition:
     map_id: str
     zone: ScenarioZone
     roles: tuple[ScenarioRole, ...]
+    return_spawn: tuple[float, float, float] = (0.0, 0.0, 0.0)
     time_limit_seconds: float = 60.0
     participation_xp: int = 10
     completion_xp: int = 100
     perfect_bonus_xp: int = 50
     violation_penalty_xp: int = 15
     maximum_xp: int = 150
+    rule_config: ScenarioRuleConfig = field(default_factory=ScenarioRuleConfig)
 
     @property
     def min_players(self) -> int:
@@ -269,6 +272,10 @@ class ScenarioManager:
                 result_id=session.result_id,
             ))
         return events
+
+    def session_for_player(self, player_id: str) -> ScenarioSession | None:
+        session_id = self.player_sessions.get(player_id)
+        return self.sessions.get(session_id) if session_id is not None else None
 
     def record_violation(self, session_id: str, player_id: str, event_id: str) -> None:
         session = self.sessions[session_id]

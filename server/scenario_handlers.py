@@ -12,6 +12,7 @@ from .vehicle import Controls, VehicleState
 
 SendMessage = Callable[[WebSocket, dict[str, Any]], Awaitable[bool]]
 SaveResult = Callable[[str, str, str, str, str, bool, int, list[str]], bool]
+SavePosition = Callable[[str, float, float, float, float, str], None]
 
 
 class ScenarioHandlers:
@@ -25,6 +26,7 @@ class ScenarioHandlers:
         world_map: dict[str, Any],
         send: SendMessage,
         save_result: SaveResult,
+        save_position: SavePosition,
         world_scene_prepare: Callable[[dict[str, Any]], dict[str, Any]],
         scenario_scene_prepare: Callable[[dict[str, Any], Any], dict[str, Any]],
     ) -> None:
@@ -36,6 +38,7 @@ class ScenarioHandlers:
         self.world_map = world_map
         self.send = send
         self.save_result = save_result
+        self.save_position = save_position
         self.world_scene_prepare = world_scene_prepare
         self.scenario_scene_prepare = scenario_scene_prepare
 
@@ -50,6 +53,16 @@ class ScenarioHandlers:
                 payload = self._event_payload(event, player)
                 await self.send(websocket, payload)
             if event.type == "scenario_result" and event.session_id is not None:
+                session = self.manager.sessions[event.session_id]
+                for participant_id in session.participants:
+                    player = self.players.get(participant_id)
+                    if player is not None:
+                        state = player["vehicle"]
+                        player["scenarioFinish"] = (
+                            state.x,
+                            state.z,
+                            state.heading,
+                        )
                 self._save_result(event)
                 asyncio.create_task(self.return_from_scenario(event.session_id))
 
@@ -129,11 +142,28 @@ class ScenarioHandlers:
                 seq=0,
                 applied_seq=0,
                 input_time=0.0,
+                previous_vehicle=(x, z, 0.0),
             )
             self.scene_ready.discard(participant_id)
             websocket = self.connections.get(participant_id)
             if websocket is not None:
                 await self.send(websocket, self.scenario_scene_prepare(player, session))
+
+    async def leave_to_return_spawn(self, player_id: str) -> None:
+        player = self.players.get(player_id)
+        if player is None or player.get("sceneKind") != "scenario":
+            return
+        session_id = player.get("scenarioSessionId")
+        events = self.manager.leave(player_id)
+        await self.send_events(events)
+        session = self.manager.sessions.get(session_id) if session_id else None
+        if session is None:
+            return
+        x, z, heading = session.definition.return_spawn
+        self._move_to_world(player, x, z, heading)
+        websocket = self.connections.get(player_id)
+        if websocket is not None:
+            await self.send(websocket, self.world_scene_prepare(player))
 
     async def return_from_scenario(self, session_id: str) -> None:
         await asyncio.sleep(5)
@@ -147,7 +177,14 @@ class ScenarioHandlers:
             websocket = self.connections.get(participant_id)
             if player is None or websocket is None:
                 continue
-            x, z, heading = player["scenarioReturn"]
+            x, z, heading = player.get(
+                "scenarioFinish",
+                (
+                    player["vehicle"].x,
+                    player["vehicle"].z,
+                    player["vehicle"].heading,
+                ),
+            )
             player.update(
                 sceneId="world:main",
                 sceneKind="world",
@@ -161,7 +198,47 @@ class ScenarioHandlers:
                 seq=0,
                 applied_seq=0,
                 input_time=0.0,
+                previous_vehicle=(x, z, 0.0),
+            )
+            self.save_position(
+                participant_id,
+                x,
+                z,
+                heading,
+                player["vertical"].y,
+                session.definition.map_id,
             )
             player.pop("scenarioReturn", None)
+            player.pop("scenarioFinish", None)
             self.scene_ready.discard(participant_id)
             await self.send(websocket, self.world_scene_prepare(player))
+
+    def _move_to_world(self, player: dict[str, Any], x: float, z: float, heading: float) -> None:
+        body = self.vehicle_world.restore(
+            x, z, heading, self.world_map.get("spawnY", 0)
+        )
+        player.update(
+            sceneId="world:main",
+            sceneKind="world",
+            scenarioId=None,
+            roleId=None,
+            scenarioSessionId=None,
+            epoch=player["epoch"] + 1,
+            vehicle=VehicleState(x=x, z=z, heading=heading),
+            vertical=body,
+            controls=Controls(brake=1),
+            seq=0,
+            applied_seq=0,
+            input_time=0.0,
+            previous_vehicle=(x, z, 0.0),
+        )
+        player.pop("scenarioReturn", None)
+        self.scene_ready.discard(player["id"])
+        self.save_position(
+            player["id"],
+            x,
+            z,
+            heading,
+            body.y,
+            self.world_map["worldId"],
+        )

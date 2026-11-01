@@ -34,6 +34,10 @@ async def run_physics(
                 if now - player["input_time"] <= 0.25
                 else Controls(brake=1)
             )
+            previous = player.get(
+                "previous_vehicle",
+                (player["vehicle"].x, player["vehicle"].z, player["vehicle"].speed),
+            )
             state = step_vehicle(player["vehicle"], controls, vehicle_config, dt)
             if player.get("v2"):
                 others = [
@@ -53,7 +57,12 @@ async def run_physics(
                 z=round(state.z, 2),
                 heading=round(state.heading, 2),
             )
-            await scenario_observe(player["id"], state.x, state.z, state.speed)
+            player["previous_vehicle"] = (state.x, state.z, state.speed)
+            await scenario_observe(
+                player["id"],
+                previous,
+                (state.x, state.z, state.speed),
+            )
 
 
 async def run_snapshots(
