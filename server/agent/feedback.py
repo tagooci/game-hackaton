@@ -17,6 +17,41 @@ class FeedbackGenerationError(RuntimeError):
 
 
 @dataclass(frozen=True)
+class FeedbackConfig:
+    """Generation settings loaded from environment variables."""
+
+    base_url: str = "http://127.0.0.1:11434"
+    model: str = "qwen2.5:3b"
+    timeout_seconds: float = 30.0
+    temperature: float = 0.8
+    top_p: float = 0.9
+    max_tokens: int = 400
+    verbosity: str = "normal"
+    tone: str = "friendly"
+
+    @classmethod
+    def from_environment(cls) -> "FeedbackConfig":
+        return cls(
+            base_url=os.getenv("OLLAMA_URL", cls.base_url).rstrip("/"),
+            model=os.getenv("OLLAMA_MODEL", cls.model),
+            timeout_seconds=_env_float("AGENT_TIMEOUT_SECONDS", cls.timeout_seconds, minimum=1),
+            temperature=_env_float("AGENT_TEMPERATURE", cls.temperature, minimum=0, maximum=2),
+            top_p=_env_float("AGENT_TOP_P", cls.top_p, minimum=0, maximum=1),
+            max_tokens=_env_int("AGENT_MAX_TOKENS", cls.max_tokens, minimum=64, maximum=2048),
+            verbosity=_env_choice(
+                "AGENT_VERBOSITY",
+                cls.verbosity,
+                {"brief", "normal", "detailed"},
+            ),
+            tone=_env_choice(
+                "AGENT_TONE",
+                cls.tone,
+                {"neutral", "friendly", "coach"},
+            ),
+        )
+
+
+@dataclass(frozen=True)
 class FeedbackError:
     violation_id: str
     comment: str
@@ -56,23 +91,30 @@ class OllamaFeedbackGenerator:
         base_url: str | None = None,
         model: str | None = None,
         timeout_seconds: float = 30,
+        config: FeedbackConfig | None = None,
     ) -> None:
-        self.base_url = (base_url or os.getenv("OLLAMA_URL", "http://127.0.0.1:11434")).rstrip("/")
-        self.model = model or os.getenv("OLLAMA_MODEL", "qwen2.5:3b")
-        self.timeout_seconds = timeout_seconds
+        loaded = config or FeedbackConfig.from_environment()
+        self.base_url = (base_url or loaded.base_url).rstrip("/")
+        self.model = model or loaded.model
+        self.timeout_seconds = timeout_seconds if timeout_seconds != 30 else loaded.timeout_seconds
+        self.temperature = loaded.temperature
+        self.top_p = loaded.top_p
+        self.max_tokens = loaded.max_tokens
+        self.verbosity = loaded.verbosity
+        self.tone = loaded.tone
 
     async def generate(self, result: ScenarioResult) -> ScenarioFeedback:
-        prompt = _build_prompt(result)
+        prompt = _build_prompt(result, self.verbosity, self.tone)
         response_schema = _feedback_schema(result)
         raw_response = await asyncio.to_thread(
-            self._generate_sync, prompt, 0.8, response_schema
+            self._generate_sync, prompt, self.temperature, response_schema
         )
         try:
             return parse_feedback(raw_response, result)
         except FeedbackGenerationError as first_error:
             repair_prompt = _build_repair_prompt(result, raw_response, first_error)
             repaired = await asyncio.to_thread(
-                self._generate_sync, repair_prompt, 0.1, response_schema
+                self._generate_sync, repair_prompt, min(self.temperature, 0.2), response_schema
             )
             return parse_feedback(repaired, result)
 
@@ -87,8 +129,8 @@ class OllamaFeedbackGenerator:
                 "stream": False,
                 "options": {
                     "temperature": temperature,
-                    "top_p": 0.9,
-                    "num_predict": 400,
+                    "top_p": self.top_p,
+                    "num_predict": self.max_tokens,
                 },
             }
         ).encode("utf-8")
@@ -118,7 +160,7 @@ class OllamaFeedbackGenerator:
         return text.strip()
 
 
-def _build_prompt(result: ScenarioResult) -> str:
+def _build_prompt(result: ScenarioResult, verbosity: str = "normal", tone: str = "friendly") -> str:
     facts = {
         "status": result.status.value,
         "scenario": result.scenario_id,
@@ -152,9 +194,52 @@ def _build_prompt(result: ScenarioResult) -> str:
         "В successful добавь по одной короткой фразе для каждой проверенной категории "
         "с нулём нарушений. В errors добавь ровно по одному объекту для каждого нарушения, "
         "используя точное значение поля id, а не ruleId. "
-        "Пиши по-русски, естественно и каждый раз немного по-разному.\n\n"
+        f"Объём текста: {verbosity}. Тон: {tone}. "
+        "Пиши по-русски, естественно и каждый раз немного по-разному. "
+        "Для brief используй короткие фразы, для detailed добавляй краткое пояснение "
+        "причины ошибки, но не выдумывай факты.\n\n"
         f"Факты:\n{json.dumps(facts, ensure_ascii=False, indent=2)}"
     )
+
+
+def _env_float(
+    name: str,
+    default: float,
+    *,
+    minimum: float,
+    maximum: float | None = None,
+) -> float:
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    try:
+        value = float(raw)
+    except ValueError as exc:
+        raise ValueError(f"{name} must be a number") from exc
+    if value < minimum or (maximum is not None and value > maximum):
+        bound = f"{minimum}..{maximum}" if maximum is not None else f">={minimum}"
+        raise ValueError(f"{name} must be {bound}")
+    return value
+
+
+def _env_int(name: str, default: int, *, minimum: int, maximum: int) -> int:
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    try:
+        value = int(raw)
+    except ValueError as exc:
+        raise ValueError(f"{name} must be an integer") from exc
+    if value < minimum or value > maximum:
+        raise ValueError(f"{name} must be between {minimum} and {maximum}")
+    return value
+
+
+def _env_choice(name: str, default: str, choices: set[str]) -> str:
+    value = os.getenv(name, default)
+    if value not in choices:
+        raise ValueError(f"{name} must be one of: {', '.join(sorted(choices))}")
+    return value
 
 
 def _feedback_schema(result: ScenarioResult) -> dict[str, object]:

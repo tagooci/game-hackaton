@@ -14,6 +14,7 @@ from .parser import (
 )
 from .service import AgentService, IngestedResult
 from .feedback import (
+    FeedbackConfig,
     FeedbackError,
     FeedbackGenerationError,
     OllamaFeedbackGenerator,
@@ -28,6 +29,7 @@ __all__ = [
     "AgentService",
     "IngestedResult",
     "FeedbackGenerationError",
+    "FeedbackConfig",
     "FeedbackError",
     "OllamaFeedbackGenerator",
     "ScenarioFeedback",
