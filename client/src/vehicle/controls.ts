@@ -8,8 +8,12 @@ export function createVehicleControls(canvas: HTMLCanvasElement) {
   const options = { signal: events.signal };
   const clear = () => { keys.clear(); respawn = false; };
 
+  const hasGameFocus = () => document.activeElement === canvas
+    || Boolean(document.activeElement?.closest('.scenario-assistant'));
+
   window.addEventListener('keydown', event => {
-    if (document.activeElement !== canvas || event.ctrlKey || event.metaKey) return;
+    if (!hasGameFocus() || event.ctrlKey || event.metaKey) return;
+    if (event.code === 'Escape') { clear(); (document.activeElement as HTMLElement | null)?.blur(); return; }
     if (event.code === 'KeyR' && !event.repeat) {
       event.preventDefault();
       respawn = true;
@@ -25,7 +29,7 @@ export function createVehicleControls(canvas: HTMLCanvasElement) {
   document.addEventListener('visibilitychange', () => { if (document.hidden) clear(); }, options);
 
   function getControls(): VehicleControls {
-    if (document.pointerLockElement !== canvas || document.activeElement !== canvas || !document.hasFocus() || document.hidden) {
+    if (!hasGameFocus() || !document.hasFocus() || document.hidden) {
       return { throttle: 0, steering: 0, brake: 1 };
     }
     return {

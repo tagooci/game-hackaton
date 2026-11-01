@@ -83,11 +83,9 @@ function startGame(account: Account): () => void {
   scene.activeCamera = camera;
   canvas.tabIndex = 0;
   const controls = createVehicleControls(canvas);
-  const assistant = createScenarioAssistant(host, () => {
-    controls.clear();
-    if (document.pointerLockElement === canvas) document.exitPointerLock();
-  });
+  const assistant = createScenarioAssistant(host);
   let lastScenarioResult = '';
+  let inScenario = false;
   let ownId = '';
   let targetPose: VehiclePose = vehicle.getPose();
 
@@ -124,9 +122,11 @@ function startGame(account: Account): () => void {
   const overlay = document.createElement('div');
   overlay.className = 'loading-screen';
   overlay.textContent = 'Подключение…';
-  canvas.addEventListener('click', () => {
-    if (!overlay.hidden || assistant.isOpen || document.pointerLockElement === canvas) return;
-    canvas.requestPointerLock().catch(error => console.warn('Не удалось захватить курсор:', error));
+  canvas.addEventListener('click', async () => {
+    if (!overlay.hidden || document.pointerLockElement === canvas) return;
+    canvas.focus({ preventScroll: true });
+    try { if (!assistant.isOpen) await canvas.requestPointerLock?.(); }
+    catch { /* Keyboard controls also work in browsers without pointer lock. */ }
   }, eventOptions);
   const logout = document.createElement('button');
   logout.className = 'logout';
@@ -167,7 +167,7 @@ function startGame(account: Account): () => void {
     });
   }
   const stopStateSender = startStateSender(serverUrl, {
-    getControls: () => mapError || assistant.isOpen ? neutralControls : controls.getControls(),
+    getControls: () => mapError ? neutralControls : controls.getControls(),
     takeRespawn: controls.takeRespawn,
     prepareScene: async message => {
       const expected = new Set(['car-kit/sedan.glb.bin']);
@@ -190,9 +190,13 @@ function startGame(account: Account): () => void {
     onMessage: message => {
       if (message.type === 'welcome') ownId = message.playerId;
       if (message.type === 'scene_prepare') {
-        if (message.sceneKind === 'scenario') {
+        const returnedFromScenario = inScenario && message.sceneKind === 'world';
+        inScenario = message.sceneKind === 'scenario';
+        if (inScenario) {
           lastScenarioResult = '';
-          assistant.introduction(message.roleId);
+          assistant.hide();
+        } else if (returnedFromScenario && lastScenarioResult) {
+          assistant.result(lastScenarioResult);
         } else if (!lastScenarioResult) assistant.hide();
         queuePosition = undefined; queueLabel.hidden = true;
         finishArch?.dispose();
@@ -201,10 +205,10 @@ function startGame(account: Account): () => void {
         vehicle.setPose(message.spawn);
         targetPose = message.spawn;
       }
+
       if (message.type === 'snapshot') {
-        if (typeof message.scenarioResult === 'string' && message.scenarioResult && message.scenarioResult !== lastScenarioResult) {
+        if (inScenario && typeof message.scenarioResult === 'string' && message.scenarioResult && message.scenarioResult !== lastScenarioResult) {
           lastScenarioResult = message.scenarioResult;
-          assistant.result(message.scenarioResult);
         }
         const queue = message.scenarioQueue;
         queuePosition = queue ? new Vector3(queue.x, queue.y, queue.z) : undefined;
@@ -216,7 +220,7 @@ function startGame(account: Account): () => void {
     },
     onDisconnect: () => {
       mapReady = false;
-      assistant.hide(); lastScenarioResult = '';
+      assistant.hide(); lastScenarioResult = ''; inScenario = false;
       remotePlayers.clear(); controls.clear(); targetPose = vehicle.getPose();
     },
   });
