@@ -279,8 +279,8 @@ function startGame(account: Account, profile: Profile): () => void {
           : message.weather === 'rain'
             ? new Color4(0.35, 0.4, 0.48, 1)
             : new Color4(0.86, 0.83, 0.76, 1);
-        ambient.intensity = isDark ? 0 : 0.6;
-        sun.intensity = isDark ? 0 : message.weather === 'rain' ? 0.55 : 1.0;
+        ambient.intensity = isDark ? 0.12 : 0.6;
+        sun.intensity = isDark ? 0.04 : message.weather === 'rain' ? 0.55 : 1.0;
       }
 
       if (message.type === 'snapshot') {
