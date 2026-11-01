@@ -1,26 +1,18 @@
 /** Local V12-inspired synthesis; no downloads and no server audio traffic. */
-export function createEngineSound(host: HTMLElement, controlsHost: HTMLElement) {
+export function createEngineSound(host: HTMLElement) {
   let context: AudioContext | undefined;
   let gain: GainNode;
   let filter: BiquadFilterNode;
   let exhaust: OscillatorNode;
   let body: OscillatorNode;
-  let muted = false;
   let disposed = false;
   let failed = false;
   let nextUpdate = 0;
   const events = new AbortController();
   const options = { signal: events.signal };
-  const button = document.createElement('button');
-  button.className = 'engine-sound-toggle';
-  button.type = 'button';
-  button.textContent = 'Двигатель: вкл.';
-  button.setAttribute('aria-label', 'Отключить звук двигателя');
-  button.setAttribute('aria-pressed', 'true');
-  controlsHost.append(button);
 
   function unlock(event: Event) {
-    if (disposed || failed || muted || !event.isTrusted) return;
+    if (disposed || failed || !event.isTrusted) return;
     try {
       if (!context) {
         context = new AudioContext();
@@ -53,19 +45,9 @@ export function createEngineSound(host: HTMLElement, controlsHost: HTMLElement) 
       failed = true;
       if (context) void context.close().catch(() => {});
       context = undefined;
-      button.textContent = 'Звук недоступен';
-      button.disabled = true;
     }
   }
 
-  button.addEventListener('click', event => {
-    muted = !muted;
-    button.textContent = muted ? 'Двигатель: выкл.' : 'Двигатель: вкл.';
-    button.setAttribute('aria-label', muted ? 'Включить звук двигателя' : 'Отключить звук двигателя');
-    button.setAttribute('aria-pressed', String(!muted));
-    if (muted && context) gain.gain.setTargetAtTime(0, context.currentTime, 0.04);
-    else unlock(event);
-  }, options);
   host.addEventListener('pointerdown', unlock, options);
   host.addEventListener('keydown', unlock, options);
   document.addEventListener('visibilitychange', () => {
@@ -84,13 +66,12 @@ export function createEngineSound(host: HTMLElement, controlsHost: HTMLElement) 
       exhaust.frequency.setTargetAtTime(rpm / 10, now, 0.18);
       body.frequency.setTargetAtTime(rpm / 30, now, 0.22);
       filter.frequency.setTargetAtTime(450 + velocity * 650 + load * 950, now, 0.15);
-      const volume = muted || document.hidden || !running ? 0 : 0.025 + load * 0.075 + velocity * 0.025;
+      const volume = document.hidden || !running ? 0 : 0.025 + load * 0.075 + velocity * 0.025;
       gain.gain.setTargetAtTime(volume, now, 0.1);
     },
     dispose() {
       disposed = true;
       events.abort();
-      button.remove();
       if (context) {
         gain.gain.value = 0;
         exhaust?.stop();

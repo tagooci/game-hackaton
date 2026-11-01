@@ -105,7 +105,7 @@ function startGame(account: Account, profile: Profile): () => void {
   fpsLabel.textContent = 'FPS: —';
   performanceLabel.append(pingLabel, fpsLabel);
   host.append(performanceLabel);
-  const engineSound = createEngineSound(host, performanceLabel);
+  const engineSound = createEngineSound(host);
   let lastFpsUpdate = performance.now();
   const assistant = createScenarioAssistant(host, () => {
     controls.clear();
@@ -136,7 +136,7 @@ function startGame(account: Account, profile: Profile): () => void {
   shadows.normalBias = 0.08;
   shadows.setDarkness(0.25);
 
-  // Земля под картой; локальная сетка с шагом 1 м следует за машиной.
+  // Тёмно-зелёная подложка значительно шире карты во всех направлениях.
   const ground = MeshBuilder.CreateGround(
     'ground',
     { width: 2700, height: 2300 },
@@ -144,7 +144,7 @@ function startGame(account: Account, profile: Profile): () => void {
   );
 
   const groundMaterial = new StandardMaterial('ground-material', scene);
-  groundMaterial.diffuseColor = Color3.FromHexString('#77776c').toLinearSpace();
+  groundMaterial.diffuseColor = Color3.FromHexString('#183d28').toLinearSpace();
   groundMaterial.specularColor = Color3.Black();
   ground.position.y = -0.12;
   ground.material = groundMaterial;
@@ -214,7 +214,9 @@ function startGame(account: Account, profile: Profile): () => void {
       minimap.setReady(false);
       overlay.textContent = 'Загрузка карты…';
       await roads.init(message.plan.mapManifestUrl);
-      if (roads.manifest.groundColor) groundMaterial.diffuseColor = Color3.FromHexString(roads.manifest.groundColor).toLinearSpace();
+      const bounds = roads.manifest.bounds;
+      ground.position.x = (bounds.minX + bounds.maxX) / 2;
+      ground.position.z = (bounds.minZ + bounds.maxZ) / 2;
       await roads.update(message.spawn.x, message.spawn.z);
       overlay.textContent = 'Загрузка машины…';
       await vehicle.ready;
