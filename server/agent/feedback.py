@@ -127,6 +127,7 @@ class OllamaFeedbackGenerator:
                 "prompt": prompt,
                 "format": response_schema,
                 "stream": False,
+                "think": False,
                 "options": {
                     "temperature": temperature,
                     "top_p": self.top_p,
@@ -259,7 +260,7 @@ def _feedback_schema(result: ScenarioResult) -> dict[str, object]:
                 "items": {
                     "type": "object",
                     "properties": {
-                        "category": {"type": "string", "enum": categories},
+                        "category": {"type": "string", **({"enum": categories} if categories else {})},
                         "comment": {"type": "string"},
                     },
                     "required": ["category", "comment"],
@@ -272,7 +273,7 @@ def _feedback_schema(result: ScenarioResult) -> dict[str, object]:
                 "items": {
                     "type": "object",
                     "properties": {
-                        "violationId": {"type": "string", "enum": violation_ids},
+                        "violationId": {"type": "string", **({"enum": violation_ids} if violation_ids else {})},
                         "comment": {"type": "string"},
                     },
                     "required": ["violationId", "comment"],

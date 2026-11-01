@@ -22,7 +22,6 @@ class ScenarioStatus(StrEnum):
 
 class CheckName(StrEnum):
     ROAD_MARKINGS = "roadMarkings"
-    LANE_CHANGES = "laneChanges"
     RIGHT_OF_WAY = "rightOfWay"
     TRAFFIC_SIGNS = "trafficSigns"
     COLLISIONS = "collisions"

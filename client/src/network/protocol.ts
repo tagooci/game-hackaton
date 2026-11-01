@@ -14,6 +14,8 @@ export type ServerMessage =
   | ScenePrepare
   | ({ type: 'scene_start'; startTick: number; tick: number } & SceneContext)
   | ({ type: 'snapshot'; tick: number; players: PlayerSnapshot[]; scenarioResult?: string | null; scenarioQueue?: { count: number; x: number; y: number; z: number } | null } & SceneContext)
+  | { type: 'agent_feedback'; resultId: string; sessionId: string; playerId: string; feedback: { successful: { category: string; comment: string }[]; errors: { violationId: string; comment: string }[] } }
+  | { type: 'agent_feedback_error'; resultId: string; sessionId: string; text: string }
   | { type: 'error'; code: string; text: string };
 
 function object(value: unknown): value is Record<string, unknown> {
@@ -45,6 +47,12 @@ export function parseServerMessage(text: string): ServerMessage | undefined {
       if (!context(v) || !Number.isSafeInteger(v.tick) || !Array.isArray(v.players)
         || !v.players.every(p => object(p) && typeof p.id === 'string' && typeof p.name === 'string' && pose(p)
           && typeof p.wheelAngle === 'number' && Number.isFinite(p.wheelAngle) && Number.isInteger(p.color) && Number(p.color) >= 0 && Number(p.color) < 5)) return;
+      break;
+    case 'agent_feedback':
+      if (typeof v.resultId !== 'string' || typeof v.sessionId !== 'string' || typeof v.playerId !== 'string' || !object(v.feedback) || !Array.isArray(v.feedback.successful) || !Array.isArray(v.feedback.errors)) return;
+      break;
+    case 'agent_feedback_error':
+      if (typeof v.resultId !== 'string' || typeof v.sessionId !== 'string' || typeof v.text !== 'string') return;
       break;
     case 'error':
       if (typeof v.code !== 'string' || typeof v.text !== 'string') return;

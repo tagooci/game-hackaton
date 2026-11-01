@@ -26,7 +26,8 @@ def waiting(player):
 
 
 class ScenarioSessions:
-    def __init__(self):
+    def __init__(self, on_result=None):
+        self.on_result = on_result
         self.waiters = {}
         self.sessions = {}
         self.count = 0
@@ -63,7 +64,9 @@ class ScenarioSessions:
                         continue
                     timers.setdefault(pid, now)
                     if now-timers[pid] >= 1:
-                        session['results'].finish(pid, 'completed', now)
+                        report = session['results'].finish(pid, 'completed', now)
+                        if report is not None and self.on_result is not None:
+                            self.on_result(report)
                         session.setdefault('finished', set()).add(pid)
                         # Сцена сохраняет координаты общей карты: возвращаем на тот же выезд.
                         player['return_state'] = (state, body)
