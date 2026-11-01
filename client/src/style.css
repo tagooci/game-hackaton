@@ -57,6 +57,10 @@ button:disabled { cursor: wait; opacity: 0.6; }
 @media (min-width: 851px) and (pointer: fine) { .touch-controls { display: none; } }
 @media (max-width: 480px) { .touch-controls { gap: 8px; } .touch-arrows, .touch-pedals { gap: 8px; } .touch-controls button { border-radius: 14px; } }
 @media (hover: none) and (max-width: 1200px) {
+  .touch-controls {
+    inset: 0;
+    display: block;
+  }
   .speedometer {
     left: max(12px, env(safe-area-inset-left));
     right: auto;
@@ -64,8 +68,15 @@ button:disabled { cursor: wait; opacity: 0.6; }
     transform: none;
   }
   .touch-arrows {
-    margin-left: clamp(80px, 22vw, 160px);
-    margin-bottom: clamp(150px, 25vh, 220px);
+    position: absolute;
+    left: max(clamp(80px, 22vw, 160px), calc(env(safe-area-inset-left) + 72px));
+    bottom: clamp(150px, 25vh, 220px);
+    margin: 0;
+  }
+  .touch-pedals {
+    position: absolute;
+    right: max(18px, env(safe-area-inset-right));
+    bottom: max(18px, env(safe-area-inset-bottom));
   }
 }
 .scenario-queue { font: 600 15px/1.4 system-ui, sans-serif; white-space: nowrap; }
