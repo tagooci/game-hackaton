@@ -69,6 +69,8 @@ export function createScenarioAssistant(host: HTMLElement, onOpen = () => {}) {
     next.textContent = replyIndex < replies.length - 1 ? 'Дальше →' : 'Понятно';
   }
   function show(value: string | string[]) {
+    root.classList.remove('assistant-loading');
+    next.hidden = false;
     replies = (typeof value === 'string' ? [value] : value).filter(reply => reply.trim());
     if (!replies.length) return;
     replyIndex = 0;
@@ -86,6 +88,16 @@ export function createScenarioAssistant(host: HTMLElement, onOpen = () => {}) {
   root.onkeydown = event => { if (event.key === 'Escape') { event.stopPropagation(); close(); } };
   return {
     get isOpen() { return opened; },
+    waiting() {
+      show('Анализирую проезд');
+      root.classList.add('assistant-loading');
+      next.hidden = true;
+      const dots = document.createElement('span');
+      dots.className = 'assistant-dots';
+      dots.setAttribute('aria-label', 'Ожидание ответа');
+      for (let i = 0; i < 3; i++) dots.append(document.createElement('span'));
+      text.append(dots);
+    },
     preview() {
       show([
         'Вы правильно пропустили КамАЗ справа.',

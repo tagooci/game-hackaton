@@ -28,9 +28,11 @@ class RoadSurface:
                 for z in range(math.floor(min_z/cell_size),math.floor(max_z/cell_size)+1):
                     self.cells[x,z].append(surface)
 
-    def contacts(self, x, z, heading):
+    def contacts(self, x, z, heading, road_id=None):
         candidates = []
         for surface in self.cells.get((math.floor(x/self.cell_size),math.floor(z/self.cell_size)), []):
+            if road_id is not None and surface.get('roadId') != road_id:
+                continue
             if 'plane' in surface:
                 a, dx, dz, ex, ez, determinant, gx, gz = surface['plane']
                 u = ((x-a[0])*ez-ex*(z-a[2]))/determinant

@@ -176,6 +176,14 @@ class VehicleWorld:
                         continue
                     hit = penetration(candidate.x,candidate.z,candidate.heading,box)
                     if hit:
+                        # Бокс наклонной грани хранит общий диапазон высоты и может
+                        # пересекать кузов там, где точная поверхность проходит под колёсами.
+                        # На своей опорной поверхности используем треугольники; бордюры,
+                        # машины и препятствия под мостом по-прежнему блокируют движение.
+                        if next_body.grounded and box.get('kind') != 'curb' and box.get('objectId'):
+                            contacts = self.surface.contacts(qx,qz,candidate.heading,box['objectId'])
+                            if any(abs(height-bottom) <= STEP_HEIGHT for height,_ in contacts):
+                                continue
                         if box.get("playerId"):
                             self.contact_players.add(box["playerId"])
                         depth,nx,nz = hit

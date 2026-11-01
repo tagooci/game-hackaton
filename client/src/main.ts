@@ -215,8 +215,8 @@ function startGame(account: Account): () => void {
           assistant.hide();
         } else if (returnedFromScenario && agentReplies.length) {
           assistant.result(agentReplies);
-        } else if (returnedFromScenario && lastScenarioResult) {
-          assistant.result(lastScenarioResult);
+        } else if (returnedFromScenario) {
+          assistant.waiting();
         } else if (!lastScenarioResult) assistant.hide();
         queuePosition = undefined; queueLabel.hidden = true;
         finishArch?.dispose();

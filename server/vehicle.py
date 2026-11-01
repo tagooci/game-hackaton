@@ -13,8 +13,8 @@ class VehicleConfig:
     brakeDeceleration: float = 25.0
     rollingDeceleration: float = 0.45
     maxSteerAngle: float = 0.8
-    steeringRate: float = 3.0
-    maxLateralAcceleration: float = 8.0
+    steeringRate: float = 4.5
+    maxLateralAcceleration: float = 14.0
     directionChangeDelay: float = 0.25
 
 

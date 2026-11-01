@@ -1,4 +1,5 @@
 import { createVehicleView, VEHICLE_LENGTH } from '../vehicle/vehicleView.ts';
+import { Matrix, Vector3 } from '@babylonjs/core/Maths/math.vector';
 import type { Scene } from '@babylonjs/core/scene.js';
 import type { PlayerSnapshot, ServerMessage } from '../network/protocol';
 
@@ -11,7 +12,7 @@ interface Sample extends PlayerSnapshot {
 
 /** Rendering only: the network module supplies events, Babylon renders the meshes. */
 export function createRemotePlayers(scene: Scene, createView = createVehicleView) {
-  const players = new Map<string, { vehicle: ReturnType<typeof createVehicleView>; samples: Sample[] }>();
+  const players = new Map<string, { vehicle: ReturnType<typeof createVehicleView>; samples: Sample[]; label: HTMLDivElement }>();
   let ownId: string | undefined;
   let lastTick = -1;
 
@@ -20,11 +21,16 @@ export function createRemotePlayers(scene: Scene, createView = createVehicleView
     const vehicle = createView(scene, VEHICLE_LENGTH, `player-${player.id}`);
     vehicle.setPose(player);
     vehicle.root.metadata = { playerId: player.id, name: player.name };
-    players.set(player.id, { vehicle, samples: [{ ...player, time: now }] });
+    const label = document.createElement('div');
+    label.className = 'player-name';
+    label.textContent = player.name;
+    label.hidden = true;
+    scene.getEngine().getRenderingCanvas()?.parentElement?.append(label);
+    players.set(player.id, { vehicle, label, samples: [{ ...player, time: now }] });
   }
 
   function clear(): void {
-    for (const { vehicle } of players.values()) vehicle.dispose();
+    for (const { vehicle, label } of players.values()) { vehicle.dispose(); label.remove(); }
     players.clear();
     ownId = undefined;
     lastTick = -1;
@@ -47,12 +53,13 @@ export function createRemotePlayers(scene: Scene, createView = createVehicleView
         lastTick = message.tick;
         const visible = new Set(message.players.map(player => player.id));
         for (const [id, player] of players) {
-          if (!visible.has(id)) { player.vehicle.dispose(); players.delete(id); }
+          if (!visible.has(id)) { player.vehicle.dispose(); player.label.remove(); players.delete(id); }
         }
         for (const state of message.players) {
           addPlayer(state, now);
           const player = players.get(state.id);
           if (!player) continue; // Своя машина отображается отдельно.
+          player.label.textContent = state.name;
           player.samples.push({ ...state, time: now });
           if (player.samples.length > MAX_SAMPLES) player.samples.shift();
         }
@@ -62,7 +69,7 @@ export function createRemotePlayers(scene: Scene, createView = createVehicleView
 
   function update(now = performance.now()): void {
     const renderTime = now - INTERPOLATION_DELAY_MS;
-    for (const { vehicle, samples } of players.values()) {
+    for (const { vehicle, samples, label } of players.values()) {
       while (samples.length > 2 && samples[1].time <= renderTime) samples.shift();
       const from = samples[0];
       const to = samples[1] ?? from;
@@ -78,6 +85,18 @@ export function createRemotePlayers(scene: Scene, createView = createVehicleView
         wheelAngle: (from.wheelAngle ?? 0) + ((to.wheelAngle ?? 0) - (from.wheelAngle ?? 0)) * t,
         color: to.color,
       });
+      const camera = scene.activeCamera;
+      const engine = scene.getEngine();
+      const canvas = engine.getRenderingCanvas();
+      if (camera && canvas) {
+        const pose = vehicle.getPose();
+        const point = new Vector3(pose.x, (pose.y ?? 0) + 2.5, pose.z);
+        const screen = Vector3.Project(point, Matrix.Identity(), scene.getTransformMatrix(),
+          camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight()));
+        label.hidden = screen.z < 0 || screen.z > 1 || Vector3.Distance(camera.position, point) > 55;
+        label.style.left = `${screen.x / engine.getRenderWidth() * canvas.clientWidth}px`;
+        label.style.top = `${screen.y / engine.getRenderHeight() * canvas.clientHeight}px`;
+      }
     }
   }
 
