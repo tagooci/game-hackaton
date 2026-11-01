@@ -2,18 +2,19 @@ import './style.css';
 import { api, ApiError, showAuth } from './auth/session';
 import type { Account } from './auth/session';
 
+import { RoadContent } from './world/road-content.js';
 import { Engine } from '@babylonjs/core/Engines/engine';
 import { Scene } from '@babylonjs/core/scene';
 import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera';
 import { HemisphericLight } from '@babylonjs/core/Lights/hemisphericLight';
 import { MeshBuilder } from '@babylonjs/core/Meshes/meshBuilder';
 import { Vector3 } from '@babylonjs/core/Maths/math.vector';
-import { Color3 } from '@babylonjs/core/Maths/math.color';
+import { Color3, Color4 } from '@babylonjs/core/Maths/math.color';
 import type { VehiclePose } from './vehicle/vehicleView';
 import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial';
 import { startStateSender } from './network/stateSender';
 import { createRemotePlayers } from './players/remotePlayers';
-import { createVehicleView } from './vehicle/vehicleView';
+import { createVehicleView, VEHICLE_LENGTH } from './vehicle/vehicleView';
 import { createVehicleControls } from './vehicle/controls';
 
 const host = document.querySelector<HTMLDivElement>('#app')!;
@@ -46,9 +47,15 @@ function startGame(account: Account): () => void {
 
   // Сцена содержит камеру, свет и объекты.
   const scene = new Scene(engine);
+  scene.clearColor = new Color4(0.73, 0.82, 0.87, 1);
+  // Дальняя граница подгрузки скрыта за плавным туманом.
+  scene.fogMode = Scene.FOGMODE_LINEAR;
+  scene.fogColor = new Color3(0.73, 0.82, 0.87);
+  scene.fogStart = 25;
+  scene.fogEnd = 40;
 
   // Длина модели в метрах; пропорции сохраняются при загрузке.
-  const vehicle = createVehicleView(scene, 4.4);
+  const vehicle = createVehicleView(scene, VEHICLE_LENGTH);
   vehicle.setPose({ x: 0, z: 0, heading: 0 });
 
   // Камера наблюдает за машиной и не управляет её положением.
@@ -61,8 +68,9 @@ function startGame(account: Account): () => void {
     scene,
   );
   camera.lockedTarget = vehicle.body;
+  camera.maxZ = 140;
   camera.lowerRadiusLimit = 5;
-  camera.upperRadiusLimit = 20;
+  camera.upperRadiusLimit = 12;
   camera.lowerBetaLimit = 0.2;
   camera.upperBetaLimit = Math.PI / 2 - 0.05;
   camera.panningSensibility = 0;
@@ -77,20 +85,22 @@ function startGame(account: Account): () => void {
   // Освещение сверху.
   new HemisphericLight('light', new Vector3(0, 1, 0), scene);
 
-  // Площадка 100 × 100 м; шаг сетки — 1 м.
+  // Земля под картой; локальная сетка с шагом 1 м следует за машиной.
   const ground = MeshBuilder.CreateGround(
     'ground',
-    { width: 100, height: 100 },
+    { width: 2700, height: 2300 },
     scene,
   );
 
   const groundMaterial = new StandardMaterial('ground-material', scene);
-  groundMaterial.diffuseColor = new Color3(0.3, 0.32, 0.35);
+  groundMaterial.diffuseColor = Color3.FromHexString('#7D9478');
+  groundMaterial.specularColor = Color3.Black();
+  ground.position.y = -0.12;
   ground.material = groundMaterial;
   const lines: Vector3[][] = [];
   for (let i = -50; i <= 50; i++) {
-    lines.push([new Vector3(i, 0.01, -50), new Vector3(i, 0.01, 50)]);
-    lines.push([new Vector3(-50, 0.01, i), new Vector3(50, 0.01, i)]);
+    lines.push([new Vector3(i, -0.11, -50), new Vector3(i, -0.11, 50)]);
+    lines.push([new Vector3(-50, -0.11, i), new Vector3(50, -0.11, i)]);
   }
   const grid = MeshBuilder.CreateLineSystem('ground-grid', { lines }, scene);
   grid.color = new Color3(0.5, 0.53, 0.57);
@@ -114,19 +124,46 @@ function startGame(account: Account): () => void {
   const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
   const serverUrl = `${wsProtocol}//${location.host}/ws/v2`;
   const remotePlayers = createRemotePlayers(scene);
+  const roads = new RoadContent(scene, () => {});
+  if (import.meta.env.DEV) Object.defineProperty(window, 'roadCache', { configurable: true, get: () => roads.stats() });
+  let mapReady = false;
+  let mapLoading = false;
+  let mapError = false;
+  const neutralControls = { throttle: 0, steering: 0, brake: 1 };
+
+  function updateRoads(x: number, z: number): Promise<void> {
+    mapLoading = true;
+    return roads.update(x, z).then(() => {
+      mapLoading = false;
+      mapError = false;
+    }).catch(error => {
+      mapLoading = false;
+      mapError = true;
+      overlay.hidden = false;
+      overlay.textContent = `Ошибка карты: ${error.message}. Перезагрузите страницу.`;
+      throw error;
+    });
+  }
   const stopStateSender = startStateSender(serverUrl, {
-    getControls: controls.getControls,
+    getControls: () => mapError ? neutralControls : controls.getControls(),
+    takeRespawn: controls.takeRespawn,
     prepareScene: async message => {
       const expected = new Set(['car-kit/sedan.glb', 'car-kit/Textures/colormap.png']);
       if (message.plan.resources.length !== expected.size || message.plan.resources.some(r => !expected.has(r.id))) {
         throw new Error('Неподдерживаемый план сцены');
       }
+      mapReady = false;
+      overlay.textContent = 'Загрузка карты…';
+      await roads.init(message.plan.mapManifestUrl);
+      if (roads.manifest.groundColor) groundMaterial.diffuseColor = Color3.FromHexString(roads.manifest.groundColor);
+      await roads.update(message.spawn.x, message.spawn.z);
       overlay.textContent = 'Загрузка машины…';
       await vehicle.ready;
       overlay.textContent = 'Подготовка сцены…';
       await scene.whenReadyAsync();
+      mapReady = true;
     },
-    onStatus: text => { overlay.hidden = !text; overlay.textContent = text; },
+    onStatus: text => { if (!mapLoading && !mapError) { overlay.hidden = !text; overlay.textContent = text; } },
     onSessionEnd: code => authScreen(code === 4001 ? 'Аккаунт уже подключён в другом окне' : 'Войдите в аккаунт снова'),
     onMessage: message => {
       if (message.type === 'welcome') ownId = message.playerId;
@@ -142,6 +179,7 @@ function startGame(account: Account): () => void {
       remotePlayers.handleMessage(message);
     },
     onDisconnect: () => {
+      mapReady = false;
       remotePlayers.clear(); controls.clear(); targetPose = vehicle.getPose();
     },
   });
@@ -156,9 +194,19 @@ function startGame(account: Account): () => void {
       x: pose.x + (targetPose.x - pose.x) * blend,
       z: pose.z + (targetPose.z - pose.z) * blend,
       heading: pose.heading + angle * blend,
+      y: (pose.y ?? 0) + ((targetPose.y ?? 0) - (pose.y ?? 0)) * blend,
+      pitch: (pose.pitch ?? 0) + ((targetPose.pitch ?? 0) - (pose.pitch ?? 0)) * blend,
       wheelAngle: (pose.wheelAngle ?? 0) + ((targetPose.wheelAngle ?? 0) - (pose.wheelAngle ?? 0)) * blend,
       color: targetPose.color,
     });
+    grid.position.set(Math.floor(pose.x), 0, Math.floor(pose.z));
+    if (mapReady && !mapLoading && !mapError) {
+      const size = roads.manifest.streamStep ?? roads.manifest.chunkSize;
+      const key = `${Math.floor(pose.x / size)}:${Math.floor(pose.z / size)}:none`;
+      if (key !== roads.planKey) {
+        void updateRoads(pose.x, pose.z).catch(() => {});
+      }
+    }
     remotePlayers.update();
     scene.render();
   });
@@ -174,6 +222,8 @@ function startGame(account: Account): () => void {
     controls.dispose();
     events.abort();
     engine.stopRenderLoop();
+    if (import.meta.env.DEV) Reflect.deleteProperty(window, 'roadCache');
+    roads.dispose();
     remotePlayers.dispose();
     vehicle.dispose();
     scene.dispose();

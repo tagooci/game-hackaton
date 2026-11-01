@@ -1,4 +1,4 @@
-export interface PlayerState { x: number; z: number; heading: number }
+export interface PlayerState { x: number; z: number; heading: number; y?: number; pitch?: number }
 export interface VehicleControls { throttle: number; steering: number; brake: number }
 export interface PlayerSnapshot extends PlayerState {
   id: string; name: string; vehicleType: string; speed: number; steering: number; lastInputSeq: number; wheelAngle: number; color: number;
@@ -6,7 +6,7 @@ export interface PlayerSnapshot extends PlayerState {
 export interface SceneContext { sceneId: string; epoch: number }
 export interface ScenePrepare extends SceneContext {
   type: 'scene_prepare'; spawn: PlayerState;
-  plan: { revision: number; resources: { id: string; url: string; bytes: number }[] };
+  plan: { mapManifestUrl: string; revision: number; resources: { id: string; url: string; bytes: number }[] };
 }
 export type ServerMessage =
   | { type: 'welcome'; v: 2; playerId: string; inputHz: number }
@@ -19,7 +19,8 @@ function object(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 function pose(value: unknown): boolean {
-  return object(value) && ['x', 'z', 'heading'].every(key => typeof value[key] === 'number' && Number.isFinite(value[key]));
+  return object(value) && ['x', 'z', 'heading'].every(key => typeof value[key] === 'number' && Number.isFinite(value[key]))
+    && ['y', 'pitch'].every(key => value[key] === undefined || typeof value[key] === 'number' && Number.isFinite(value[key]));
 }
 function context(value: Record<string, unknown>): boolean {
   return typeof value.sceneId === 'string' && Number.isSafeInteger(value.epoch);
@@ -33,7 +34,7 @@ export function parseServerMessage(text: string): ServerMessage | undefined {
       if (v.v !== 2 || typeof v.playerId !== 'string' || !Number.isInteger(v.inputHz) || Number(v.inputHz) < 1 || Number(v.inputHz) > 60) return;
       break;
     case 'scene_prepare':
-      if (!context(v) || !pose(v.spawn) || !object(v.plan) || !Number.isSafeInteger(v.plan.revision) || !Array.isArray(v.plan.resources)
+      if (!context(v) || !pose(v.spawn) || !object(v.plan) || typeof v.plan.mapManifestUrl !== 'string' || !Number.isSafeInteger(v.plan.revision) || !Array.isArray(v.plan.resources)
         || !v.plan.resources.every(r => object(r) && typeof r.id === 'string' && typeof r.url === 'string' && Number.isSafeInteger(r.bytes) && Number(r.bytes) >= 0)) return;
       break;
     case 'scene_start':

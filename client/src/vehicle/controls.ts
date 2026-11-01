@@ -2,13 +2,20 @@ import type { VehicleControls } from '../network/protocol';
 
 export function createVehicleControls(canvas: HTMLCanvasElement) {
   const keys = new Set<string>();
+  let respawn = false;
   const movementKeys = new Set(['KeyW', 'KeyA', 'KeyS', 'KeyD', 'Space']);
   const events = new AbortController();
   const options = { signal: events.signal };
-  const clear = () => keys.clear();
+  const clear = () => { keys.clear(); respawn = false; };
 
   window.addEventListener('keydown', event => {
-    if (document.activeElement !== canvas || event.ctrlKey || event.metaKey || !movementKeys.has(event.code)) return;
+    if (document.activeElement !== canvas || event.ctrlKey || event.metaKey) return;
+    if (event.code === 'KeyR' && !event.repeat) {
+      event.preventDefault();
+      respawn = true;
+      return;
+    }
+    if (!movementKeys.has(event.code)) return;
     event.preventDefault();
     keys.add(event.code);
   }, options);
@@ -28,5 +35,6 @@ export function createVehicleControls(canvas: HTMLCanvasElement) {
     };
   }
 
-  return { getControls, clear, dispose: () => { events.abort(); clear(); } };
+  const takeRespawn = () => { const requested = respawn; respawn = false; return requested; };
+  return { getControls, takeRespawn, clear, dispose: () => { events.abort(); clear(); } };
 }
