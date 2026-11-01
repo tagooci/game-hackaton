@@ -8,6 +8,7 @@ from dataclasses import dataclass, field
 from enum import StrEnum
 from itertools import count
 import math
+import secrets
 from typing import Any
 
 
@@ -42,6 +43,7 @@ class ScenarioZone:
 class ScenarioRole:
     id: str
     vehicle_type: str = "car"
+    spawn: tuple[float, float, float] = (0.0, 0.0, 0.0)
     destination: ScenarioZone | None = None
 
 
@@ -52,6 +54,11 @@ class ScenarioDefinition:
     zone: ScenarioZone
     roles: tuple[ScenarioRole, ...]
     time_limit_seconds: float = 60.0
+    participation_xp: int = 10
+    completion_xp: int = 100
+    perfect_bonus_xp: int = 50
+    violation_penalty_xp: int = 15
+    maximum_xp: int = 150
 
     @property
     def min_players(self) -> int:
@@ -73,6 +80,10 @@ class ScenarioSession:
     started_at: float | None = None
     violations: dict[str, list[str]] = field(default_factory=dict)
     finished_players: set[str] = field(default_factory=set)
+    ready_players: set[str] = field(default_factory=set)
+    start_tick: int | None = None
+    xp: dict[str, int] = field(default_factory=dict)
+    result_id: str | None = None
 
 
 @dataclass(frozen=True)
@@ -87,6 +98,9 @@ class ScenarioEvent:
     reason: str | None = None
     passed: bool | None = None
     violation_ids: tuple[str, ...] = ()
+    start_tick: int | None = None
+    xp: int | None = None
+    result_id: str | None = None
 
 
 class ScenarioManager:
@@ -106,6 +120,15 @@ class ScenarioManager:
             raise ValueError("a scenario supports at most three roles")
         if not math.isfinite(definition.time_limit_seconds) or definition.time_limit_seconds <= 0:
             raise ValueError("time limit must be positive and finite")
+        if any(value < 0 for value in (
+            definition.participation_xp,
+            definition.completion_xp,
+            definition.perfect_bonus_xp,
+            definition.violation_penalty_xp,
+        )):
+            raise ValueError("experience values must be non-negative")
+        if definition.maximum_xp < 0:
+            raise ValueError("maximum experience must be non-negative")
         self.definitions[definition.id] = definition
 
     def join(self, player_id: str, scenario_id: str, x: float, z: float, speed: float, now: float) -> list[ScenarioEvent]:
@@ -167,11 +190,37 @@ class ScenarioManager:
             reason=reason,
         )]
 
+    def release(self, session_id: str) -> None:
+        session = self.sessions[session_id]
+        for participant_id in session.participants:
+            self.player_sessions.pop(participant_id, None)
+
     def set_state(self, session_id: str, state: ScenarioState, now: float | None = None) -> None:
         session = self.sessions[session_id]
         if state == ScenarioState.RUNNING:
             session.started_at = now
         session.state = state
+
+    def mark_ready(self, session_id: str, player_id: str, start_tick: int) -> list[ScenarioEvent]:
+        session = self.sessions[session_id]
+        if player_id not in session.participants or session.state != ScenarioState.LOADING:
+            return []
+        session.ready_players.add(player_id)
+        if session.ready_players != set(session.participants):
+            return []
+        session.state = ScenarioState.RUNNING
+        session.start_tick = start_tick
+        return [
+            ScenarioEvent(
+                "scenario_start",
+                session.definition.id,
+                session.id,
+                participant_id,
+                role_id=session.participants[participant_id],
+                start_tick=start_tick,
+            )
+            for participant_id in session.participants
+        ]
 
     def observe(
         self,
@@ -187,6 +236,7 @@ class ScenarioManager:
         session = self.sessions[session_id]
         if session.state != ScenarioState.RUNNING or player_id in session.finished_players:
             return []
+        definition = session.definition
         role_id = session.participants[player_id]
         role = next(role for role in session.definition.roles if role.id == role_id)
         if role.destination is None or not role.destination.contains(x, z, speed):
@@ -194,6 +244,10 @@ class ScenarioManager:
 
         session.finished_players.add(player_id)
         violations = tuple(session.violations.get(player_id, ()))
+        xp = definition.participation_xp + definition.completion_xp
+        xp += 0 if violations else definition.perfect_bonus_xp
+        xp -= len(violations) * definition.violation_penalty_xp
+        session.xp[player_id] = max(0, min(definition.maximum_xp, xp))
         events = [ScenarioEvent(
             "scenario_player_finished",
             session.definition.id,
@@ -202,14 +256,17 @@ class ScenarioManager:
             role_id=role_id,
             passed=not violations,
             violation_ids=violations,
+            xp=session.xp[player_id],
         )]
         if len(session.finished_players) == len(session.participants):
             session.state = ScenarioState.FINISHED
+            session.result_id = f"result-{secrets.token_urlsafe(12)}"
             events.append(ScenarioEvent(
                 "scenario_result",
                 session.definition.id,
                 session.id,
                 reason="all_players_finished",
+                result_id=session.result_id,
             ))
         return events
 
@@ -234,6 +291,7 @@ class ScenarioManager:
                     "finished": player_id in session.finished_players,
                     "passed": not session.violations.get(player_id),
                     "violationIds": session.violations.get(player_id, []),
+                    "xp": session.xp.get(player_id, 0),
                 }
                 for player_id, role_id in session.participants.items()
             ],

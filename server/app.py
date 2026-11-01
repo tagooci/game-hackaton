@@ -11,7 +11,18 @@ from contextlib import asynccontextmanager, suppress
 from fastapi import Cookie, FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
 
-from .vehicle import Controls, VehicleConfig, VehicleState, step_vehicle, steering_angle
+from .app_helpers import (
+    broadcast,
+    credentials,
+    is_number,
+    read_json_object,
+    send,
+    send_error,
+    send_v2_error,
+    session_response,
+    world_resources,
+)
+from .vehicle import Controls, VehicleConfig, VehicleState
 from .auth import AuthService
 from .db import Database
 from .state import (
@@ -26,42 +37,35 @@ from .state import (
     v2_players,
     v2_scene_ready,
 )
-from .scenarios import ScenarioEvent, ScenarioManager
+from .scenarios import (
+    ScenarioDefinition,
+    ScenarioEvent,
+    ScenarioManager,
+    ScenarioRole,
+    ScenarioZone,
+)
+from .scenario_handlers import ScenarioHandlers
+from .simulation import run_physics, run_snapshots
 from .world_physics import VehicleWorld
 
 TICK_RATE = 20
 PROTOCOL_VERSION = 1
 tick = 0
 VEHICLE_CONFIG = VehicleConfig()
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 
 async def physics_loop():
-    dt = 1 / 30
-    loop = asyncio.get_running_loop()
-    deadline = loop.time()
-    while True:
-        deadline += dt
-        await asyncio.sleep(max(0, deadline - loop.time()))
-        now = loop.time()
-        if now - deadline > 0.2:
-            deadline = now
-        for player in v2_players.values():
-            if "vehicle" not in player:
-                continue
-            if player["id"] not in v2_scene_ready or tick < player.get("start_tick", 0):
-                continue
-            controls = player["controls"] if now - player["input_time"] <= 0.25 else Controls(brake=1)
-            state = step_vehicle(player["vehicle"], controls, VEHICLE_CONFIG, dt)
-            if player.get('v2'):
-                others = [vehicle_world.car_box(other['vehicle'],other['vertical']) for other in v2_players.values()
-                          if other['id'] != player['id'] and other['id'] in v2_scene_ready]
-                state,player['vertical'] = vehicle_world.step(player['vehicle'],state,player['vertical'],dt,others)
-            player["vehicle"] = state
-            player["applied_seq"] = player.get("seq", 0)
-            player.update(x=round(state.x, 2), z=round(state.z, 2), heading=round(state.heading, 2))
-            await send_scenario_events(scenario_manager.observe(
-                player["id"], state.x, state.z, state.speed,
-            ))
+    await run_physics(
+        v2_players,
+        v2_scene_ready,
+        vehicle_world,
+        VEHICLE_CONFIG,
+        lambda player_id, x, z, speed: scenario_handlers.send_events(
+            scenario_manager.observe(player_id, x, z, speed)
+        ),
+        lambda: tick,
+    )
 
 V2_PROTOCOL_VERSION = 2
 STATIC_DIR = Path(__file__).resolve().parent.parent / 'client' / 'dist'
@@ -71,81 +75,45 @@ vehicle_world = VehicleWorld(NAVIGATION['surfaces'],NAVIGATION.get('colliders',(
 SESSION_COOKIE = "game_session"
 database = Database()
 auth = AuthService(database)
-scenario_manager = ScenarioManager()
-
-
-async def send_scenario_events(events: list[ScenarioEvent]) -> None:
-    for event in events:
-        if event.type == "scenario_cancelled" and event.session_id is not None:
-            session = scenario_manager.sessions.get(event.session_id)
-            recipients = session.participants if session else ()
-        elif event.player_id is not None:
-            recipients = (event.player_id,)
-        elif event.session_id is not None:
-            session = scenario_manager.sessions.get(event.session_id)
-            recipients = session.participants if session else ()
-        else:
-            recipients = ()
-        for player_id in recipients:
-            websocket = v2_connections.get(player_id)
-            if websocket is None:
-                continue
-            payload = {
-                "type": event.type,
-                "sceneId": v2_players[player_id]["sceneId"],
-                "epoch": v2_players[player_id]["epoch"],
-                "scenarioId": event.scenario_id,
-            }
-            if event.session_id is not None:
-                payload["sessionId"] = event.session_id
-            if event.waiting is not None:
-                payload["waiting"] = event.waiting
-            if event.required is not None:
-                payload["required"] = event.required
-            if event.role_id is not None:
-                payload["roleId"] = event.role_id
-            if event.reason is not None:
-                payload["reason"] = event.reason
-            if event.passed is not None:
-                payload["passed"] = event.passed
-            if event.violation_ids:
-                payload["violationIds"] = list(event.violation_ids)
-            if event.type == "scenario_result" and event.session_id is not None:
-                session = scenario_manager.sessions[event.session_id]
-                payload["players"] = [
-                    {
-                        "id": participant_id,
-                        "roleId": role_id,
-                        "passed": not session.violations.get(participant_id),
-                        "violationIds": session.violations.get(participant_id, []),
-                    }
-                    for participant_id, role_id in session.participants.items()
-                ]
-            await send(websocket, payload)
+scenario_manager = ScenarioManager((
+    ScenarioDefinition(
+        id="priority-test",
+        map_id=WORLD_MAP["worldId"],
+        zone=ScenarioZone("junction-waiting", 56.0, 61.0, 36.0, 44.0),
+        roles=(
+            ScenarioRole(
+                "main-straight",
+                spawn=(58.5, 28.0, math.pi),
+                destination=ScenarioZone("south-exit", 56.8, 60.2, 4.0, 10.0),
+            ),
+            ScenarioRole(
+                "secondary-turn",
+                spawn=(70.0, 20.0, -math.pi / 2),
+                destination=ScenarioZone("north-exit", 62.0, 68.0, 28.0, 32.0),
+            ),
+        ),
+    ),
+))
 
 
 async def snapshot_loop():
     global tick
-    while True:
-        await asyncio.sleep(1 / TICK_RATE)
+    def next_tick() -> int:
+        global tick
         tick += 1
-        for player in list(players.values()):
-            await send(player["ws"], {
-                "type": "snapshot",
-                "tick": tick,
-                "players": snapshot_view(player["zone"]),
-            })
-        for player_id, ws in list(v2_connections.items()):
-            if player_id not in v2_scene_ready:
-                continue
-            await send(ws, {
-                "type": "snapshot",
-                "sceneId": v2_players[player_id]["sceneId"],
-                "epoch": v2_players[player_id]["epoch"],
-                "tick": tick,
-                "players": [_v2_player_snapshot(pid) for pid in v2_players if pid in v2_scene_ready],
-                "signals": [],
-            })
+        return tick
+
+    await run_snapshots(
+        players,
+        v2_players,
+        v2_connections,
+        v2_scene_ready,
+        VEHICLE_CONFIG,
+        snapshot_view,
+        send,
+        TICK_RATE,
+        next_tick,
+    )
 
 
 @asynccontextmanager
@@ -163,8 +131,13 @@ async def lifespan(app: FastAPI):
         with suppress(asyncio.CancelledError):
             await physics_task
         for player in v2_players.values():
+            if player["sceneKind"] != "world":
+                continue
             state = player["vehicle"]
-            database.save_safe_position(player["id"], state.x, state.z, state.heading, player["vertical"].y, WORLD_MAP["worldId"])
+            database.save_safe_position(
+                player["id"], state.x, state.z, state.heading,
+                player["vertical"].y, WORLD_MAP["worldId"],
+            )
         v2_players.clear()
         database.close()
 
@@ -178,91 +151,27 @@ async def content_no_store(request: Request, call_next):
     return response
 
 
-async def send(ws: WebSocket, data: dict) -> bool:
-    try:
-        await ws.send_json(data)
-        return True
-    except Exception:
-        return False
-
-
-async def send_error(ws: WebSocket, code: str, text: str) -> None:
-    await send(ws, {"type": "error", "code": code, "text": text})
-
-
-async def broadcast(data: dict, exclude_id: str | None = None) -> None:
-    for player in list(players.values()):
-        if player["id"] != exclude_id:
-            await send(player["ws"], data)
-
-
-def is_number(value) -> bool:
-    if not isinstance(value, (int, float)) or isinstance(value, bool):
-        return False
-    try:
-        return math.isfinite(value)
-    except OverflowError:
-        return False
-
-
 @app.get('/health')
 async def get_health():
     return {'status': 'ok'}
 
 
-async def _read_json_object(request: Request) -> dict:
-    try:
-        body = await request.json()
-    except ValueError as exc:
-        raise HTTPException(status_code=400, detail="expected JSON object") from exc
-    if not isinstance(body, dict):
-        raise HTTPException(status_code=400, detail="expected JSON object")
-    return body
-
-
-def _credentials(body: dict) -> tuple[str, str]:
-    username = body.get("username")
-    password = body.get("password")
-    if not isinstance(username, str) or not isinstance(password, str):
-        raise HTTPException(
-            status_code=400, detail="username and password are required"
-        )
-    return username, password
-
-
-def _session_response(account: dict, token: str):
-    from fastapi.responses import JSONResponse
-
-    result = JSONResponse(
-        {"playerId": account["playerId"], "name": account["name"]}
-    )
-    result.set_cookie(
-        SESSION_COOKIE,
-        token,
-        httponly=True,
-        samesite="lax",
-        secure=os.getenv("GAME_COOKIE_SECURE", "").lower() == "true",
-        path="/",
-    )
-    return result
-
-
 @app.post("/api/v2/login")
 async def login(request: Request):
-    body = await _read_json_object(request)
-    username, password = _credentials(body)
+    body = await read_json_object(request)
+    username, password = credentials(body)
 
     account = auth.authenticate(username, password)
     if account is None:
         raise HTTPException(status_code=401, detail="invalid credentials")
 
-    return _session_response(account, auth.create_session(account["playerId"]))
+    return session_response(account, auth.create_session(account["playerId"]), SESSION_COOKIE)
 
 
 @app.post("/api/v2/register")
 async def register(request: Request):
-    body = await _read_json_object(request)
-    username, password = _credentials(body)
+    body = await read_json_object(request)
+    username, password = credentials(body)
     name = body.get("name", username)
     if not isinstance(name, str):
         raise HTTPException(status_code=400, detail="name must be a string")
@@ -274,7 +183,7 @@ async def register(request: Request):
         raise HTTPException(status_code=409, detail="username already exists") from exc
 
     account = {"playerId": player_id, "name": name.strip()}
-    return _session_response(account, auth.create_session(player_id))
+    return session_response(account, auth.create_session(player_id), SESSION_COOKIE)
 
 
 @app.get("/api/v2/me")
@@ -304,7 +213,9 @@ async def logout(game_session: str | None = Cookie(default=None)):
 async def get_content_bootstrap(game_session: str | None = Cookie(default=None)):
     if auth.account_for_session(game_session) is None:
         raise HTTPException(status_code=401, detail="not authenticated")
-    world_bytes = WORLD_MAP["worldBytes"] + sum(resource["bytes"] for resource in world_resources())
+    world_bytes = WORLD_MAP["worldBytes"] + sum(
+        resource["bytes"] for resource in world_resources(PROJECT_ROOT)
+    )
     return {
         "worldId": WORLD_MAP["worldId"],
         "contentVersion": WORLD_MAP["contentVersion"],
@@ -312,32 +223,6 @@ async def get_content_bootstrap(game_session: str | None = Cookie(default=None))
         "cacheBudgetBytes": world_bytes // 10,
         "accounting": "unique_resource_bytes",
     }
-
-
-def world_resources() -> list[dict]:
-    asset_dir = Path(__file__).resolve().parent.parent / "client" / "public" / "assets"
-    return [
-        {"id": relative, "url": f"/assets/{relative}", "bytes": (asset_dir / relative).stat().st_size}
-        for relative in ("car-kit/sedan.glb", "car-kit/Textures/colormap.png")
-    ]
-
-
-def _v2_player_snapshot(player_id: str) -> dict:
-    player = v2_players[player_id]
-    state = player["vehicle"]
-    return {
-        "id": player_id, "name": player["name"], "vehicleType": "car",
-        "roleId": player.get("roleId"),
-        **{key: round(getattr(state, key), 3) for key in ("x", "z", "heading", "speed", "steering")},
-        "lastInputSeq": player.get("applied_seq", 0),
-        "y": round(player["vertical"].y, 4), "pitch": round(player["vertical"].pitch, 4),
-        "wheelAngle": round(steering_angle(state.speed, state.steering, VEHICLE_CONFIG), 4),
-        "color": player["color"],
-    }
-
-
-async def send_v2_error(ws: WebSocket, code: str, text: str) -> None:
-    await send(ws, {"type": "error", "code": code, "text": text})
 
 
 def world_scene_prepare(player):
@@ -348,10 +233,61 @@ def world_scene_prepare(player):
         "scenarioId": None, "roleId": None, "vehicleType": "car",
         "spawn": {"x": state.x, "z": state.z, "heading": state.heading, "y": body.y, "pitch": body.pitch},
         "participants": [],
-        "plan": {"revision": 1, "chunkIds": [], "resources": world_resources(),
+        "plan": {"revision": 1, "chunkIds": [], "resources": world_resources(PROJECT_ROOT),
                  "mapManifestUrl": "/content/world/manifest.json"},
         "timeoutMs": 30000,
     }
+
+
+def scenario_scene_prepare(player, session) -> dict:
+    state, body = player["vehicle"], player["vertical"]
+    return {
+        "type": "scene_prepare",
+        "sceneId": player["sceneId"],
+        "epoch": player["epoch"],
+        "sceneKind": "scenario",
+        "mapId": session.definition.map_id,
+        "scenarioId": session.definition.id,
+        "roleId": player["roleId"],
+        "vehicleType": "car",
+        "spawn": {
+            "x": state.x,
+            "z": state.z,
+            "heading": state.heading,
+            "y": body.y,
+            "pitch": body.pitch,
+        },
+        "participants": [
+            {
+                "id": participant_id,
+                "name": v2_players[participant_id]["name"],
+                "roleId": role_id,
+                "vehicleType": "car",
+            }
+            for participant_id, role_id in session.participants.items()
+        ],
+        "plan": {
+            "revision": 1,
+            "chunkIds": [],
+            "resources": world_resources(PROJECT_ROOT),
+            "mapManifestUrl": "/content/world/manifest.json",
+        },
+        "timeoutMs": 30000,
+    }
+
+
+scenario_handlers = ScenarioHandlers(
+    manager=scenario_manager,
+    players=v2_players,
+    connections=v2_connections,
+    scene_ready=v2_scene_ready,
+    vehicle_world=vehicle_world,
+    world_map=WORLD_MAP,
+    send=send,
+    save_result=database.save_scenario_result,
+    world_scene_prepare=world_scene_prepare,
+    scenario_scene_prepare=scenario_scene_prepare,
+)
 
 
 @app.websocket("/ws/v2")
@@ -457,18 +393,18 @@ async def get_v2_websocket(websocket: WebSocket):
                 if player['sceneKind'] != 'world' or player['sceneId'] != 'world:main':
                     await send_v2_error(websocket, "respawn_forbidden", "respawn is only available in the world")
                     continue
-                if (player_id not in v2_scene_ready or message.get('sceneId') != scene_id
-                        or type(message.get('epoch')) is not int or message['epoch'] != epoch):
+                if (player_id not in v2_scene_ready or message.get('sceneId') != player["sceneId"]
+                        or type(message.get('epoch')) is not int or message['epoch'] != player["epoch"]):
                     continue
-                await send_scenario_events(scenario_manager.leave(player_id))
+                await scenario_handlers.send_events(scenario_manager.leave(player_id))
                 player.pop("roleId", None)
                 player.pop("scenarioSessionId", None)
                 v2_scene_ready.discard(player_id)
-                epoch += 1
+                player_epoch = player["epoch"] + 1
                 state = VehicleState(**WORLD_MAP['spawn'])
                 body = vehicle_world.restore(state.x, state.z, state.heading, WORLD_MAP.get('spawnY', 0))
                 player.update(vehicle=state, vertical=body, controls=Controls(brake=1),
-                              seq=0, applied_seq=0, input_time=0.0, epoch=epoch)
+                              seq=0, applied_seq=0, input_time=0.0, epoch=player_epoch)
                 database.save_safe_position(player_id, state.x, state.z, state.heading, body.y, WORLD_MAP['worldId'])
                 await send(websocket, world_scene_prepare(player))
                 continue
@@ -499,37 +435,58 @@ async def get_v2_websocket(websocket: WebSocket):
                         if assigned_player is not None:
                             assigned_player["roleId"] = event.role_id
                             assigned_player["scenarioSessionId"] = event.session_id
-                await send_scenario_events(events)
+                session_ids = {
+                    event.session_id for event in events
+                    if event.type == "scenario_assigned" and event.session_id is not None
+                }
+                for session_id in session_ids:
+                    await scenario_handlers.prepare_session(session_id)
+                await scenario_handlers.send_events(events)
                 continue
 
             if msg_type == "scenario_leave":
-                await send_scenario_events(scenario_manager.leave(player_id))
+                await scenario_handlers.send_events(scenario_manager.leave(player_id))
                 player.pop("roleId", None)
                 player.pop("scenarioSessionId", None)
                 continue
 
             if msg_type == "scene_ready":
                 if (
-                    message.get("sceneId") == scene_id
-                    and type(message.get("epoch")) is int and message.get("epoch") == epoch
+                    message.get("sceneId") == player["sceneId"]
+                    and type(message.get("epoch")) is int and message.get("epoch") == player["epoch"]
                     and type(message.get("revision")) is int and message.get("revision") == 1
                     and player_id not in v2_scene_ready
                 ):
-                    mark_scene_ready(player_id, tick + 1)
-                    await send(
-                        websocket,
-                        {
-                            "type": "scene_start",
-                            "sceneId": scene_id,
-                            "epoch": epoch,
-                            "startTick": tick + 1,
-                            "tick": tick,
-                        },
-                    )
+                    start_events = scenario_manager.mark_ready(
+                        player["scenarioSessionId"],
+                        player_id,
+                        tick + 2,
+                    ) if player["sceneKind"] == "scenario" else []
+                    if player["sceneKind"] == "world":
+                        mark_scene_ready(player_id, tick + 1)
+                        start_events = [ScenarioEvent(
+                            "scene_start", "", None, player_id, start_tick=tick + 1,
+                        )]
+                    else:
+                        player["start_tick"] = tick + 2
+                        v2_scene_ready.add(player_id)
+                    if start_events:
+                        for event in start_events:
+                            participant = v2_players[event.player_id]
+                            v2_scene_ready.add(event.player_id)
+                            participant["start_tick"] = event.start_tick
+                            await send(v2_connections[event.player_id], {
+                                "type": "scene_start",
+                                "sceneId": participant["sceneId"],
+                                "epoch": participant["epoch"],
+                                "startTick": event.start_tick,
+                                "tick": tick,
+                            })
                 continue
             if msg_type == "input":
                 if (player_id not in v2_scene_ready or tick < player.get("start_tick", 0)
-                        or message.get("sceneId") != scene_id or type(message.get("epoch")) is not int or message.get("epoch") != epoch):
+                        or message.get("sceneId") != player["sceneId"]
+                        or type(message.get("epoch")) is not int or message.get("epoch") != player["epoch"]):
                     continue
                 seq = message.get("seq")
                 if type(seq) is not int or seq <= player["seq"] or seq > 9007199254740991:
@@ -549,8 +506,12 @@ async def get_v2_websocket(websocket: WebSocket):
             v2_scene_ready.discard(player_id)
         if v2_players.get(player_id) is player:
             state = player["vehicle"]
-            database.save_safe_position(player_id, state.x, state.z, state.heading, player["vertical"].y, WORLD_MAP["worldId"])
-            await send_scenario_events(scenario_manager.leave(player_id))
+            if player["sceneKind"] == "world":
+                database.save_safe_position(
+                    player_id, state.x, state.z, state.heading,
+                    player["vertical"].y, WORLD_MAP["worldId"],
+                )
+            await scenario_handlers.send_events(scenario_manager.leave(player_id))
             v2_players.pop(player_id, None)
 
 
@@ -616,6 +577,7 @@ async def get_websocket(websocket: WebSocket):
                     **({"controlMode": "vehicle", "sceneId": "world:main", "epoch": 1} if control_mode == "vehicle" else {}),
                 })
                 await broadcast(
+                    players,
                     {"type": "player_joined", **public_view(player)},
                     exclude_id=player["id"],
                 )
@@ -667,7 +629,7 @@ async def get_websocket(websocket: WebSocket):
     finally:
         if player is not None:
             remove_player(player["id"])
-            await broadcast({"type": "player_left", "id": player["id"]})
+            await broadcast(players, {"type": "player_left", "id": player["id"]})
             print(f"Left: {player['id']}")
 
 
