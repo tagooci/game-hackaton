@@ -46,7 +46,7 @@ class FeedbackConfig:
             tone=_env_choice(
                 "AGENT_TONE",
                 cls.tone,
-                {"neutral", "friendly", "coach"},
+                {"neutral", "friendly", "coach", "aggressive"},
             ),
         )
 
@@ -112,7 +112,9 @@ class OllamaFeedbackGenerator:
         try:
             return parse_feedback(raw_response, result)
         except FeedbackGenerationError as first_error:
-            repair_prompt = _build_repair_prompt(result, raw_response, first_error)
+            repair_prompt = _build_repair_prompt(
+                result, raw_response, first_error, self.tone
+            )
             repaired = await asyncio.to_thread(
                 self._generate_sync, repair_prompt, min(self.temperature, 0.2), response_schema
             )
@@ -186,7 +188,15 @@ def _build_prompt(result: ScenarioResult, verbosity: str = "normal", tone: str =
         ],
     }
     length = "До двух коротких предложений" if verbosity == "detailed" else "Одна короткая фраза"
-    voice = {"neutral": "Спокойно и по делу", "friendly": "Доброжелательно, без пафоса", "coach": "Как терпеливый инструктор"}[tone]
+    voice = {
+        "neutral": "Спокойно и по делу",
+        "friendly": "Доброжелательно, без пафоса",
+        "coach": "Как терпеливый инструктор",
+        "aggressive": (
+            "Жёстко и предельно прямо: указывай на ошибку без смягчения, "
+            "но без оскорблений, угроз и перехода на личность"
+        ),
+    }[tone]
     return (
         "Ты инструктор по вождению. Обратись к игроку на «вы», простым русским языком. "
         f"{voice}. {length} на комментарий. "
@@ -284,7 +294,10 @@ def _feedback_schema(result: ScenarioResult) -> dict[str, object]:
 
 
 def _build_repair_prompt(
-    result: ScenarioResult, raw_response: str, error: FeedbackGenerationError
+    result: ScenarioResult,
+    raw_response: str,
+    error: FeedbackGenerationError,
+    tone: str = "friendly",
 ) -> str:
     expected_ids = [violation.id for violation in result.violations]
     expected_successes = [
@@ -292,9 +305,14 @@ def _build_repair_prompt(
         for name, check in result.checks.items()
         if check.checked and check.violation_count == 0
     ]
+    style = (
+        "Пиши жёстко и предельно прямо, без оскорблений, угроз и перехода на личность."
+        if tone == "aggressive"
+        else "Пиши коротко и естественно."
+    )
     return (
         "Исправь JSON обратной связи. Верни только валидный JSON без markdown.\n"
-        "Пиши коротко, естественно, на «вы». Используй слово «разметка», не «марки».\n"
+        f"{style} Обращайся на «вы». Используй слово «разметка», не «марки».\n"
         "Сохрани факты и используй только точные идентификаторы из списка.\n"
         f"Точные violationId: {json.dumps(expected_ids, ensure_ascii=False)}\n"
         f"Точные категории successful, все обязательны ровно по одному разу: "

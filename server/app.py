@@ -84,7 +84,10 @@ async def generate_agent_feedback(report, connection, experience: int):
             settings = server_settings.get()
             config = replace(
                 FeedbackConfig.from_environment(),
-                tone="coach" if settings["agentStyle"] == "coach" else "friendly",
+                tone={
+                    "coach": "coach",
+                    "aggressive": "aggressive",
+                }.get(settings["agentStyle"], "friendly"),
             )
             feedback = await OllamaFeedbackGenerator(config=config).generate(result)
         if v2_connections.get(result.player_id) is connection:

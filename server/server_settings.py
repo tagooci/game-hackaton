@@ -5,7 +5,7 @@ import os
 import threading
 
 
-AGENT_STYLES = frozenset({"normal", "coach"})
+AGENT_STYLES = frozenset({"normal", "coach", "aggressive"})
 WEATHERS = frozenset({"clear", "rain", "fog"})
 
 
