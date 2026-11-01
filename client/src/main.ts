@@ -1,6 +1,7 @@
 import { createSpeedometer } from './vehicle/speedometer';
 import './style.css';
 import { createMinimap } from './hud/minimap.js';
+import { createMusicPlayer } from './hud/musicPlayer.js';
 import { createScenarioAssistant, showAssistantPreview } from './assistant/scenarioAssistant';
 import { api, ApiError, showAuth, showGarage } from './auth/session';
 import type { Account, Profile } from './auth/session';
@@ -144,9 +145,10 @@ function startGame(account: Account, profile: Profile): () => void {
     catch { /* Keyboard controls also work in browsers without pointer lock. */ }
   }, eventOptions);
   const logout = document.createElement('button');
-  logout.className = 'logout';
+  logout.className = 'logout logout--with-player';
   logout.textContent = `Выйти (${account.name})`;
   host.append(overlay, logout);
+  const musicPlayer = createMusicPlayer(host);
   logout.onclick = async () => {
     logout.disabled = true;
     try { await api('logout', {}); authScreen(); }
@@ -206,11 +208,18 @@ function startGame(account: Account, profile: Profile): () => void {
     onStatus: text => { if (!mapLoading && !mapError) { overlay.hidden = !text; overlay.textContent = text; } },
     onSessionEnd: code => authScreen(code === 4001 ? 'Аккаунт уже подключён в другом окне' : 'Войдите в аккаунт снова'),
     onMessage: message => {
+      if (message.type === 'scenario_reward' && message.sessionId === feedbackSession) {
+        agentExperience = `${message.experience} XP`;
+        if (!inScenario) {
+          if (agentReplies.length) assistant.result(agentReplies, agentExperience);
+          else assistant.waiting(agentExperience);
+        }
+      }
       if (message.type === 'agent_feedback' || message.type === 'agent_feedback_error') {
         window.dispatchEvent(new CustomEvent('agent-feedback', { detail: message }));
         console.info('Agent feedback:', message);
         if (message.sessionId === feedbackSession) {
-          agentExperience = message.type === 'agent_feedback' ? message.feedback.experience : '';
+          if (message.type === 'agent_feedback') agentExperience = message.feedback.experience;
           agentReplies = message.type === 'agent_feedback_error' ? [message.text] : [
             ...message.feedback.successful.map(item => item.comment),
             ...message.feedback.errors.map(item => item.comment),
@@ -231,7 +240,7 @@ function startGame(account: Account, profile: Profile): () => void {
         } else if (returnedFromScenario && agentReplies.length) {
           assistant.result(agentReplies, agentExperience);
         } else if (returnedFromScenario) {
-          assistant.waiting();
+          assistant.waiting(agentExperience);
         } else if (!lastScenarioResult) assistant.hide();
         queuePosition = undefined; queueLabel.hidden = true;
         finishArch?.dispose();
@@ -326,6 +335,7 @@ function startGame(account: Account, profile: Profile): () => void {
     if (document.pointerLockElement === canvas) document.exitPointerLock();
     stopStateSender();
     assistant.dispose();
+    musicPlayer.dispose();
     controls.dispose();
     speedometer.dispose();
     events.abort();

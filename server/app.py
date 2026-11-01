@@ -80,6 +80,9 @@ agent_lock = asyncio.Lock()
 async def generate_agent_feedback(report, connection, experience: int):
     try:
         result = parse_result(report)
+        if v2_connections.get(result.player_id) is connection:
+            await send(connection, {"type": "scenario_reward", "resultId": result.result_id,
+                                   "sessionId": result.session_id, "experience": experience})
         async with agent_lock:
             settings = server_settings.get()
             config = replace(

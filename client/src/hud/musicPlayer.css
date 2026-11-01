@@ -1,0 +1,23 @@
+.music-player { position:absolute; z-index:6; top:18px; right:18px; --music-button-size:36px; width:220px; box-sizing:border-box; padding:15px 16px 14px; border:2px solid #292b2b; border-radius:16px; background:#F2E4D5; color:#292b2b; box-shadow:0 4px 14px #00000016; font-family:'Montserrat',system-ui,sans-serif; user-select:none; }
+.music-player__title { overflow:hidden; margin:0 0 12px; font-size:14px; line-height:20px; font-weight:600; text-align:center; text-overflow:ellipsis; white-space:nowrap; }
+.music-player__controls { display:flex; align-items:center; justify-content:center; gap:14px; }
+.music-player .music-player__button { display:grid; place-items:center; box-sizing:border-box; flex:0 0 var(--music-button-size); width:var(--music-button-size); height:var(--music-button-size); min-width:var(--music-button-size); min-height:var(--music-button-size); max-width:var(--music-button-size); max-height:var(--music-button-size); padding:7px; border:1.5px solid #292b2b; border-radius:50%; background:transparent; color:#292b2b; cursor:pointer; transition:transform 120ms ease,background-color 120ms ease; }
+.music-player .music-player__toggle { background:#292b2b; color:#fffaf2; }
+.music-player .music-player__button:hover { background:#e8ddcd; }
+.music-player .music-player__toggle:hover { background:#454848; }
+.music-player__button:active { transform:scale(.91); }
+.music-player__button:focus-visible { outline:2px solid #e9422b; outline-offset:3px; }
+.music-player__button svg { display:block; width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+.music-player__button .music-player__play { fill:currentColor; stroke:none; }
+.logout.logout--with-player { top:144px; right:18px; }
+@media(max-width:650px),(max-height:550px) {
+  .music-player { --music-button-size:34px; top:10px; right:10px; width:172px; padding:11px 10px; border-radius:13px; }
+  .music-player__title { margin-bottom:9px; font-size:12px; }
+  .music-player__controls { gap:10px; }
+  .music-player .music-player__button { padding:6px; }
+  .logout.logout--with-player { top:118px; right:10px; }
+}
+@media(prefers-reduced-motion:reduce) { .music-player .music-player__button { transition:none; } }
+
+.music-player__error { margin:9px 0 0; color:#a62f22; font-size:11px; line-height:1.4; }
+.music-player__error[hidden] { display:none; }
