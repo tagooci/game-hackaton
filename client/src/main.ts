@@ -1,4 +1,5 @@
 import './style.css';
+import { createMinimap } from './hud/minimap.js';
 import { createScenarioAssistant, showAssistantPreview } from './assistant/scenarioAssistant';
 import { api, ApiError, showAuth } from './auth/session';
 import type { Account } from './auth/session';
@@ -151,6 +152,7 @@ function startGame(account: Account): () => void {
   let finishArch: ReturnType<typeof createFinishArch> | undefined;
   let queuePosition: Vector3 | undefined;
   const remotePlayers = createRemotePlayers(scene);
+  const minimap = createMinimap(host);
   const roads = new RoadContent(scene, () => {});
   if (import.meta.env.DEV) Object.defineProperty(window, 'roadCache', { configurable: true, get: () => roads.stats() });
   let mapReady = false;
@@ -180,6 +182,7 @@ function startGame(account: Account): () => void {
         throw new Error('Неподдерживаемый план сцены');
       }
       mapReady = false;
+      minimap.setReady(false);
       overlay.textContent = 'Загрузка карты…';
       await roads.init(message.plan.mapManifestUrl);
       if (roads.manifest.groundColor) groundMaterial.diffuseColor = Color3.FromHexString(roads.manifest.groundColor).toLinearSpace();
@@ -189,6 +192,7 @@ function startGame(account: Account): () => void {
       overlay.textContent = 'Подготовка сцены…';
       await scene.whenReadyAsync();
       mapReady = true;
+      minimap.setReady(true);
     },
     onStatus: text => { if (!mapLoading && !mapError) { overlay.hidden = !text; overlay.textContent = text; } },
     onSessionEnd: code => authScreen(code === 4001 ? 'Аккаунт уже подключён в другом окне' : 'Войдите в аккаунт снова'),
@@ -227,6 +231,7 @@ function startGame(account: Account): () => void {
       }
 
       if (message.type === 'snapshot') {
+        minimap.update(ownId, message.players);
         if (inScenario && typeof message.scenarioResult === 'string' && message.scenarioResult && message.scenarioResult !== lastScenarioResult) {
           lastScenarioResult = message.scenarioResult;
         }
@@ -240,6 +245,7 @@ function startGame(account: Account): () => void {
     },
     onDisconnect: () => {
       mapReady = false;
+      minimap.setReady(false);
       assistant.hide(); lastScenarioResult = ''; agentReplies = []; feedbackSession = ''; inScenario = false;
       remotePlayers.clear(); controls.clear(); targetPose = vehicle.getPose();
     },
@@ -298,6 +304,7 @@ function startGame(account: Account): () => void {
     if (import.meta.env.DEV) Reflect.deleteProperty(window, 'roadCache');
     roads.dispose();
     remotePlayers.dispose();
+    minimap.dispose();
     vehicle.dispose();
     scene.dispose();
     engine.dispose();

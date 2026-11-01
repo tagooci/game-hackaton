@@ -1,0 +1,11 @@
+{
+  "bounds": {
+    "minX": -78.0,
+    "maxX": 78.0,
+    "minZ": -93.0,
+    "maxZ": 63.0
+  },
+  "worldId": "compact-reference-b311ebce",
+  "contentVersion": "6ea20218e328f746",
+  "roadCount": 111
+}
