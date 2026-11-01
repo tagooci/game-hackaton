@@ -1,3 +1,6 @@
+import { VEHICLE_PAINTS } from '../vehicle/vehiclePaint';
+import menuDocument from '../../../frontend/pages/menu.html?raw';
+import { mountMenuPreview } from './menuPreview.js';
 import authDocument from '../../../frontend/pages/login.html?raw';
 
 export interface Account { playerId: string; name: string }
@@ -5,7 +8,8 @@ export interface Profile {
   experience: number;
   level: number;
   vehicleColor: number;
-  vehicleType: 'car' | 'truck';
+  vehicleType: 'car' | 'truck' | 'super-sedan';
+  vehicles?: { id: string; unlocked: boolean }[];
 }
 
 export class ApiError extends Error {
@@ -154,48 +158,38 @@ export function showGarage(
 ): () => void {
   host.replaceChildren();
   const panel = document.createElement('section');
-  panel.className = 'garage-screen';
-  panel.innerHTML = `<form class="garage-form">
-    <h1>Гараж</h1>
-    <p>Уровень <strong data-level></strong> · Опыт <strong data-experience></strong></p>
-    <fieldset><legend>Цвет машинки</legend>
-      <div class="color-options">${[0, 1, 2, 3, 4].map(color =>
-        `<label class="color-${color}"><input type="radio" name="vehicleColor" value="${color}"><span></span></label>`).join('')}</div>
-    </fieldset>
-    <fieldset><legend>Машинка</legend>
-      <label class="vehicle-option"><input type="radio" name="vehicleType" value="car"> Легковая</label>
-      <label class="vehicle-option"><input type="radio" name="vehicleType" value="truck"> Грузовая <small>(открывается с 3 уровня)</small></label>
-    </fieldset>
-    <p class="garage-error" role="alert"></p>
-    <button type="submit">Подключиться к карте</button>
-  </form>`;
+  const root = panel.attachShadow({ mode: 'open' });
+  const template = new DOMParser().parseFromString(menuDocument, 'text/html');
+  const style = document.createElement('style');
+  style.textContent = template.querySelector('style')!.textContent!
+    .replace(/:root/g, ':host').replace(/\bbody\s*\{/g, ':host {')
+    + ':host { position:absolute; inset:0; display:block; overflow:auto; }';
+  root.append(style, template.querySelector('main')!.cloneNode(true));
+  root.querySelectorAll<HTMLImageElement>('img').forEach(image => {
+    image.src = image.getAttribute('src')!.replace('./assets/', '/assets/menu/');
+  });
   host.append(panel);
-  const form = panel.querySelector('form')!;
-  const error = panel.querySelector<HTMLElement>('[role=alert]')!;
-  panel.querySelector<HTMLElement>('[data-level]')!.textContent = String(profile.level);
-  panel.querySelector<HTMLElement>('[data-experience]')!.textContent = String(profile.experience);
-  form.querySelector<HTMLInputElement>(`[name=vehicleColor][value="${profile.vehicleColor}"]`)!.checked = true;
-  form.querySelector<HTMLInputElement>(`[name=vehicleType][value="${profile.vehicleType}"]`)!.checked = true;
-  form.querySelector<HTMLInputElement>('[value=truck]')!.disabled = profile.level < 3;
-  let disposed = false;
-  form.onsubmit = async event => {
-    event.preventDefault();
-    const data = new FormData(form);
-    const next: Profile = {
-      ...profile,
-      vehicleColor: Number(data.get('vehicleColor')),
-      vehicleType: data.get('vehicleType') as Profile['vehicleType'],
-    };
-    const submit = form.querySelector<HTMLButtonElement>('[type=submit]')!;
-    submit.disabled = true;
-    error.textContent = '';
-    try {
-      const saved = await api<Profile>('profile', next);
-      if (!disposed) await onStart(saved);
-    } catch (reason) {
-      error.textContent = reason instanceof ApiError ? reason.message : 'Не удалось сохранить выбор';
-      submit.disabled = false;
-    }
-  };
-  return () => { disposed = true; panel.remove(); };
+  const order = [3, 0, 4, 1, 2];
+  root.querySelectorAll<HTMLButtonElement>('.color-option').forEach((button, index) => {
+    const paint = VEHICLE_PAINTS[order[index]];
+    button.dataset.color = paint.color;
+    button.style.background = paint.color;
+    button.disabled = false;
+    button.title = paint.label;
+    button.setAttribute('aria-label', paint.label);
+    button.replaceChildren();
+  });
+  const colors = Object.fromEntries(VEHICLE_PAINTS.map(paint => [paint.color, paint.id]));
+  const selectedColor = VEHICLE_PAINTS[profile.vehicleColor]?.color ?? VEHICLE_PAINTS[3].color;
+  const stopPreview = mountMenuPreview(root, selectedColor,
+    profile.vehicleType === 'super-sedan' ? 'sports' : 'sedan',
+    profile.vehicles?.some(vehicle => vehicle.id === 'super-sedan' && vehicle.unlocked) ?? false,
+    async (color: string, model: string) => {
+      if (model === 'sports') throw new Error('Спортивная машина пока не подключена на сервере');
+      const saved = await api<Profile>('profile', {
+        vehicleColor: colors[color], vehicleType: model === 'sports' ? 'super-sedan' : 'car',
+      });
+      await onStart(saved);
+    });
+  return () => { stopPreview(); panel.remove(); };
 }

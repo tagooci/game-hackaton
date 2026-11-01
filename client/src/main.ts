@@ -33,6 +33,7 @@ function authScreen(error = ''): void {
 
 async function enterGame(account: Account): Promise<void> {
   const profile = await api<Profile>('profile');
+  stopScreen();
   stopScreen = showGarage(host, profile, selected => startAfterGarage(account, selected));
 }
 
@@ -95,6 +96,7 @@ function startGame(account: Account, profile: Profile): () => void {
     if (document.pointerLockElement === canvas) document.exitPointerLock();
   });
   let agentReplies: string[] = [];
+  let agentExperience = '';
   let feedbackSession = '';
   let lastScenarioResult = '';
   let inScenario = false;
@@ -204,12 +206,12 @@ function startGame(account: Account, profile: Profile): () => void {
         window.dispatchEvent(new CustomEvent('agent-feedback', { detail: message }));
         console.info('Agent feedback:', message);
         if (message.sessionId === feedbackSession) {
+          agentExperience = message.type === 'agent_feedback' ? message.feedback.experience : '';
           agentReplies = message.type === 'agent_feedback_error' ? [message.text] : [
-            message.feedback.experience,
             ...message.feedback.successful.map(item => item.comment),
             ...message.feedback.errors.map(item => item.comment),
           ];
-          if (!inScenario && agentReplies.length) assistant.result(agentReplies);
+          if (!inScenario && agentReplies.length) assistant.result(agentReplies, agentExperience);
         }
       }
       if (message.type === 'welcome') ownId = message.playerId;
@@ -219,10 +221,11 @@ function startGame(account: Account, profile: Profile): () => void {
         if (inScenario) {
           lastScenarioResult = '';
           agentReplies = [];
+          agentExperience = '';
           feedbackSession = message.sceneId;
           assistant.hide();
         } else if (returnedFromScenario && agentReplies.length) {
-          assistant.result(agentReplies);
+          assistant.result(agentReplies, agentExperience);
         } else if (returnedFromScenario) {
           assistant.waiting();
         } else if (!lastScenarioResult) assistant.hide();
@@ -257,7 +260,7 @@ function startGame(account: Account, profile: Profile): () => void {
     },
     onDisconnect: () => {
       mapReady = false;
-      assistant.hide(); lastScenarioResult = ''; agentReplies = []; feedbackSession = ''; inScenario = false;
+      assistant.hide(); lastScenarioResult = ''; agentReplies = []; agentExperience = ''; feedbackSession = ''; inScenario = false;
       remotePlayers.clear(); controls.clear(); targetPose = { ...vehicle.getPose(), speed: 0, throttle: 0 };
     },
   });

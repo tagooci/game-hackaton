@@ -8,6 +8,7 @@ export function createScenarioAssistant(host: HTMLElement, onOpen = () => {}) {
   root.setAttribute('aria-label', 'Реплика персонажа');
   root.innerHTML = `<section class="assistant-bubble" role="dialog" aria-label="Реплика персонажа">
     <button class="assistant-close" type="button" aria-label="Свернуть реплику">×</button>
+    <p class="assistant-reward" hidden></p>
     <div class="assistant-message" role="status" aria-live="polite" aria-atomic="true"><p></p></div>
     <footer><button class="assistant-next" type="button">Понятно</button></footer>
   </section><button class="assistant-avatar" type="button" aria-label="Открыть реплику персонажа" aria-expanded="false"><img src="/assistant/robot.svg" alt="Офицер" draggable="false"></button>`;
@@ -15,6 +16,7 @@ export function createScenarioAssistant(host: HTMLElement, onOpen = () => {}) {
   const bubble = root.querySelector<HTMLElement>('.assistant-bubble')!;
   const avatar = root.querySelector<HTMLButtonElement>('.assistant-avatar')!;
   const text = root.querySelector('p')!;
+  const reward = root.querySelector<HTMLElement>('.assistant-reward')!;
   const next = root.querySelector<HTMLButtonElement>('.assistant-next')!;
   let replies: string[] = [];
   let replyIndex = 0;
@@ -69,6 +71,7 @@ export function createScenarioAssistant(host: HTMLElement, onOpen = () => {}) {
     next.textContent = replyIndex < replies.length - 1 ? 'Дальше →' : 'Понятно';
   }
   function show(value: string | string[]) {
+    reward.hidden = true;
     root.classList.remove('assistant-loading');
     next.hidden = false;
     replies = (typeof value === 'string' ? [value] : value).filter(reply => reply.trim());
@@ -110,7 +113,13 @@ export function createScenarioAssistant(host: HTMLElement, onOpen = () => {}) {
         ? 'Ваша задача — повернуть налево и остановиться в своей финишной зоне. Оцените обстановку и выберите безопасный момент для манёвра.'
         : 'Ваша задача — проехать прямо и остановиться в своей финишной зоне. Следите за обстановкой на перекрёстке.');
     },
-    result(result: string | string[]) { show(result); },
+    result(result: string | string[], experience = '') {
+      show(result);
+      if (/^[+]?\d+ XP$/.test(experience)) {
+        reward.textContent = `Вы получили ${experience.replace(/^\+/, '')}`;
+        reward.hidden = false;
+      }
+    },
     hide() { setOpen(false, false); root.hidden = true; },
     dispose() { dismissAnimation?.cancel(); avatarAnimation?.cancel(); root.remove(); },
   };

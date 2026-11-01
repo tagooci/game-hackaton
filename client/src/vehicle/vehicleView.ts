@@ -1,3 +1,4 @@
+import { VEHICLE_PAINTS } from './vehiclePaint';
 import { createVehicleEffects } from './vehicleEffects';
 import '@babylonjs/loaders/glTF/2.0/glTFLoader.js';
 import { LoadAssetContainerAsync } from '@babylonjs/core/Loading/sceneLoader.js';
@@ -67,7 +68,7 @@ export function createVehicleView(scene: Scene, length: number, name = 'local-ve
       // В sedan.glb красный кузов использует этот столбец палитры.
       // Нижние серые участки той же колонки оставляем без изменений.
       if (Math.abs(uvs[i] - 0.84375) < 0.001 && uvs[i + 1] < 0.5) {
-        uvs[i] = 0.46875 + color * 0.125;
+        uvs[i] = VEHICLE_PAINTS[color]?.u ?? VEHICLE_PAINTS[3].u;
       }
     }
     paintMesh.setVerticesData(VertexBuffer.UVKind, uvs);
