@@ -294,7 +294,6 @@ export function showGarage(
     profile.vehicleType === 'super-sedan' ? 'sports' : 'sedan',
     profile.vehicles?.some(vehicle => vehicle.id === 'super-sedan' && vehicle.unlocked) ?? false,
     async (color: string, model: string) => {
-      if (model === 'sports') throw new Error('Спортивная машина пока не подключена на сервере');
       const saved = await api<Profile>('profile', {
         vehicleColor: colors[color], vehicleType: model === 'sports' ? 'super-sedan' : 'car',
       });

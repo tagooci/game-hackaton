@@ -29,14 +29,24 @@ export interface VehiclePose {
 }
 
 // Одна загрузка на сцену; текстура и материалы общие для всех машин.
-const models = new WeakMap<Scene, Promise<AssetContainer>>();
+const models = new WeakMap<Scene, Map<string, Promise<AssetContainer>>>();
 
-function loadModel(scene: Scene): Promise<AssetContainer> {
-  let model = models.get(scene);
+function loadModel(scene: Scene, vehicleType: string): Promise<AssetContainer> {
+  let sceneModels = models.get(scene);
+  if (!sceneModels) {
+    sceneModels = new Map();
+    models.set(scene, sceneModels);
+  }
+  let model = sceneModels.get(vehicleType);
   if (!model) {
-    model = fetch(`${import.meta.env.BASE_URL}assets/car-kit/sedan.glb.bin`, { cache: 'no-store' })
+    const sports = vehicleType === 'super-sedan';
+    const url = sports
+      ? `${import.meta.env.BASE_URL}assets/menu/models/sedan-sports/model.glb`
+      : `${import.meta.env.BASE_URL}assets/car-kit/sedan.glb.bin`;
+    model = fetch(url, { cache: 'no-store' })
       .then(async response => {
         if (!response.ok) throw new Error(`Машина: HTTP ${response.status}`);
+        if (sports) return LoadAssetContainerAsync(url, scene, { pluginExtension: '.glb' });
         const decoded = await new Response(response.body!.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
         return LoadAssetContainerAsync(new Uint8Array(decoded), scene, { pluginExtension: '.glb' });
       })
@@ -45,7 +55,7 @@ function loadModel(scene: Scene): Promise<AssetContainer> {
         else scene.onDisposeObservable.addOnce(() => container.dispose());
         return container;
       });
-    models.set(scene, model);
+    sceneModels.set(vehicleType, model);
   }
   return model;
 }
@@ -61,6 +71,8 @@ export function createVehicleView(scene: Scene, length: number, name = 'local-ve
   let instance: InstantiatedEntries | undefined;
   let sedanModel: TransformNode | undefined;
   let vehicleType = 'car';
+  let loadedVehicleType = '';
+  let modelRequest = 0;
   // Compact prototype truck: same 3.3 x 1.95 x 1.6875 m envelope as server physics.
   const truck = new TransformNode(`${name}-truck`, scene);
   truck.parent = root; truck.setEnabled(false);
@@ -100,47 +112,57 @@ export function createVehicleView(scene: Scene, length: number, name = 'local-ve
     paintMesh.setVerticesData(VertexBuffer.UVKind, uvs);
   }
 
-  const ready = loadModel(scene)
-    .then(container => {
-      if (root.isDisposed()) return;
-      instance = container.instantiateModelsToScene(meshName => `${name}-${meshName}`, false, { doNotInstantiate: true });
-      const model = new TransformNode(`${name}-model`, scene);
-      sedanModel = model; model.setEnabled(vehicleType !== 'truck');
-      for (const node of instance.rootNodes) node.parent = model;
-      for (const mesh of model.getChildMeshes()) {
-        mesh.receiveShadows = true;
-        if (mesh.name === `${name}-body`) {
-          paintMesh = mesh as Mesh;
-          paintMesh.makeGeometryUnique();
-          originalUVs = Array.from(paintMesh.getVerticesData(VertexBuffer.UVKind)!);
-        }
-        if (mesh.name.includes('wheel-front-')) {
-          const wheel = mesh as Mesh;
-          // Деквантизацию впекаем перед pivot: иначе координата центра колеса
-          // в целых единицах GLB превращается в смещение на тысячи метров.
-          wheel.bakeCurrentTransformIntoVertices(false, true);
-          wheel.setPivotPoint(wheel.getBoundingInfo().boundingBox.center);
-          frontWheels.push(wheel);
-        }
+  async function attachModel(type: string): Promise<void> {
+    const request = ++modelRequest;
+    const container = await loadModel(scene, type);
+    if (root.isDisposed() || request !== modelRequest) return;
+    instance?.dispose();
+    sedanModel?.dispose();
+    paintMesh = undefined;
+    originalUVs = undefined;
+    frontWheels.length = 0;
+    instance = container.instantiateModelsToScene(meshName => `${name}-${meshName}`, false, { doNotInstantiate: true });
+    const model = new TransformNode(`${name}-model`, scene);
+    sedanModel = model;
+    loadedVehicleType = type;
+    model.setEnabled(type !== 'truck');
+    for (const node of instance.rootNodes) node.parent = model;
+    for (const mesh of model.getChildMeshes()) {
+      mesh.receiveShadows = true;
+      if (mesh.name === `${name}-body` || mesh.name === `${name}-body_primitive0`) {
+        paintMesh = mesh as Mesh;
+        paintMesh.makeGeometryUnique();
+        originalUVs = Array.from(paintMesh.getVerticesData(VertexBuffer.UVKind)!);
       }
-      updateAppearance();
-      // Знак учитывает преобразование glTF в левую систему координат Babylon.
-      for (const wheel of frontWheels) wheel.rotationQuaternion = Quaternion.RotationAxis(Vector3.Up(), -wheelAngle);
-      // Сохраняем пропорции, ставим колёса на землю и центрируем кузов.
-      const { min, max } = model.getHierarchyBoundingVectors(true);
-      const scale = length / (max.z - min.z);
-      model.scaling.setAll(scale);
-      model.position.set(-(min.x + max.x) * scale / 2, -min.y * scale, -(min.z + max.z) * scale / 2);
-      model.parent = effects.visual;
-      body.position.y = (max.y - min.y) * scale / 2;
-    });
+      if (mesh.name.includes('wheel-front-')) {
+        const wheel = mesh as Mesh;
+        wheel.bakeCurrentTransformIntoVertices(false, true);
+        wheel.setPivotPoint(wheel.getBoundingInfo().boundingBox.center);
+        frontWheels.push(wheel);
+      }
+    }
+    updateAppearance();
+    for (const wheel of frontWheels) wheel.rotationQuaternion = Quaternion.RotationAxis(Vector3.Up(), -wheelAngle);
+    const { min, max } = model.getHierarchyBoundingVectors(true);
+    const scale = length / (max.z - min.z);
+    model.scaling.setAll(scale);
+    model.position.set(-(min.x + max.x) * scale / 2, -min.y * scale, -(min.z + max.z) * scale / 2);
+    model.parent = effects.visual;
+    body.position.y = (max.y - min.y) * scale / 2;
+  }
+
+  const ready = attachModel('car');
   ready.catch(error => console.error('Не удалось загрузить модель машины:', error));
 
   function setPose(pose: VehiclePose): void {
     effects.setMotion(pose.throttle ?? 0, pose.grounded ?? true);
-    vehicleType = pose.vehicleType ?? vehicleType;
+    const nextVehicleType = pose.vehicleType ?? vehicleType;
+    if (nextVehicleType !== vehicleType) {
+      vehicleType = nextVehicleType;
+      void attachModel(vehicleType).catch(error => console.error('Не удалось сменить модель машины:', error));
+    }
     truck.setEnabled(vehicleType === 'truck');
-    sedanModel?.setEnabled(vehicleType !== 'truck');
+    sedanModel?.setEnabled(vehicleType !== 'truck' && loadedVehicleType === vehicleType);
     root.position.set(pose.x, pose.y ?? 0, pose.z);
     root.rotation.x = pose.pitch ?? 0;
     root.rotation.y = pose.heading;

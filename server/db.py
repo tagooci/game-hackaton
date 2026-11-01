@@ -19,9 +19,9 @@ DEFAULT_DB_PATH = (
 
 
 def level_for_experience(experience: int) -> int:
-    if experience < 500:
+    if experience < 1100:
         return 1
-    if experience < 1000:
+    if experience < 1700:
         return 2
     return 3
 
@@ -29,11 +29,11 @@ def level_for_experience(experience: int) -> int:
 def experience_progress(experience: int) -> dict[str, int]:
     level = level_for_experience(experience)
     if level == 1:
-        current, target = experience, 500
+        current, target = experience, 1100
     elif level == 2:
-        current, target = experience - 500, 500
+        current, target = experience - 1100, 600
     else:
-        current, target = 500, 500
+        current, target = 600, 600
     return {
         "level": level,
         "levelExperience": current,

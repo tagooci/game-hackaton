@@ -208,6 +208,9 @@ function startGame(account: Account, profile: Profile): () => void {
     takeRespawn: controls.takeRespawn,
     prepareScene: async message => {
       const expected = new Set(['car-kit/sedan.glb.bin']);
+      if (message.vehicleType === 'super-sedan') {
+        expected.add('menu/sedan-sports/model.glb');
+      }
       if (message.plan.resources.length !== expected.size || message.plan.resources.some(r => !expected.has(r.id))) {
         throw new Error('Неподдерживаемый план сцены');
       }

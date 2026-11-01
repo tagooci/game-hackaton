@@ -33,13 +33,13 @@ VEHICLES: dict[str, VehicleDefinition] = {
         asset_bytes=24889,
         physics=VehicleConfig(maxForwardSpeed=18.0, acceleration=3.5),
     ),
-    # The asset is intentionally registered before the client model is added.
+    # The sports model is shared by the garage preview and the game scene.
     "super-sedan": VehicleDefinition(
         id="super-sedan",
         unlock_level=3,
-        asset_id="car-kit/super-sedan.glb.bin",
-        asset_url="/assets/car-kit/super-sedan.glb.bin",
-        asset_bytes=0,
+        asset_id="menu/sedan-sports/model.glb",
+        asset_url="/assets/menu/models/sedan-sports/model.glb",
+        asset_bytes=177676,
         physics=VehicleConfig(
             maxForwardSpeed=27.0,
             acceleration=5.5,
