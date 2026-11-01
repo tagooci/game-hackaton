@@ -7,15 +7,15 @@ export function createScenarioAssistant(host: HTMLElement, onOpen = () => {}) {
   root.hidden = true;
   root.setAttribute('aria-label', 'Реплика персонажа');
   root.innerHTML = `<section class="assistant-bubble" role="dialog" aria-label="Реплика персонажа">
+    <div class="assistant-reward" role="status" hidden><span class="assistant-coin" aria-hidden="true"></span><span class="assistant-reward-text"></span></div>
     <button class="assistant-close" type="button" aria-label="Свернуть реплику">×</button>
-    <p class="assistant-reward" hidden></p>
     <div class="assistant-message" role="status" aria-live="polite" aria-atomic="true"><p></p></div>
     <footer><button class="assistant-next" type="button">Понятно</button></footer>
   </section><button class="assistant-avatar" type="button" aria-label="Открыть реплику персонажа" aria-expanded="false"><img src="/assistant/robot.svg" alt="Офицер" draggable="false"></button>`;
   host.append(root);
   const bubble = root.querySelector<HTMLElement>('.assistant-bubble')!;
   const avatar = root.querySelector<HTMLButtonElement>('.assistant-avatar')!;
-  const text = root.querySelector('p')!;
+  const text = root.querySelector('.assistant-message p')!;
   const reward = root.querySelector<HTMLElement>('.assistant-reward')!;
   const next = root.querySelector<HTMLButtonElement>('.assistant-next')!;
   let replies: string[] = [];
@@ -81,6 +81,10 @@ export function createScenarioAssistant(host: HTMLElement, onOpen = () => {}) {
     root.hidden = false;
     setOpen(true);
   }
+  function setReward(experience: string) {
+    reward.hidden = !/^[+]?\d+ XP$/.test(experience);
+    reward.querySelector('.assistant-reward-text')!.textContent = reward.hidden ? '' : `Вы получили ${experience.replace(/^\+/, '')}`;
+  }
   function close() { setOpen(false); avatar.focus(); }
   avatar.onclick = () => setOpen(!opened);
   root.querySelector<HTMLButtonElement>('.assistant-close')!.onclick = close;
@@ -91,7 +95,7 @@ export function createScenarioAssistant(host: HTMLElement, onOpen = () => {}) {
   root.onkeydown = event => { if (event.key === 'Escape') { event.stopPropagation(); close(); } };
   return {
     get isOpen() { return opened; },
-    waiting() {
+    waiting(experience = '') {
       show('Анализирую проезд');
       root.classList.add('assistant-loading');
       next.hidden = true;
@@ -99,7 +103,8 @@ export function createScenarioAssistant(host: HTMLElement, onOpen = () => {}) {
       dots.className = 'assistant-dots';
       dots.setAttribute('aria-label', 'Ожидание ответа');
       for (let i = 0; i < 3; i++) dots.append(document.createElement('span'));
-      text.append(dots);
+      text.replaceChildren(dots);
+      setReward(experience);
     },
     preview() {
       show([
@@ -115,10 +120,7 @@ export function createScenarioAssistant(host: HTMLElement, onOpen = () => {}) {
     },
     result(result: string | string[], experience = '') {
       show(result);
-      if (/^[+]?\d+ XP$/.test(experience)) {
-        reward.textContent = `Вы получили ${experience.replace(/^\+/, '')}`;
-        reward.hidden = false;
-      }
+      setReward(experience);
     },
     hide() { setOpen(false, false); root.hidden = true; },
     dispose() { dismissAnimation?.cancel(); avatarAnimation?.cancel(); root.remove(); },
