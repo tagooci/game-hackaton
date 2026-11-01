@@ -1,4 +1,5 @@
 import './style.css';
+import { createScenarioAssistant, showAssistantPreview } from './assistant/scenarioAssistant';
 import { api, ApiError, showAuth } from './auth/session';
 import type { Account } from './auth/session';
 
@@ -82,6 +83,11 @@ function startGame(account: Account): () => void {
   scene.activeCamera = camera;
   canvas.tabIndex = 0;
   const controls = createVehicleControls(canvas);
+  const assistant = createScenarioAssistant(host, () => {
+    controls.clear();
+    if (document.pointerLockElement === canvas) document.exitPointerLock();
+  });
+  let lastScenarioResult = '';
   let ownId = '';
   let targetPose: VehiclePose = vehicle.getPose();
 
@@ -119,7 +125,7 @@ function startGame(account: Account): () => void {
   overlay.className = 'loading-screen';
   overlay.textContent = 'Подключение…';
   canvas.addEventListener('click', () => {
-    if (!overlay.hidden || document.pointerLockElement === canvas) return;
+    if (!overlay.hidden || assistant.isOpen || document.pointerLockElement === canvas) return;
     canvas.requestPointerLock().catch(error => console.warn('Не удалось захватить курсор:', error));
   }, eventOptions);
   const logout = document.createElement('button');
@@ -161,7 +167,7 @@ function startGame(account: Account): () => void {
     });
   }
   const stopStateSender = startStateSender(serverUrl, {
-    getControls: () => mapError ? neutralControls : controls.getControls(),
+    getControls: () => mapError || assistant.isOpen ? neutralControls : controls.getControls(),
     takeRespawn: controls.takeRespawn,
     prepareScene: async message => {
       const expected = new Set(['car-kit/sedan.glb.bin']);
@@ -184,6 +190,10 @@ function startGame(account: Account): () => void {
     onMessage: message => {
       if (message.type === 'welcome') ownId = message.playerId;
       if (message.type === 'scene_prepare') {
+        if (message.sceneKind === 'scenario') {
+          lastScenarioResult = '';
+          assistant.introduction(message.roleId);
+        } else if (!lastScenarioResult) assistant.hide();
         queuePosition = undefined; queueLabel.hidden = true;
         finishArch?.dispose();
         finishArch = message.finish ? createFinishArch(scene, message.finish) : undefined;
@@ -192,6 +202,10 @@ function startGame(account: Account): () => void {
         targetPose = message.spawn;
       }
       if (message.type === 'snapshot') {
+        if (typeof message.scenarioResult === 'string' && message.scenarioResult && message.scenarioResult !== lastScenarioResult) {
+          lastScenarioResult = message.scenarioResult;
+          assistant.result(message.scenarioResult);
+        }
         const queue = message.scenarioQueue;
         queuePosition = queue ? new Vector3(queue.x, queue.y, queue.z) : undefined;
         queueLabel.textContent = queue ? `${queue.count}/2` : '';
@@ -202,6 +216,7 @@ function startGame(account: Account): () => void {
     },
     onDisconnect: () => {
       mapReady = false;
+      assistant.hide(); lastScenarioResult = '';
       remotePlayers.clear(); controls.clear(); targetPose = vehicle.getPose();
     },
   });
@@ -251,6 +266,7 @@ function startGame(account: Account): () => void {
   function dispose(): void {
     if (document.pointerLockElement === canvas) document.exitPointerLock();
     stopStateSender();
+    assistant.dispose();
     controls.dispose();
     events.abort();
     engine.stopRenderLoop();
@@ -266,10 +282,14 @@ function startGame(account: Account): () => void {
   return () => { dispose(); overlay.remove(); logout.remove(); queueLabel.remove(); finishArch?.dispose(); };
 }
 
+if (new URLSearchParams(location.search).has('assistant-preview')) {
+  stopScreen = showAssistantPreview(host);
+} else {
 host.textContent = 'Проверка сессии…';
 api<Account>('me').then(enterGame).catch(error => {
   if (!disposed) authScreen(error instanceof ApiError && error.status === 401 ? '' : 'Не удалось подключиться к серверу');
 });
+}
 function disposeApplication(): void { disposed = true; stopScreen(); }
 import.meta.hot?.dispose(disposeApplication);
 window.addEventListener('pagehide', event => { if (!event.persisted) disposeApplication(); });
