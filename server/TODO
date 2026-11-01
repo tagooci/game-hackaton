@@ -1,18 +1,76 @@
-Server/client pipeline — integrated
-===================================
+Серверная часть — статус и дальнейшие задачи
+==============================================
 
-[x] Auth screen: login, registration, confirmation, display name; 400/401/409
-    errors preserve fields. HttpOnly cookie; no token/password localStorage.
-[x] Session bootstrap: /me, /content/bootstrap, logout back to auth.
-[x] Loading screen: authenticated /ws/v2, prepare/ready/start; model and texture
-    are ready before scene_ready. Controls wait for startTick. Close codes
-    1008/4001 return to auth with a message.
-[x] Game screen: v2 input context and seq; authoritative full snapshots;
-    interpolation resets on transition/disconnect; immediate braking on blur.
-[x] Backend: step_vehicle at fixed 30 Hz, real local asset metadata, validation
-    of input/seq/epoch/rate/timeout, snapshots of all connected ready players.
+Готово
+------
 
-Remaining world features (outside this integration):
-- Chunk streaming and enforcement of the 10% content cache budget. Metadata is
-  accurate, but the tiny test scene currently uses all available world content.
-- Map, collision geometry, scenario transitions and traffic rules.
+[x] Авторизация и аккаунты: регистрация, вход, logout, HttpOnly cookie.
+[x] Сессии пользователя и восстановление безопасной позиции в мире.
+[x] WebSocket v2: origin, протокол, rate limit, seq, epoch и input timeout.
+[x] Фиксированная серверная физика машин на 30 Hz.
+[x] Авторитетные snapshot-ы игроков с фильтрацией по sceneId.
+[x] Сценарная регистрация игроков в зоне ожидания.
+[x] Подбор участников и назначение ролей.
+[x] Scenario scene lifecycle: prepare, ready, общий startTick и running.
+[x] Индивидуальные destination-зоны и завершение после финиша всех игроков.
+[x] Сохранение результатов сценария и XP в SQLite.
+[x] Идемпотентное начисление XP по resultId.
+[x] Сохранение конечной позиции после успешного сценария.
+[x] Возврат в return_spawn при scenario_leave или отмене.
+[x] Возврат на обычный world spawn при disconnect во время сценария.
+[x] Отмена всей сессии, если один из участников вышел.
+[x] Тайм-аут активного сценария.
+[x] Очистка завершённых и отменённых сессий из памяти.
+[x] Базовый движок геометрических правил: скорость, полоса, стоп-линия.
+[x] Разные rule-конфигурации для разных ролей.
+[x] Разделение кода на app, helpers, simulation, сценарные и WebSocket-модули.
+[x] Каталог сценариев и валидация сценарных определений.
+
+До появления финальной карты
+----------------------------
+
+[ ] Добавить отдельную временную конфигурацию правил для priority-test.
+[ ] Добавить проверку направления движения по полосе.
+[ ] Добавить модели конфликтных областей и приоритета движения.
+[ ] Реализовать проверку уступания главной дороге.
+[ ] Добавить проверку правильного маршрута и выезда.
+[ ] Разделить rule_event на warning и violation.
+[ ] Добавить стабильные eventId, ruleId, severity, tick и текст правила.
+[ ] Добавить timeout ожидания участников в зоне регистрации.
+[ ] Решить политику XP для игроков, завершивших маршрут до общего timeout.
+[ ] Добавить корректную остановку активных сценариев при shutdown сервера.
+[ ] Добавить диагностические endpoint-ы для сценариев и активных сессий.
+[ ] Добавить очистку и защиту от повторной обработки lifecycle-событий.
+
+После появления metadata карты
+--------------------------------
+
+[ ] Получать road-semantics.json вместе с картой.
+[ ] Проверять mapId, contentVersion и совместимость со сценарием.
+[ ] Загрузить junctions, lanes, routes, stopLines, zones и conflictAreas.
+[ ] Заменить временные координаты priority-test на IDs объектов карты.
+[ ] Проверить соответствие spawn своей входной полосе.
+[ ] Проверить соответствие destination ожидаемой выходной полосе.
+[ ] Проверить уровни дороги для мостов и тоннелей.
+[ ] Подключить реальные ограничения скорости и приоритеты дорог.
+[ ] Валидировать связность дорожного графа и все ссылки metadata.
+[ ] Запретить публикацию карты при ошибках логической валидации.
+
+После стабилизации серверного контракта
+---------------------------------------
+
+[ ] Зафиксировать финальный формат rule_event и scenario_result в PROTOCOL.md.
+[ ] Добавить API для списка доступных сценариев.
+[ ] Добавить API для просмотра активной scenario-сессии.
+[ ] Добавить историю результатов и XP игрока.
+[ ] Добавить третий слот и дополнительные роли.
+[ ] Добавить поддержку светофоров и знаков, если они потребуются карте.
+[ ] Документировать миграции SQLite для новых полей сценариев.
+
+Ограничения текущей версии
+--------------------------
+
+- Активные сценарные сессии хранятся только в памяти.
+- Координаты priority-test являются временными.
+- Финальная metadata карты ещё не подключена к серверу.
+- Клиентский UI сценариев пока не является частью этого TODO.

@@ -34,7 +34,7 @@ export function showAuth(host: HTMLElement, onLogin: (account: Account) => Promi
   errorText.textContent = initialError;
   let mode = 'login';
   let disposed = false;
-  for (const button of form.querySelectorAll<HTMLButtonElement>('[data-mode]')) {
+  form.querySelectorAll<HTMLButtonElement>('[data-mode]').forEach(button => {
     button.onclick = () => {
       mode = button.dataset.mode!;
       errorText.textContent = '';
@@ -45,7 +45,7 @@ export function showAuth(host: HTMLElement, onLogin: (account: Account) => Promi
       });
       form.querySelector<HTMLInputElement>('[name=password]')!.autocomplete = mode === 'login' ? 'current-password' : 'new-password';
     };
-  }
+  });
   form.onsubmit = async event => {
     event.preventDefault();
     const fields = new FormData(form);

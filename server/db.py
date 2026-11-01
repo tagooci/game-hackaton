@@ -32,6 +32,7 @@ class Database:
                     username TEXT NOT NULL UNIQUE,
                     name TEXT NOT NULL,
                     password_hash TEXT NOT NULL,
+                    experience INTEGER NOT NULL DEFAULT 0,
                     safe_x REAL NOT NULL DEFAULT 0,
                     safe_z REAL NOT NULL DEFAULT 0,
                     safe_heading REAL NOT NULL DEFAULT 0
@@ -46,9 +47,29 @@ class Database:
 
         with self._connect() as db:
             columns = {row["name"] for row in db.execute("PRAGMA table_info(accounts)")}
-            for name, definition in [("safe_y", "REAL NOT NULL DEFAULT 0"), ("safe_world", "TEXT NOT NULL DEFAULT ''")]:
+            for name, definition in [
+                ("experience", "INTEGER NOT NULL DEFAULT 0"),
+                ("safe_y", "REAL NOT NULL DEFAULT 0"),
+                ("safe_world", "TEXT NOT NULL DEFAULT ''"),
+            ]:
                 if name not in columns:
                     db.execute(f"ALTER TABLE accounts ADD COLUMN {name} {definition}")
+            db.executescript(
+                """
+                CREATE TABLE IF NOT EXISTS scenario_results (
+                    result_id TEXT NOT NULL,
+                    session_id TEXT NOT NULL,
+                    scenario_id TEXT NOT NULL,
+                    player_id TEXT NOT NULL REFERENCES accounts(player_id),
+                    role_id TEXT NOT NULL,
+                    passed INTEGER,
+                    experience INTEGER NOT NULL,
+                    violation_ids TEXT NOT NULL,
+                    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    PRIMARY KEY (result_id, player_id)
+                );
+                """
+            )
 
     def safe_context(self, player_id: str) -> tuple[str, float]:
         with self._lock, self._connect() as db:
@@ -119,6 +140,7 @@ class Database:
             row = db.execute(
                 """
                 SELECT a.player_id, a.name
+                    , a.experience
                 FROM sessions s JOIN accounts a ON a.player_id = s.player_id
                 WHERE s.token_hash = ?
                 """,
@@ -126,7 +148,11 @@ class Database:
             ).fetchone()
         if row is None:
             return None
-        return {"playerId": row["player_id"], "name": row["name"]}
+        return {
+            "playerId": row["player_id"],
+            "name": row["name"],
+            "experience": int(row["experience"]),
+        }
 
     def delete_session(self, token: str | None) -> str | None:
         if not token:
@@ -162,6 +188,52 @@ class Database:
                 """,
                 (x, z, heading, y, world, player_id),
             )
+
+    def save_scenario_result(
+        self,
+        result_id: str,
+        session_id: str,
+        scenario_id: str,
+        player_id: str,
+        role_id: str,
+        passed: bool,
+        experience: int,
+        violation_ids: list[str],
+    ) -> bool:
+        with self._lock, self._connect() as db:
+            cursor = db.execute(
+                """
+                INSERT OR IGNORE INTO scenario_results
+                    (result_id, session_id, scenario_id, player_id, role_id,
+                     passed, experience, violation_ids)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    result_id,
+                    session_id,
+                    scenario_id,
+                    player_id,
+                    role_id,
+                    int(passed),
+                    experience,
+                    ",".join(violation_ids),
+                ),
+            )
+            if cursor.rowcount == 0:
+                return False
+            db.execute(
+                "UPDATE accounts SET experience = experience + ? WHERE player_id = ?",
+                (experience, player_id),
+            )
+            return True
+
+    def experience(self, player_id: str) -> int:
+        with self._lock, self._connect() as db:
+            row = db.execute(
+                "SELECT experience FROM accounts WHERE player_id = ?",
+                (player_id,),
+            ).fetchone()
+        return int(row["experience"]) if row else 0
 
     def close(self) -> None:
         """Connections are short-lived; kept as an explicit lifecycle hook."""
