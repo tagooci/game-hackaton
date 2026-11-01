@@ -83,7 +83,12 @@ function startGame(account: Account): () => void {
   scene.activeCamera = camera;
   canvas.tabIndex = 0;
   const controls = createVehicleControls(canvas);
-  const assistant = createScenarioAssistant(host);
+  const assistant = createScenarioAssistant(host, () => {
+    controls.clear();
+    if (document.pointerLockElement === canvas) document.exitPointerLock();
+  });
+  let agentReplies: string[] = [];
+  let feedbackSession = '';
   let lastScenarioResult = '';
   let inScenario = false;
   let ownId = '';
@@ -167,7 +172,7 @@ function startGame(account: Account): () => void {
     });
   }
   const stopStateSender = startStateSender(serverUrl, {
-    getControls: () => mapError ? neutralControls : controls.getControls(),
+    getControls: () => mapError || assistant.isOpen ? neutralControls : controls.getControls(),
     takeRespawn: controls.takeRespawn,
     prepareScene: async message => {
       const expected = new Set(['car-kit/sedan.glb.bin']);
@@ -191,6 +196,13 @@ function startGame(account: Account): () => void {
       if (message.type === 'agent_feedback' || message.type === 'agent_feedback_error') {
         window.dispatchEvent(new CustomEvent('agent-feedback', { detail: message }));
         console.info('Agent feedback:', message);
+        if (message.sessionId === feedbackSession) {
+          agentReplies = message.type === 'agent_feedback_error' ? [message.text] : [
+            ...message.feedback.successful.map(item => item.comment),
+            ...message.feedback.errors.map(item => item.comment),
+          ];
+          if (!inScenario && agentReplies.length) assistant.result(agentReplies);
+        }
       }
       if (message.type === 'welcome') ownId = message.playerId;
       if (message.type === 'scene_prepare') {
@@ -198,7 +210,11 @@ function startGame(account: Account): () => void {
         inScenario = message.sceneKind === 'scenario';
         if (inScenario) {
           lastScenarioResult = '';
+          agentReplies = [];
+          feedbackSession = message.sceneId;
           assistant.hide();
+        } else if (returnedFromScenario && agentReplies.length) {
+          assistant.result(agentReplies);
         } else if (returnedFromScenario && lastScenarioResult) {
           assistant.result(lastScenarioResult);
         } else if (!lastScenarioResult) assistant.hide();
@@ -224,7 +240,7 @@ function startGame(account: Account): () => void {
     },
     onDisconnect: () => {
       mapReady = false;
-      assistant.hide(); lastScenarioResult = ''; inScenario = false;
+      assistant.hide(); lastScenarioResult = ''; agentReplies = []; feedbackSession = ''; inScenario = false;
       remotePlayers.clear(); controls.clear(); targetPose = vehicle.getPose();
     },
   });
