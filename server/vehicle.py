@@ -8,7 +8,7 @@ import math
 class VehicleConfig:
     wheelbase: float = 1.95
     maxForwardSpeed: float = 22.0
-    maxReverseSpeed: float = 4.0
+    maxReverseSpeed: float = 11.0
     acceleration: float = 4.0
     brakeDeceleration: float = 25.0
     rollingDeceleration: float = 0.45

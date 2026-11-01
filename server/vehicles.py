@@ -31,7 +31,7 @@ VEHICLES: dict[str, VehicleDefinition] = {
         asset_id="car-kit/sedan.glb.bin",
         asset_url="/assets/car-kit/sedan.glb.bin",
         asset_bytes=24889,
-        physics=VehicleConfig(maxForwardSpeed=18.0, acceleration=3.5),
+        physics=VehicleConfig(maxForwardSpeed=18.0, maxReverseSpeed=9.0, acceleration=3.5),
     ),
     # The sports model is shared by the garage preview and the game scene.
     "super-sedan": VehicleDefinition(
@@ -42,6 +42,7 @@ VEHICLES: dict[str, VehicleDefinition] = {
         asset_bytes=177676,
         physics=VehicleConfig(
             maxForwardSpeed=27.0,
+            maxReverseSpeed=13.5,
             acceleration=5.5,
             maxLateralAcceleration=9.0,
         ),
