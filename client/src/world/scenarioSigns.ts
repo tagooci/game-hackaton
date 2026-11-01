@@ -35,4 +35,3 @@ export function createRoundaboutSigns(scene: Scene, signs: { x: number; z: numbe
   }
   return { dispose() { root.dispose(); material.dispose(); texture.dispose(); } };
 }
-

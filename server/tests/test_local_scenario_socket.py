@@ -108,4 +108,3 @@ class SocketTests(unittest.TestCase):
     def test_first_three_player_scenario(self):self.run_scenario('left-turn')
 
 if __name__=='__main__':unittest.main()
-
