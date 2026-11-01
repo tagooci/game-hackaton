@@ -237,13 +237,19 @@ function startGame(account: Account, profile: Profile): () => void {
         targetPose = message.spawn;
         scene.fogStart = message.weather === 'fog' ? 18 : 40;
         scene.fogEnd = message.weather === 'fog' ? 42 : 60;
-        scene.fogColor = message.weather === 'rain'
-          ? new Color3(0.35, 0.4, 0.48)
-          : new Color3(0.86, 0.83, 0.76);
-        scene.clearColor = message.weather === 'rain'
-          ? new Color4(0.35, 0.4, 0.48, 1)
-          : new Color4(0.86, 0.83, 0.76, 1);
-        sun.intensity = message.weather === 'rain' ? 0.55 : 1.0;
+        const isDark = message.weather === 'dark';
+        scene.fogColor = isDark
+          ? new Color3(0.015, 0.02, 0.04)
+          : message.weather === 'rain'
+            ? new Color3(0.35, 0.4, 0.48)
+            : new Color3(0.86, 0.83, 0.76);
+        scene.clearColor = isDark
+          ? new Color4(0.015, 0.02, 0.04, 1)
+          : message.weather === 'rain'
+            ? new Color4(0.35, 0.4, 0.48, 1)
+            : new Color4(0.86, 0.83, 0.76, 1);
+        ambient.intensity = isDark ? 0 : 0.6;
+        sun.intensity = isDark ? 0 : message.weather === 'rain' ? 0.55 : 1.0;
       }
 
       if (message.type === 'snapshot') {

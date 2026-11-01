@@ -347,6 +347,21 @@ async def update_admin_settings(
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
+@app.post("/api/v2/admin/weather")
+async def update_admin_weather(
+    request: Request, game_session: str | None = Cookie(default=None)
+):
+    await _admin_account(game_session)
+    body = await _read_json_object(request)
+    weather = body.get("weather")
+    if not isinstance(weather, str):
+        raise HTTPException(status_code=400, detail="weather is required")
+    try:
+        return server_settings.update_weather(weather)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
 @app.post("/api/v2/profile")
 async def update_profile(request: Request, game_session: str | None = Cookie(default=None)):
     account = await _authenticated_account(game_session)

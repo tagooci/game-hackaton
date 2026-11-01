@@ -7,7 +7,7 @@ export interface SceneContext { sceneId: string; epoch: number }
 export interface ScenePrepare extends SceneContext {
   type: 'scene_prepare'; spawn: PlayerState; finish?: PlayerState | null;
   sceneKind: 'world' | 'scenario'; scenarioId: string | null; roleId: string | null;
-  weather: 'clear' | 'rain' | 'fog';
+  weather: 'clear' | 'rain' | 'fog' | 'dark';
   plan: { mapManifestUrl: string; revision: number; resources: { id: string; url: string; bytes: number }[] };
 }
 export type ServerMessage =
@@ -38,7 +38,7 @@ export function parseServerMessage(text: string): ServerMessage | undefined {
       if (v.v !== 2 || typeof v.playerId !== 'string' || !Number.isInteger(v.inputHz) || Number(v.inputHz) < 1 || Number(v.inputHz) > 60) return;
       break;
     case 'scene_prepare':
-      if (!context(v) || !pose(v.spawn) || !['clear', 'rain', 'fog'].includes(v.weather as string) || !object(v.plan) || typeof v.plan.mapManifestUrl !== 'string' || !Number.isSafeInteger(v.plan.revision) || !Array.isArray(v.plan.resources)
+      if (!context(v) || !pose(v.spawn) || !['clear', 'rain', 'fog', 'dark'].includes(v.weather as string) || !object(v.plan) || typeof v.plan.mapManifestUrl !== 'string' || !Number.isSafeInteger(v.plan.revision) || !Array.isArray(v.plan.resources)
         || !v.plan.resources.every(r => object(r) && typeof r.id === 'string' && typeof r.url === 'string' && Number.isSafeInteger(r.bytes) && Number(r.bytes) >= 0)) return;
       break;
     case 'scene_start':
