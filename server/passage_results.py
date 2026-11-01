@@ -38,6 +38,12 @@ def samples(previous, current):
 
 class PassageResults:
     def __init__(self, session_id, players, definition, now):
+        rules = definition.get('rules', {})
+        supported = {'priority','yield','speedLimit','stop','noEntry','allowedDirections'}
+        for sign in rules.get('signs', []):
+            if sign['kind'] not in supported:
+                raise ValueError(f"Unsupported traffic sign: {sign['id']} ({sign['kind']})")
+        self.stopped_at_signs = set()
         self.session_id, self.definition, self.started = session_id, definition, now
         self.previous = {p['id']: p['vehicle'] for p in players}
         self.roles = {p['id']:p['roleId'] for p in players}
@@ -69,6 +75,8 @@ class PassageResults:
             def record(category,rule,key,details,related=(),sign=None):
                 current_active.add(self.event(player,category,rule,key,now,details,related,sign))
             for marking in rules.get('markings',[]):
+                if abs(player['vertical'].y-marking.get('y',player['vertical'].y))> .5:
+                    continue
                 if marking['crossingAllowed']:
                     continue
                 if any(intersects_line(p,marking['line']) for p in path):
@@ -83,13 +91,43 @@ class PassageResults:
                             record('laneChanges','incorrect-lane',lane['id'],'Кузов вышел за границы разрешённой полосы')
                             break
             for sign in rules.get('signs',[]):
-                if sign['kind'] == 'priority':
-                    continue  # Приоритет проверяется отдельно, без двойного учёта.
-                if sign['kind'] != 'speedLimit':
+                if player['roleId'] not in sign.get('roles', self.roles.values()):
                     continue
-                zone=sign['zone']
-                if zone[0] <= state.x <= zone[2] and zone[1] <= state.z <= zone[3] and abs(state.speed) > sign['limitMps']+.1:
-                    record('trafficSigns','speed-limit',sign['id'],'Превышение ограничения скорости',sign=sign['id'])
+                kind=sign['kind']
+                if kind == 'priority':
+                    continue  # Приоритет отдельно, без двойного учёта.
+                zone=sign.get('zone')
+                in_zone = lambda p: zone is None or zone[0]<=p.x<=zone[2] and zone[1]<=p.z<=zone[3]
+                if kind == 'speedLimit':
+                    if any(in_zone(p) for p in path) and abs(state.speed)>sign['limitMps']+.1:
+                        record('trafficSigns','speed-limit',sign['id'],'Превышение ограничения скорости',sign=sign['id'])
+                elif kind in ('stop','noEntry'):
+                    # Контроль по переднему бамперу, с учётом направления въезда.
+                    ax,az=sign['line'][0];bx,bz=sign['line'][1]
+                    nx,nz=sign['entryDirection']
+                    def distance(p):
+                        frontx=p.x+math.sin(p.heading)*CAR_LENGTH/2
+                        frontz=p.z+math.cos(p.heading)*CAR_LENGTH/2
+                        return (frontx-ax)*nx+(frontz-az)*nz
+                    before,after=distance(previous),distance(state)
+                    token=(pid,sign['id'])
+                    if kind=='stop' and -sign.get('stopDistance',3)<=after<=.05 and abs(state.speed)<=.05 and in_zone(state):
+                        self.stopped_at_signs.add(token)
+                    if before<=0<after and any(intersects_line(p,sign['line']) for p in path):
+                        if kind=='noEntry' or token not in self.stopped_at_signs:
+                            record('trafficSigns',kind,sign['id'],'Нарушение требования знака',sign=sign['id'])
+                        self.stopped_at_signs.discard(token)
+                elif kind == 'allowedDirections':
+                    if in_zone(state) and self.roles[pid] not in sign['allowedRoles']:
+                        record('trafficSigns','prohibited-direction',sign['id'],'Движение в запрещённом направлении',sign=sign['id'])
+                elif kind == 'yield' and any(in_zone(p) for p in path):
+                    for other in players:
+                        if other['id']==pid or other['roleId'] not in sign['yieldToRoles']:
+                            continue
+                        conflict=sign['conflict']
+                        b=other['vehicle']
+                        if penetration(state.x,state.z,state.heading,conflict) and penetration(b.x,b.z,b.heading,conflict):
+                            record('rightOfWay','yield-by-sign',sign['id'],'Не уступили по знаку',(other['id'],),sign=sign['id'])
             for other in players:
                 if other['id']==pid or other['id'] in self.emitted:
                     continue

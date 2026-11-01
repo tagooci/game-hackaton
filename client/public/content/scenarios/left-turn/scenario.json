@@ -34,17 +34,60 @@
       "heading": 3.141592653589793
     }
   },
-  "version": 1,
+  "version": 2,
   "type": "short",
   "rules": {
     "coverage": {
-      "roadMarkings": false,
-      "laneChanges": false,
+      "roadMarkings": true,
+      "laneChanges": true,
       "rightOfWay": true,
       "trafficSigns": true,
       "collisions": true
     },
-    "markings": [],
+    "markings": [
+      {
+        "id": "main-center-south",
+        "crossingAllowed": true,
+        "line": [
+          [
+            60,
+            -5
+          ],
+          [
+            60,
+            15
+          ]
+        ]
+      },
+      {
+        "id": "main-center-north",
+        "crossingAllowed": true,
+        "line": [
+          [
+            60,
+            25
+          ],
+          [
+            60,
+            45
+          ]
+        ]
+      },
+      {
+        "id": "ramp-center",
+        "crossingAllowed": false,
+        "line": [
+          [
+            45,
+            20
+          ],
+          [
+            55,
+            20
+          ]
+        ]
+      }
+    ],
     "laneZones": [
       {
         "id": "straight-approach",
@@ -99,20 +142,91 @@
           60,
           50
         ]
+      },
+      {
+        "id": "left-turn-exit",
+        "roles": [
+          "left-turn"
+        ],
+        "zone": [
+          45,
+          15,
+          54.99,
+          25
+        ],
+        "allowed": [
+          40,
+          20,
+          55,
+          23
+        ]
+      },
+      {
+        "id": "straight-wrong-exit",
+        "roles": [
+          "straight"
+        ],
+        "zone": [
+          45,
+          15,
+          54.99,
+          25
+        ],
+        "allowed": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "id": "left-wrong-exit",
+        "roles": [
+          "left-turn"
+        ],
+        "zone": [
+          55,
+          26,
+          65,
+          45
+        ],
+        "allowed": [
+          0,
+          0,
+          0,
+          0
+        ]
       }
     ],
     "signs": [
       {
         "id": "priority-A",
-        "kind": "priority"
+        "kind": "priority",
+        "roles": [
+          "straight"
+        ]
       },
       {
         "id": "priority-B",
-        "kind": "priority"
+        "kind": "priority",
+        "roles": [
+          "left-turn"
+        ]
       },
       {
         "id": "yield-C",
-        "kind": "priority"
+        "kind": "yield",
+        "roles": [],
+        "yieldToRoles": [
+          "straight",
+          "left-turn"
+        ],
+        "zone": [
+          50,
+          15,
+          55,
+          25
+        ]
       }
     ],
     "conflict": {

@@ -1,6 +1,7 @@
 """Подбор участников и проверка учебного левого поворота."""
 import json
 import math
+import uuid
 from pathlib import Path
 from .vehicle import Controls, VehicleState
 from .passage_results import PassageResults
@@ -28,7 +29,6 @@ class ScenarioSessions:
     def __init__(self):
         self.waiters = {}
         self.sessions = {}
-        self.counter = 0
         self.count = 0
         self.pair_since = None
 
@@ -88,8 +88,7 @@ class ScenarioSessions:
         self.pair_since = None
         while len(candidates) >= 2:
             pair, candidates = candidates[:2], candidates[2:]
-            self.counter += 1
-            scene_id = f'scenario:left-turn:{self.counter}'
+            scene_id = f'scenario:left-turn:{uuid.uuid4()}'
             self.sessions[scene_id] = dict(players=[pid for _, pid in pair], deadline=now+30, started=False)
             for role, (_, pid) in enumerate(pair):
                 self.waiters.pop(pid, None)
