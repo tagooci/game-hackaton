@@ -1,12 +1,12 @@
 """Mutable process-wide settings controlled by the administrator."""
 
 from dataclasses import dataclass
-import os
 import threading
 
 
 AGENT_STYLES = frozenset({"normal", "coach", "aggressive"})
 WEATHERS = frozenset({"clear", "rain", "fog", "dark"})
+ADMIN_USERNAME = "ochov@gmail.com"
 
 
 @dataclass
@@ -44,5 +44,4 @@ class ServerSettingsStore:
         return self.get()
 
     def is_admin(self, username: str) -> bool:
-        configured = os.getenv("ADMIN_USERNAME", "").strip()
-        return bool(configured) and username == configured
+        return username == ADMIN_USERNAME
