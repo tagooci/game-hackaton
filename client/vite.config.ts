@@ -20,7 +20,7 @@ export default defineConfig({
     name: 'content-no-store',
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
-        if (req.url?.startsWith('/content/')) res.setHeader('Cache-Control', 'no-store');
+        if (req.url?.startsWith('/content/') || req.url?.startsWith('/assets/')) res.setHeader('Cache-Control', 'no-store');
         next();
       });
     },

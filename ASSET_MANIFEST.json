@@ -113,6 +113,40 @@
         "client/public/content/assets/imported/map-eea5c549e3afcc87.glb.bin",
         "client/public/content/assets/imported/map-ef898603ae3e9ddd.glb.bin"
       ]
+    },
+    {
+      "id": "local:user-provided-lowpoly-city-blender",
+      "title": "User-provided LowPoly City houses, trees and benches",
+      "source_name": "Local user-provided archives",
+      "source_files": [
+        "Downloads/LowPoly_City_01Readyblender.rar",
+        "Downloads/textures.rar"
+      ],
+      "files": [
+        "blender/assets/cartocity/LowPoly_City_01Ready.blend",
+        "blender/assets/cartocity/textures/color_512x512.jpg",
+        "blender/compact-city.blend"
+      ],
+      "local_user_provided": true,
+      "reference_url": "https://sketchfab.com/3d-models/low-poly-city-cartocity-pack-cartoonsih-city-d56ffa39bb7440afb1d09aa615a743d6",
+      "license": "User-provided archive; license not included in archive",
+      "archive_reference_identity": "Not independently matched; the local archive is recorded separately from the reference URL",
+      "modifications": "Original palette restored; rigid orientation corrections, uniform size normalization and linked scene instances"
+    },
+    {
+      "id": "user:LowPoly-City-environment",
+      "title": "LowPoly City buildings, trees and benches",
+      "source_name": "User supplied archives",
+      "source_files": [
+        "LowPoly_City_01Readyblender.rar",
+        "textures.rar"
+      ],
+      "license": "Not supplied in archives",
+      "license_status": "user_provided",
+      "files": [
+        "client/public/content/assets/imported/city-*.glb.bin"
+      ],
+      "notes": "Palette baked into vertex colors; placement from blender/compact-city.blend; bench orientation corrected during export."
     }
   ],
   "version": 1

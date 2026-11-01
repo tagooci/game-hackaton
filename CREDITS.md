@@ -20,3 +20,9 @@ Current imported map: user-provided `blender/compact-reference.blend` and its JS
 Kenney models supplied locally from `Downloads/kenney_city-kit-roads/Models/GLB format`.
 Imported runtime models: `client/public/content/assets/imported/` (CC0 Kenney geometry
 and project-authored decks/supports). License: `assets/imported/License.txt`.
+
+City dressing in blender/compact-city.blend: original houses, trees and benches from user-provided LowPoly_City_01Readyblender.rar; original palette supplied in textures.rar. The local archive is tracked separately from the user-provided CartoCity reference URL; archive authorship/license was not supplied. Geometry was oriented and uniformly scaled; original UV colors are preserved.
+
+## LowPoly City environment
+
+Buildings, trees and benches: user-provided `LowPoly_City_01Readyblender.rar` and `textures.rar`. License information was not included in the archives. Runtime models use vertex colors and shared prototypes; no CC0 status is assumed.

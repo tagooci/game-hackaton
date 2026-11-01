@@ -4,7 +4,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1] / 'public' / 'content'
 
-def pack(raw, archive, parent, unmarked=False, ramp=False, rail=False, level_crossing=False):
+def pack(raw, archive, parent, unmarked=False, ramp=False, rail=False, level_crossing=False, keep_uv=False):
     # Kenney использует палитру с однотонными UV-островками.
     # Переносим её в vertex colors, удаляем текстуры и ненужные тангенты.
     # KHR_mesh_quantization встроен в GLTF loader и не требует WASM/CDN.
@@ -60,7 +60,8 @@ def pack(raw, archive, parent, unmarked=False, ramp=False, rail=False, level_cro
                 colors.append(tuple(linear(c) for c in color)+(255,))
             if not uvs and 'COLOR_0' in attrs:
                 a=old_accessors[attrs['COLOR_0']]
-                colors=[tuple(round(c*255) if a['componentType']==5126 else c for c in row)+(255,) for row in values(attrs['COLOR_0'])]
+                scale = 255 if a['componentType']==5126 else 255/65535 if a['componentType']==5123 and a.get('normalized') else 1
+                colors=[tuple(max(0,min(255,round(c*scale))) for c in row)+(255,) for row in values(attrs['COLOR_0'])]
                 colors=[row[:4] for row in colors]
             if not colors:
                 material=doc.get('materials',[{}])[primitive.get('material',0)]
@@ -71,11 +72,12 @@ def pack(raw, archive, parent, unmarked=False, ramp=False, rail=False, level_cro
                 normals=[(x-.1*y,y,z) for x,y,z in normals]
                 normals=[tuple(c/math.sqrt(sum(a*a for a in n)) for c in n) for n in normals]
             # Сливаем вершины, разделённые только UV-островками исходной палитры.
-            unique={};mapping=[];new_p=[];new_n=[];new_c=[]
-            for point,normal,color in zip(positions,normals,colors):
+            unique={};mapping=[];new_p=[];new_n=[];new_c=[];new_uv=[]
+            for vertex,(point,normal,color) in enumerate(zip(positions,normals,colors)):
                 key=tuple(round(x,6) for x in (*point,*normal))+color
                 if key not in unique:
                     unique[key]=len(new_p);new_p.append(point);new_n.append(normal);new_c.append(color)
+                    if keep_uv:new_uv.append(uvs[vertex])
                 mapping.append(unique[key])
             indices=[(mapping[row[0]],) for row in values(primitive['indices'])]
             positions,normals,colors=new_p,new_n,new_c
@@ -89,15 +91,18 @@ def pack(raw, archive, parent, unmarked=False, ramp=False, rail=False, level_cro
             accessors[pi]['min']=accessors[pi]['min'][:3];accessors[pi]['max']=accessors[pi]['max'][:3]
             views[accessors[pi]['bufferView']]['byteStride']=8
             ni=primitive['attributes']['NORMAL'];accessors[ni]['type']='VEC3';views[accessors[ni]['bufferView']]['byteStride']=4
+            if keep_uv:
+                primitive['attributes'].pop('COLOR_0')
+                primitive['attributes']['TEXCOORD_0']=add([tuple(round(c*65535) for c in uv) for uv in new_uv],'H',5123,'VEC2',normalized=True)
             primitive['indices']=add(indices,'H',5123,'SCALAR')
             primitive['material']=0
     for node in doc['nodes']:
         if 'mesh' in node:
             if node.get('children'):raise ValueError('Quantization requires leaf mesh nodes')
             node['scale']=[c*decode for c in node.get('scale',[1,1,1])]
-    doc['materials']=[{'name':'Kenney palette','pbrMetallicRoughness':{'baseColorFactor':[1,1,1,1],'metallicFactor':0,'roughnessFactor':1}}]
+    if not keep_uv:doc['materials']=[{'name':'Kenney palette','pbrMetallicRoughness':{'baseColorFactor':[1,1,1,1],'metallicFactor':0,'roughnessFactor':1}}]
     doc['accessors']=accessors;doc['bufferViews']=views;doc['buffers']=[{'byteLength':len(data)}]
-    for key in ['images','textures','samplers','extensions']:doc.pop(key,None)
+    for key in (['extensions'] if keep_uv else ['images','textures','samplers','extensions']):doc.pop(key,None)
     doc['extensionsUsed']=['KHR_mesh_quantization'];doc['extensionsRequired']=['KHR_mesh_quantization']
     j=json.dumps(doc,separators=(',',':')).encode();j+=b' '*(-len(j)%4)
     data.extend(b'\0'*(-len(data)%4));total=12+8+len(j)+8+len(data)

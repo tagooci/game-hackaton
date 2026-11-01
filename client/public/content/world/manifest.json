@@ -1,12 +1,12 @@
 {
   "worldId": "compact-reference-b311ebce",
-  "contentVersion": "748742ec48c695f4",
+  "contentVersion": "6ea20218e328f746",
   "accounting": "unique_resource_bytes",
-  "worldBytes": 3870493,
-  "cacheBudgetBytes": 387049,
+  "worldBytes": 4168299,
+  "cacheBudgetBytes": 416829,
   "tileSize": 10,
   "chunkSize": 20,
-  "streamRadius": 65,
+  "streamRadius": 80,
   "streamStep": 2.5,
   "bounds": {
     "minX": -80,
@@ -20,7 +20,7 @@
     "heading": -3.141592653589793
   },
   "spawnY": 0.09999999403953552,
-  "groundColor": "#35353f",
+  "groundColor": "#77776c",
   "resources": [
     {
       "id": "map-742ac4b402f41e28",
@@ -194,11 +194,218 @@
       "label": "Highway sign - S06 - HORIZONTAL UPPER STRAIGHT"
     },
     {
+      "id": "city-1622b5995f094e53",
+      "url": "/content/assets/imported/city-1622b5995f094e53.glb.bin",
+      "kind": "model",
+      "bytes": 5256,
+      "sha256": "5a9275cf7e5c15ef0989caf3a4ae164a4d57031e533a5d8375a4af333314c31e",
+      "encoding": "gzip",
+      "label": "Park_00"
+    },
+    {
+      "id": "city-c45031d68eb67bc4",
+      "url": "/content/assets/imported/city-c45031d68eb67bc4.glb.bin",
+      "kind": "model",
+      "bytes": 5096,
+      "sha256": "65b4fbddc97de4d53401a3b74b27f3dfe10ca72b2fa13a9c1cbd9a6e013af182",
+      "encoding": "gzip",
+      "label": "Housing_plot_01"
+    },
+    {
+      "id": "city-db9ea9a60277914f",
+      "url": "/content/assets/imported/city-db9ea9a60277914f.glb.bin",
+      "kind": "model",
+      "bytes": 5099,
+      "sha256": "f525273745c413ac202768df1f5cdf8f540423c6945e3c98dc3b4e5b1b61f55a",
+      "encoding": "gzip",
+      "label": "Housing_plot_02"
+    },
+    {
+      "id": "city-63392b0df3ca7115",
+      "url": "/content/assets/imported/city-63392b0df3ca7115.glb.bin",
+      "kind": "model",
+      "bytes": 3578,
+      "sha256": "118c29dc9eb290e5c5a036601d2eb4d047e212143e4f63054139c8c5376e0662",
+      "encoding": "gzip",
+      "label": "Park_03"
+    },
+    {
+      "id": "city-602f3a5861ad42eb",
+      "url": "/content/assets/imported/city-602f3a5861ad42eb.glb.bin",
+      "kind": "model",
+      "bytes": 5099,
+      "sha256": "dd4ccfc66d066dd5cdb19bb7ee5eda2e45dfcacdd786818a6555524c79102194",
+      "encoding": "gzip",
+      "label": "Housing_plot_04"
+    },
+    {
+      "id": "city-d60a966b67ad3d6d",
+      "url": "/content/assets/imported/city-d60a966b67ad3d6d.glb.bin",
+      "kind": "model",
+      "bytes": 3897,
+      "sha256": "9afc73fae7e964a34facdc0bca9e9c8a5dc89c09c3b57b8f26a32aeacbcfe879",
+      "encoding": "gzip",
+      "label": "Park_05"
+    },
+    {
+      "id": "city-e5134d946e6fe366",
+      "url": "/content/assets/imported/city-e5134d946e6fe366.glb.bin",
+      "kind": "model",
+      "bytes": 3615,
+      "sha256": "23fee1eaf604d0b45ee3120bad676de44cc801c4de88993b69708cd727d9db15",
+      "encoding": "gzip",
+      "label": "Park_06"
+    },
+    {
+      "id": "city-31e9ba46c5d6e63e",
+      "url": "/content/assets/imported/city-31e9ba46c5d6e63e.glb.bin",
+      "kind": "model",
+      "bytes": 3314,
+      "sha256": "24f0091f8a14323938dd8e8f1ede34a2ee3ff21ab1b20239267252481a93c7ef",
+      "encoding": "gzip",
+      "label": "Park_07"
+    },
+    {
+      "id": "city-3bb6bca9036bc392",
+      "url": "/content/assets/imported/city-3bb6bca9036bc392.glb.bin",
+      "kind": "model",
+      "bytes": 3575,
+      "sha256": "ee1810e931d0bf2dae8504a3fdc5aaa5b356e80526fbbb25a1f037875b6bae62",
+      "encoding": "gzip",
+      "label": "Housing_plot_08"
+    },
+    {
+      "id": "city-37fb2d75b5b4c708",
+      "url": "/content/assets/imported/city-37fb2d75b5b4c708.glb.bin",
+      "kind": "model",
+      "bytes": 5093,
+      "sha256": "20a4653160675a076b4b6a9f2061fc559bf1536c12a1efe1698557a2f6f6b549",
+      "encoding": "gzip",
+      "label": "Housing_plot_09"
+    },
+    {
+      "id": "city-d269dac815fd226e",
+      "url": "/content/assets/imported/city-d269dac815fd226e.glb.bin",
+      "kind": "model",
+      "bytes": 5792,
+      "sha256": "5db2aa46b8bbd25235d98352d88c702895a8f0d664f50252539e32a0566244c1",
+      "encoding": "gzip",
+      "label": "Park_10"
+    },
+    {
+      "id": "city-95e72abbd6a97c26",
+      "url": "/content/assets/imported/city-95e72abbd6a97c26.glb.bin",
+      "kind": "model",
+      "bytes": 4881,
+      "sha256": "ca82caaece4528733ed0916e9f597a5dc4d97be41c89f8b4b3569153a077d440",
+      "encoding": "gzip",
+      "label": "Housing_plot_11"
+    },
+    {
+      "id": "city-d4b3f135c9b25f32",
+      "url": "/content/assets/imported/city-d4b3f135c9b25f32.glb.bin",
+      "kind": "model",
+      "bytes": 5253,
+      "sha256": "4494d218c6a91fd694583abf4298cc8e5f4ca50742a8e05bfd1cf07742309438",
+      "encoding": "gzip",
+      "label": "Park_12"
+    },
+    {
+      "id": "city-d680fce447b0a018",
+      "url": "/content/assets/imported/city-d680fce447b0a018.glb.bin",
+      "kind": "model",
+      "bytes": 5098,
+      "sha256": "63b223503a61fde595db1f9d5236c212105f0fe44e19b12c95dd52fc27c1dd8f",
+      "encoding": "gzip",
+      "label": "Housing_plot_13"
+    },
+    {
+      "id": "city-f7c61bb49f5e9dc0",
+      "url": "/content/assets/imported/city-f7c61bb49f5e9dc0.glb.bin",
+      "kind": "model",
+      "bytes": 5096,
+      "sha256": "a971dba92064c420a09f01db1e885f02753a344076f01e8d6b4cda740f4fd55c",
+      "encoding": "gzip",
+      "label": "Housing_plot_14"
+    },
+    {
+      "id": "city-782acfedcb7e623a",
+      "url": "/content/assets/imported/city-782acfedcb7e623a.glb.bin",
+      "kind": "model",
+      "bytes": 45127,
+      "sha256": "350706a3f605b519d9f781d108e012659ec970c5070b02d321c29cbbade69ac7",
+      "encoding": "gzip",
+      "label": "house_09"
+    },
+    {
+      "id": "city-0f5e0dc44ea80f0e",
+      "url": "/content/assets/imported/city-0f5e0dc44ea80f0e.glb.bin",
+      "kind": "model",
+      "bytes": 15995,
+      "sha256": "bafc184bd61a65d2c164c1ac79ac392ba0b0d5fbf695c2070bb01af43f4857f6",
+      "encoding": "gzip",
+      "label": "house_02.001"
+    },
+    {
+      "id": "city-52ad39dc36181d61",
+      "url": "/content/assets/imported/city-52ad39dc36181d61.glb.bin",
+      "kind": "model",
+      "bytes": 15894,
+      "sha256": "9f8579fee6f8e872eb3cbfb1bbd44d0a7fc2ccdae2f6863a77e51903b89f4e96",
+      "encoding": "gzip",
+      "label": "house_04.001"
+    },
+    {
+      "id": "city-bd2b3322aa09ff3f",
+      "url": "/content/assets/imported/city-bd2b3322aa09ff3f.glb.bin",
+      "kind": "model",
+      "bytes": 34732,
+      "sha256": "db4dc301506773db24bd5154f29dce9ab08283a6ffdff70f088261d65f7a9676",
+      "encoding": "gzip",
+      "label": "highlivingbuilding_a"
+    },
+    {
+      "id": "city-46a0e4baf8d9ab30",
+      "url": "/content/assets/imported/city-46a0e4baf8d9ab30.glb.bin",
+      "kind": "model",
+      "bytes": 8797,
+      "sha256": "c1e4469f604f7def05351491d20ced260221bfe30667e1a92867490fd9b89018",
+      "encoding": "gzip",
+      "label": "bench_b002_Mesh.001"
+    },
+    {
+      "id": "city-8e062449eb53dc5f",
+      "url": "/content/assets/imported/city-8e062449eb53dc5f.glb.bin",
+      "kind": "model",
+      "bytes": 5208,
+      "sha256": "9a163dbb6760f37a6b6be923569136401fcaa58630a995827a152003c766061a",
+      "encoding": "gzip",
+      "label": "tree.001"
+    },
+    {
+      "id": "city-998cd1af44378053",
+      "url": "/content/assets/imported/city-998cd1af44378053.glb.bin",
+      "kind": "model",
+      "bytes": 8168,
+      "sha256": "34d51a2c8de37278301e011fdd3431cbf6d5b953c993291b2e84c269593ddb2d",
+      "encoding": "gzip",
+      "label": "tree.010"
+    },
+    {
+      "id": "city-8ce48b645fa6f803",
+      "url": "/content/assets/imported/city-8ce48b645fa6f803.glb.bin",
+      "kind": "model",
+      "bytes": 9862,
+      "sha256": "da6c93478e6f96953e948dbc9fbda2571292a9f94efe81d1cd0ce529c301cdd6",
+      "encoding": "gzip",
+      "label": "tree.200"
+    },
+    {
       "id": "road-navigation",
       "url": "/content/world/navigation.json",
       "kind": "data",
-      "bytes": 3761174,
-      "sha256": "b8dc835026fbe6befa4799a1481089451c588306cbeeb2fc7767ecc03ed680bc"
+      "bytes": 3762454,
+      "sha256": "60ac42f88865af2b4a26af1609267358e871f6d63edd4acfc54c90d4c727a7f0"
     },
     {
       "id": "road-overview",
@@ -275,80 +482,80 @@
       "id": "road-2--1",
       "url": "/content/world/chunks/road-2--1.json.bin",
       "kind": "data",
-      "bytes": 458,
-      "sha256": "de1a45e16656f7a09f57e057f4a99408fd13aa4b817c19e56b85611bac1fc8ee",
+      "bytes": 780,
+      "sha256": "8e63b019e3934c22284cc5d544b8a95044037f46636b5184b7778519bdfd6cbe",
       "encoding": "gzip"
     },
     {
       "id": "road-2--2",
       "url": "/content/world/chunks/road-2--2.json.bin",
       "kind": "data",
-      "bytes": 427,
-      "sha256": "ae04e4e7769c4b96b8ae0d879b970340b12bc7ad382aa54aeeb78d7adcb5f1d2",
+      "bytes": 552,
+      "sha256": "65dfc1244518b579a5cbf00161d80a56dcb3f8c28cd36fd6d378777587b51af9",
       "encoding": "gzip"
     },
     {
       "id": "road-2--4",
       "url": "/content/world/chunks/road-2--4.json.bin",
       "kind": "data",
-      "bytes": 585,
-      "sha256": "87518851e5dbe2f85abcfca762cc2ef8215a0ed55266fc6d4acd60ada63c5f9d",
+      "bytes": 615,
+      "sha256": "e829195c6a2589baf7c0717e61a89f995f3fd4d77ab0e64139714564e563a847",
       "encoding": "gzip"
     },
     {
       "id": "road-1-2",
       "url": "/content/world/chunks/road-1-2.json.bin",
       "kind": "data",
-      "bytes": 533,
-      "sha256": "bb02338a712753b64808d9e89bcd1d20c38a5a4e24dd98fa946c937ef6c02069",
+      "bytes": 639,
+      "sha256": "509688d3967ce2c57266a813994ed0917ee771796504fedf5e70bf333619268e",
       "encoding": "gzip"
     },
     {
       "id": "road-1-1",
       "url": "/content/world/chunks/road-1-1.json.bin",
       "kind": "data",
-      "bytes": 573,
-      "sha256": "e110d1350b34fc211292992787aca04cce9f05fde33f6e57535cc9e92c4ee2d5",
+      "bytes": 739,
+      "sha256": "5e0bd55b17122546792e1a68ab085edf6aa22ebd52cf396ad8ce6cb7ec6bf2d8",
       "encoding": "gzip"
     },
     {
       "id": "road-1-0",
       "url": "/content/world/chunks/road-1-0.json.bin",
       "kind": "data",
-      "bytes": 745,
-      "sha256": "9091d1f3489dd7e0b8f6f6a4da884787a67e0b6ee9417a70074717c99716f443",
+      "bytes": 982,
+      "sha256": "2659feb82f584a948e3d729eda40b5c2b2a81516419ef88ee1e10e18802210d3",
       "encoding": "gzip"
     },
     {
       "id": "road-1--1",
       "url": "/content/world/chunks/road-1--1.json.bin",
       "kind": "data",
-      "bytes": 434,
-      "sha256": "6000a442719c15fae2a3a474eec10dc4e65e9dfa9a9ae8e41cae16defc630be3",
+      "bytes": 541,
+      "sha256": "1045f976ea0d94c1f81873d3d400110b1dd3cb0d9e0f30193c4b9f09530a1bb8",
       "encoding": "gzip"
     },
     {
       "id": "road-1--2",
       "url": "/content/world/chunks/road-1--2.json.bin",
       "kind": "data",
-      "bytes": 529,
-      "sha256": "6033ef85a3738de19e8b10dd123f6e8c863d2aba77775dc2a0d249663df4ed15",
+      "bytes": 772,
+      "sha256": "dec79cb9020ed07663dbfc94070af69d054e0f6d30f6c100c09664c028087caf",
       "encoding": "gzip"
     },
     {
       "id": "road-1--3",
       "url": "/content/world/chunks/road-1--3.json.bin",
       "kind": "data",
-      "bytes": 598,
-      "sha256": "4ae4a249498a4cb2612cc1bc551de2380627c0cf8340f780eeaa1b252b1b296b",
+      "bytes": 839,
+      "sha256": "8fa863acb1f5f0ae85e2b13e63974e829007de5f32dff11406f8f7ed6651cff7",
       "encoding": "gzip"
     },
     {
       "id": "road-1--4",
       "url": "/content/world/chunks/road-1--4.json.bin",
       "kind": "data",
-      "bytes": 529,
-      "sha256": "037f95f01a96996fe24dc84e4ff54a9364c4ee76a60ee18618266938e8151fe2",
+      "bytes": 660,
+      "sha256": "c77652e17594300785b0cb973a92aea88cec280dcf191e41a15f701aa5dcdfda",
       "encoding": "gzip"
     },
     {
@@ -363,40 +570,40 @@
       "id": "road-0-1",
       "url": "/content/world/chunks/road-0-1.json.bin",
       "kind": "data",
-      "bytes": 550,
-      "sha256": "421337452826ff50e7fc9028666e89257499fbe549152ee5398b6c4c3c3d6a45",
+      "bytes": 663,
+      "sha256": "4a4d22a9b4c391b5389ff800f7dec139403637f597605059f10b7d1d26efe43c",
       "encoding": "gzip"
     },
     {
       "id": "road-0--1",
       "url": "/content/world/chunks/road-0--1.json.bin",
       "kind": "data",
-      "bytes": 741,
-      "sha256": "35efa37ad9677be013f3a9fd4b125c1111ed8e2830e5ed80bdefd343e93f6167",
+      "bytes": 864,
+      "sha256": "018cc3118f459b3c5afce3c32ff0336a5168d34cd0e583b3bc45f82642778ae6",
       "encoding": "gzip"
     },
     {
       "id": "road-0--4",
       "url": "/content/world/chunks/road-0--4.json.bin",
       "kind": "data",
-      "bytes": 383,
-      "sha256": "7a3701b92bbb1048b713f15af2812e2ff4ef5aa0eb8dbb352e3b6b4c8b8c149d",
+      "bytes": 487,
+      "sha256": "0b5a1f1c06c024ba645728706bfa0e9b917508f1d62b700b529d2b695af60940",
       "encoding": "gzip"
     },
     {
       "id": "road-0-0",
       "url": "/content/world/chunks/road-0-0.json.bin",
       "kind": "data",
-      "bytes": 794,
-      "sha256": "3b1b9b46d1a671baa347da32416e4a686399e91101d07b98bc6253af38c1dac8",
+      "bytes": 1027,
+      "sha256": "1c405cc130c75101f5f13b59a4fac41a796c7521e6da27d509649a98e2e53b16",
       "encoding": "gzip"
     },
     {
       "id": "road-0--3",
       "url": "/content/world/chunks/road-0--3.json.bin",
       "kind": "data",
-      "bytes": 412,
-      "sha256": "a1bac1be9bb3b16acdd6cf8b6636d483095721cd7fd59687adccdc15e7ac3222",
+      "bytes": 603,
+      "sha256": "d7db3e563ac991502383ce453f3487980a657227cd498054f3160f51b883a4be",
       "encoding": "gzip"
     },
     {
@@ -411,48 +618,48 @@
       "id": "road--1-1",
       "url": "/content/world/chunks/road--1-1.json.bin",
       "kind": "data",
-      "bytes": 358,
-      "sha256": "7c74b1de5e4333498fbc528569bd182674418a17fc975968c7b9e4d2e94e6403",
+      "bytes": 703,
+      "sha256": "93d7117d811067ea8e58e7c760f65df7fff117cb45cf5c45f7a599fe35d4a831",
       "encoding": "gzip"
     },
     {
       "id": "road--1--1",
       "url": "/content/world/chunks/road--1--1.json.bin",
       "kind": "data",
-      "bytes": 651,
-      "sha256": "3b8ae64416d750e6736af8efa0e88b0d2257242737e7f804f78f21b50327cec4",
+      "bytes": 920,
+      "sha256": "5626d7deee050cb9ac66d1b9a2cbb880a1845ac8e2dc3aa818b7f875a4d1bf97",
       "encoding": "gzip"
     },
     {
       "id": "road--1--4",
       "url": "/content/world/chunks/road--1--4.json.bin",
       "kind": "data",
-      "bytes": 395,
-      "sha256": "757c9acbb3a1b533b564482c08594c11fbdbff9589e880a64cf70e25801a2ede",
+      "bytes": 703,
+      "sha256": "de770b049c516c2f4ad93057e2e4d01676ae96527d109b1286bbef7ca9d587c5",
       "encoding": "gzip"
     },
     {
       "id": "road--1--2",
       "url": "/content/world/chunks/road--1--2.json.bin",
       "kind": "data",
-      "bytes": 538,
-      "sha256": "79d254076dc9c0cdd22b4522faf5a96b1548c37044cd48b3072458d87e059306",
+      "bytes": 706,
+      "sha256": "7ffb83bc93584bfe67c4373546c464224b4cfe7c27324baa2da4308b25f83702",
       "encoding": "gzip"
     },
     {
       "id": "road--2-2",
       "url": "/content/world/chunks/road--2-2.json.bin",
       "kind": "data",
-      "bytes": 539,
-      "sha256": "eca03a9db0f90a16964ecc476de65ab62e1ecb41846e1fdf1bb20d0ccfa601ff",
+      "bytes": 640,
+      "sha256": "270b209518dd75b15d07ac554138c833fdc4fb507cfe77ab7f8ea0892a450bef",
       "encoding": "gzip"
     },
     {
       "id": "road--2-1",
       "url": "/content/world/chunks/road--2-1.json.bin",
       "kind": "data",
-      "bytes": 507,
-      "sha256": "dd7f848f5da7ceed68925a8e99ebc7caedb9ebcb99664ac53d2c9ef9b570ea05",
+      "bytes": 767,
+      "sha256": "8a7109d2c6b7f8123bc961b4d3df3e2039dd1c4bb1f7ce91a21142f049acf9ef",
       "encoding": "gzip"
     },
     {
@@ -467,112 +674,112 @@
       "id": "road--2--1",
       "url": "/content/world/chunks/road--2--1.json.bin",
       "kind": "data",
-      "bytes": 501,
-      "sha256": "858440b63cca257eba96b5a0a6036c9dd70fd2ced182be2f788553aed4b6852a",
+      "bytes": 764,
+      "sha256": "5fedc30dd2891a03b368c535b5612a7f3733996717ed436aa19815dc9b1c8472",
       "encoding": "gzip"
     },
     {
       "id": "road--2--2",
       "url": "/content/world/chunks/road--2--2.json.bin",
       "kind": "data",
-      "bytes": 488,
-      "sha256": "e1e00fb201b79bfd4ffa66c2f40630ca6a56e8e815fb9e35afc32a5d3a6523f1",
+      "bytes": 850,
+      "sha256": "12b96af47e01649c200e8caf6b5d1e0f74bb1e3ee688c6114ea787ace0a6464e",
       "encoding": "gzip"
     },
     {
       "id": "road--2--3",
       "url": "/content/world/chunks/road--2--3.json.bin",
       "kind": "data",
-      "bytes": 627,
-      "sha256": "4b02c7a1631bc31d4da6ff96a931add473e3f919e9253a7fd70125e73bbfb922",
+      "bytes": 950,
+      "sha256": "2e00e5ea37fd54442a9177011a15c77d22792470794dc39c0eabbdf23d5dec20",
       "encoding": "gzip"
     },
     {
       "id": "road--2--4",
       "url": "/content/world/chunks/road--2--4.json.bin",
       "kind": "data",
-      "bytes": 387,
-      "sha256": "2b0a8adacfdef36ce24d8e1ff3fba7dd6d5e750934708c632b2d243a5bb35cb8",
+      "bytes": 563,
+      "sha256": "8c608a658be80bc0a939de7252e917957593131d28402b9e51d1b918ad76c190",
       "encoding": "gzip"
     },
     {
       "id": "road--3-2",
       "url": "/content/world/chunks/road--3-2.json.bin",
       "kind": "data",
-      "bytes": 525,
-      "sha256": "a5f186cdbed40c913489a871b3040db61656eefc55eb6a3c173037a50426ee95",
+      "bytes": 749,
+      "sha256": "90820c5cdddef3ab82e7901dd773c6fbada6511421c39974d8c1e29e10423594",
       "encoding": "gzip"
     },
     {
       "id": "road--3-1",
       "url": "/content/world/chunks/road--3-1.json.bin",
       "kind": "data",
-      "bytes": 433,
-      "sha256": "1c43f7863d36ff3ad082473d4f70332d04c489ab934053a7dfa9aa47235a3c7a",
+      "bytes": 1051,
+      "sha256": "c2d9fdc1cc23767b8e47dcdfa374486aa6362c1b1cda534eeb56fe49c5834683",
       "encoding": "gzip"
     },
     {
       "id": "road--3--1",
       "url": "/content/world/chunks/road--3--1.json.bin",
       "kind": "data",
-      "bytes": 587,
-      "sha256": "64299919f94132296bfc2e14d295f8a4dcc07116f84283a5a9307543d7abe309",
+      "bytes": 893,
+      "sha256": "291a9a47751d4f4ee1a2401c6b896a8baa0d619416a148843a6867ab373f012a",
       "encoding": "gzip"
     },
     {
       "id": "road--3--2",
       "url": "/content/world/chunks/road--3--2.json.bin",
       "kind": "data",
-      "bytes": 436,
-      "sha256": "ac2a7e613b3c2823401b8fa956531be487eee2ec2202e229e59445ad9219535a",
+      "bytes": 724,
+      "sha256": "ef68cdd087639233deb8275e7f54d3c1f6aadbb5f611043d8b97c996d955db30",
       "encoding": "gzip"
     },
     {
       "id": "road--3--4",
       "url": "/content/world/chunks/road--3--4.json.bin",
       "kind": "data",
-      "bytes": 406,
-      "sha256": "b75a6e987fcc215ec526304cd6547457d055b7af1e1710ac05c470edf32fbf58",
+      "bytes": 583,
+      "sha256": "1ab817441316933c6e2920b939cfaa392b34e041ee27794388a193642ad23dfc",
       "encoding": "gzip"
     },
     {
       "id": "road--3-0",
       "url": "/content/world/chunks/road--3-0.json.bin",
       "kind": "data",
-      "bytes": 385,
-      "sha256": "94155f2f52d36195ff43712658d4cdb0351e3faca2bc94acefaa75c3ebb7bba4",
+      "bytes": 761,
+      "sha256": "dd09bf13fe6aa8ae95d56ccb8754e93053b94c504401a22bee57d48e33e7803e",
       "encoding": "gzip"
     },
     {
       "id": "road--3--3",
       "url": "/content/world/chunks/road--3--3.json.bin",
       "kind": "data",
-      "bytes": 385,
-      "sha256": "5a64eb168498d23e26564bfc1b8a79526de07b4be132d7bb9384580958f3df87",
+      "bytes": 519,
+      "sha256": "e7dad6015cc07e4ebd3984bc5aaab297388a743fed6b3ea71456e2942847b8eb",
       "encoding": "gzip"
     },
     {
       "id": "road-0--2",
       "url": "/content/world/chunks/road-0--2.json.bin",
       "kind": "data",
-      "bytes": 490,
-      "sha256": "81c9543285814697b4c41da3d64de8d13521d5fad9705f48918ff732977631e6",
+      "bytes": 781,
+      "sha256": "2632d9fa0fe40b4c110f89e93a2191ca654463e709d076b650f7d422607b0714",
       "encoding": "gzip"
     },
     {
       "id": "road-2-1",
       "url": "/content/world/chunks/road-2-1.json.bin",
       "kind": "data",
-      "bytes": 388,
-      "sha256": "3136fbbd0433fac8b61799f1a9de0b686ab9c584a1da8cfba844c71b08ef2971",
+      "bytes": 890,
+      "sha256": "691beab6e826758f0dfe9b0aea888384fea9dc968d33d4f4c15356b631b85219",
       "encoding": "gzip"
     },
     {
       "id": "road-2--3",
       "url": "/content/world/chunks/road-2--3.json.bin",
       "kind": "data",
-      "bytes": 566,
-      "sha256": "97ae0fc7b3679696da098fa7fc5d28b2c3f9ae4063c344c216a9a45774d71f29",
+      "bytes": 707,
+      "sha256": "86cd4937300557ba7105b3d6ec510889f308397ce62e853f4490fff36f14ed43",
       "encoding": "gzip"
     },
     {
@@ -595,24 +802,24 @@
       "id": "road-2-0",
       "url": "/content/world/chunks/road-2-0.json.bin",
       "kind": "data",
-      "bytes": 312,
-      "sha256": "c86d88a186df833105a33f0dfacc2979d90f7ffadc58f9f7cc239a65f3325b80",
+      "bytes": 597,
+      "sha256": "774c49f79acd412288de53df6d870991e38325a54747a6b329abd60d85cf5dc3",
       "encoding": "gzip"
     },
     {
       "id": "road--1-0",
       "url": "/content/world/chunks/road--1-0.json.bin",
       "kind": "data",
-      "bytes": 469,
-      "sha256": "7d194fbd901c967fdd43f2c8950dda8fa38667c1237997b22735dc31ac868b64",
+      "bytes": 689,
+      "sha256": "9d1857a2f63195646eb91e8599a66f259e38257b2cce1b6fb38de59ad30e66d9",
       "encoding": "gzip"
     },
     {
       "id": "road--1--3",
       "url": "/content/world/chunks/road--1--3.json.bin",
       "kind": "data",
-      "bytes": 535,
-      "sha256": "001e6085d121750372d182e958a0472cc4999c4bbd115a97c7fe6ce6c878b61e",
+      "bytes": 777,
+      "sha256": "0e15e5d547a99452d2643ff7b6c620ba10b051e29b53739e4fc75ef44bd8cf6f",
       "encoding": "gzip"
     },
     {
@@ -786,6 +993,8 @@
       },
       "resourceId": "road-2--1",
       "assetIds": [
+        "city-8ce48b645fa6f803",
+        "city-998cd1af44378053",
         "map-0e464e3b5566cc2c",
         "map-130da6ffc51d8d13",
         "map-a80edbf0901d9ea1",
@@ -798,10 +1007,12 @@
         "minX": 35.0,
         "maxX": 60,
         "minZ": -45.0,
-        "maxZ": -20
+        "maxZ": -16.0
       },
       "resourceId": "road-2--2",
       "assetIds": [
+        "city-0f5e0dc44ea80f0e",
+        "city-db9ea9a60277914f",
         "map-130da6ffc51d8d13",
         "map-a80edbf0901d9ea1",
         "map-d1ae55fb9bb06b2e",
@@ -819,6 +1030,7 @@
       "resourceId": "road-2--4",
       "assetIds": [
         "map-130da6ffc51d8d13",
+        "map-4bdc8824db7ca95e",
         "map-7bf3e5b72548225a",
         "map-a80edbf0901d9ea1",
         "map-d8fe3b88f5aa4e92"
@@ -834,6 +1046,7 @@
       },
       "resourceId": "road-1-2",
       "assetIds": [
+        "city-8e062449eb53dc5f",
         "map-130da6ffc51d8d13",
         "map-a80edbf0901d9ea1",
         "map-d1ae55fb9bb06b2e",
@@ -844,12 +1057,13 @@
       "id": "road-1-1",
       "bounds": {
         "minX": 15.0,
-        "maxX": 40,
+        "maxX": 40.48803,
         "minZ": 15.0,
         "maxZ": 40
       },
       "resourceId": "road-1-1",
       "assetIds": [
+        "city-998cd1af44378053",
         "map-0e464e3b5566cc2c",
         "map-130da6ffc51d8d13",
         "map-a80edbf0901d9ea1",
@@ -861,16 +1075,20 @@
       "id": "road-1-0",
       "bounds": {
         "minX": 15.0,
-        "maxX": 40,
+        "maxX": 40.3191,
         "minZ": -5.0,
         "maxZ": 25.0
       },
       "resourceId": "road-1-0",
       "assetIds": [
+        "city-8ce48b645fa6f803",
+        "city-8e062449eb53dc5f",
         "map-130da6ffc51d8d13",
         "map-7bf3e5b72548225a",
+        "map-a0eeac40ecf64d0d",
         "map-a80edbf0901d9ea1",
-        "map-d8fe3b88f5aa4e92"
+        "map-d8fe3b88f5aa4e92",
+        "map-eea5c549e3afcc87"
       ]
     },
     {
@@ -883,6 +1101,7 @@
       },
       "resourceId": "road-1--1",
       "assetIds": [
+        "city-8ce48b645fa6f803",
         "map-130da6ffc51d8d13",
         "map-a80edbf0901d9ea1",
         "map-ce6b36321726e251",
@@ -899,6 +1118,8 @@
       },
       "resourceId": "road-1--2",
       "assetIds": [
+        "city-8ce48b645fa6f803",
+        "city-998cd1af44378053",
         "map-0e464e3b5566cc2c",
         "map-130da6ffc51d8d13",
         "map-a80edbf0901d9ea1",
@@ -917,6 +1138,8 @@
       },
       "resourceId": "road-1--3",
       "assetIds": [
+        "city-46a0e4baf8d9ab30",
+        "city-998cd1af44378053",
         "map-0e464e3b5566cc2c",
         "map-130da6ffc51d8d13",
         "map-241ce766ed87517d",
@@ -934,7 +1157,9 @@
       },
       "resourceId": "road-1--4",
       "assetIds": [
+        "city-998cd1af44378053",
         "map-130da6ffc51d8d13",
+        "map-4fdb7de51d9faf4c",
         "map-7bf3e5b72548225a",
         "map-a80edbf0901d9ea1",
         "map-d1ae55fb9bb06b2e",
@@ -961,12 +1186,14 @@
       "id": "road-0-1",
       "bounds": {
         "minX": -5.0,
-        "maxX": 20,
+        "maxX": 24.0,
         "minZ": 15.0,
-        "maxZ": 40
+        "maxZ": 44.0
       },
       "resourceId": "road-0-1",
       "assetIds": [
+        "city-52ad39dc36181d61",
+        "city-602f3a5861ad42eb",
         "map-0e464e3b5566cc2c",
         "map-130da6ffc51d8d13",
         "map-a80edbf0901d9ea1",
@@ -984,7 +1211,9 @@
       },
       "resourceId": "road-0--1",
       "assetIds": [
+        "city-998cd1af44378053",
         "map-130da6ffc51d8d13",
+        "map-3fe33aa18d56eda4",
         "map-7bf3e5b72548225a",
         "map-888737959321a386",
         "map-a80edbf0901d9ea1",
@@ -1003,6 +1232,7 @@
       },
       "resourceId": "road-0--4",
       "assetIds": [
+        "city-998cd1af44378053",
         "map-130da6ffc51d8d13",
         "map-a80edbf0901d9ea1",
         "map-d1ae55fb9bb06b2e",
@@ -1012,22 +1242,19 @@
     {
       "id": "road-0-0",
       "bounds": {
-        "minX": -15.0,
-        "maxX": 55.0,
-        "minZ": -85.0,
-        "maxZ": 25.0
+        "minX": -5.0,
+        "maxX": 20,
+        "minZ": -5.0,
+        "maxZ": 20
       },
       "resourceId": "road-0-0",
       "assetIds": [
-        "map-0db7c8dfbe7b5215",
+        "city-46a0e4baf8d9ab30",
+        "city-998cd1af44378053",
+        "city-e5134d946e6fe366",
         "map-130da6ffc51d8d13",
-        "map-3fe33aa18d56eda4",
-        "map-4bdc8824db7ca95e",
-        "map-4fdb7de51d9faf4c",
-        "map-a0eeac40ecf64d0d",
         "map-a80edbf0901d9ea1",
         "map-d8fe3b88f5aa4e92",
-        "map-eea5c549e3afcc87",
         "map-ef898603ae3e9ddd"
       ]
     },
@@ -1041,6 +1268,8 @@
       },
       "resourceId": "road-0--3",
       "assetIds": [
+        "city-31e9ba46c5d6e63e",
+        "city-46a0e4baf8d9ab30",
         "map-130da6ffc51d8d13",
         "map-a80edbf0901d9ea1",
         "map-d8fe3b88f5aa4e92"
@@ -1073,6 +1302,9 @@
       },
       "resourceId": "road--1-1",
       "assetIds": [
+        "city-3bb6bca9036bc392",
+        "city-782acfedcb7e623a",
+        "city-998cd1af44378053",
         "map-130da6ffc51d8d13",
         "map-a80edbf0901d9ea1",
         "map-d8fe3b88f5aa4e92"
@@ -1088,6 +1320,9 @@
       },
       "resourceId": "road--1--1",
       "assetIds": [
+        "city-8e062449eb53dc5f",
+        "city-998cd1af44378053",
+        "map-0db7c8dfbe7b5215",
         "map-130da6ffc51d8d13",
         "map-1ad5ba7e002b286a",
         "map-a80edbf0901d9ea1",
@@ -1105,6 +1340,8 @@
       },
       "resourceId": "road--1--4",
       "assetIds": [
+        "city-8ce48b645fa6f803",
+        "city-8e062449eb53dc5f",
         "map-130da6ffc51d8d13",
         "map-a80edbf0901d9ea1",
         "map-d8fe3b88f5aa4e92"
@@ -1120,6 +1357,7 @@
       },
       "resourceId": "road--1--2",
       "assetIds": [
+        "city-998cd1af44378053",
         "map-130da6ffc51d8d13",
         "map-a80edbf0901d9ea1",
         "map-d8fe3b88f5aa4e92"
@@ -1135,6 +1373,7 @@
       },
       "resourceId": "road--2-2",
       "assetIds": [
+        "city-8e062449eb53dc5f",
         "map-130da6ffc51d8d13",
         "map-a80edbf0901d9ea1",
         "map-d1ae55fb9bb06b2e",
@@ -1145,12 +1384,14 @@
       "id": "road--2-1",
       "bounds": {
         "minX": -45.0,
-        "maxX": -20,
+        "maxX": -19.59994,
         "minZ": 15.0,
         "maxZ": 40
       },
       "resourceId": "road--2-1",
       "assetIds": [
+        "city-8e062449eb53dc5f",
+        "city-998cd1af44378053",
         "map-0e464e3b5566cc2c",
         "map-130da6ffc51d8d13",
         "map-a80edbf0901d9ea1",
@@ -1184,6 +1425,9 @@
       },
       "resourceId": "road--2--1",
       "assetIds": [
+        "city-8ce48b645fa6f803",
+        "city-8e062449eb53dc5f",
+        "city-998cd1af44378053",
         "map-130da6ffc51d8d13",
         "map-241ce766ed87517d",
         "map-a80edbf0901d9ea1",
@@ -1194,13 +1438,16 @@
     {
       "id": "road--2--2",
       "bounds": {
-        "minX": -45.0,
-        "maxX": -20,
+        "minX": -54.0,
+        "maxX": -6.0,
         "minZ": -45.0,
         "maxZ": -20
       },
       "resourceId": "road--2--2",
       "assetIds": [
+        "city-46a0e4baf8d9ab30",
+        "city-998cd1af44378053",
+        "city-d269dac815fd226e",
         "map-0e464e3b5566cc2c",
         "map-130da6ffc51d8d13",
         "map-a80edbf0901d9ea1",
@@ -1212,12 +1459,15 @@
       "id": "road--2--3",
       "bounds": {
         "minX": -40.25,
-        "maxX": -20,
+        "maxX": -19.70563,
         "minZ": -65.0,
         "maxZ": -40
       },
       "resourceId": "road--2--3",
       "assetIds": [
+        "city-8ce48b645fa6f803",
+        "city-8e062449eb53dc5f",
+        "city-998cd1af44378053",
         "map-0e464e3b5566cc2c",
         "map-130da6ffc51d8d13",
         "map-a80edbf0901d9ea1",
@@ -1228,12 +1478,13 @@
       "id": "road--2--4",
       "bounds": {
         "minX": -45.0,
-        "maxX": -20,
+        "maxX": -19.72361,
         "minZ": -80,
         "maxZ": -60
       },
       "resourceId": "road--2--4",
       "assetIds": [
+        "city-8ce48b645fa6f803",
         "map-130da6ffc51d8d13",
         "map-a80edbf0901d9ea1",
         "map-d1ae55fb9bb06b2e",
@@ -1250,6 +1501,7 @@
       },
       "resourceId": "road--3-2",
       "assetIds": [
+        "city-8e062449eb53dc5f",
         "map-130da6ffc51d8d13",
         "map-742ac4b402f41e28",
         "map-a80edbf0901d9ea1",
@@ -1260,12 +1512,17 @@
       "id": "road--3-1",
       "bounds": {
         "minX": -65.0,
-        "maxX": -40,
+        "maxX": -36.0,
         "minZ": 15.0,
-        "maxZ": 40
+        "maxZ": 44.0
       },
       "resourceId": "road--3-1",
       "assetIds": [
+        "city-46a0e4baf8d9ab30",
+        "city-8ce48b645fa6f803",
+        "city-8e062449eb53dc5f",
+        "city-998cd1af44378053",
+        "city-d4b3f135c9b25f32",
         "map-130da6ffc51d8d13",
         "map-a80edbf0901d9ea1",
         "map-d1ae55fb9bb06b2e",
@@ -1276,12 +1533,14 @@
       "id": "road--3--1",
       "bounds": {
         "minX": -65.0,
-        "maxX": -40,
+        "maxX": -39.78655,
         "minZ": -25.0,
         "maxZ": 0
       },
       "resourceId": "road--3--1",
       "assetIds": [
+        "city-8e062449eb53dc5f",
+        "city-998cd1af44378053",
         "map-0e464e3b5566cc2c",
         "map-130da6ffc51d8d13",
         "map-742ac4b402f41e28",
@@ -1294,12 +1553,13 @@
       "id": "road--3--2",
       "bounds": {
         "minX": -65.0,
-        "maxX": -40,
+        "maxX": -39.61397,
         "minZ": -45.0,
         "maxZ": -20
       },
       "resourceId": "road--3--2",
       "assetIds": [
+        "city-998cd1af44378053",
         "map-130da6ffc51d8d13",
         "map-a80edbf0901d9ea1",
         "map-d1ae55fb9bb06b2e",
@@ -1316,6 +1576,8 @@
       },
       "resourceId": "road--3--4",
       "assetIds": [
+        "city-8e062449eb53dc5f",
+        "city-998cd1af44378053",
         "map-130da6ffc51d8d13",
         "map-742ac4b402f41e28",
         "map-a80edbf0901d9ea1",
@@ -1326,12 +1588,17 @@
       "id": "road--3-0",
       "bounds": {
         "minX": -65.0,
-        "maxX": -40,
+        "maxX": -36.0,
         "minZ": -5.0,
         "maxZ": 20
       },
       "resourceId": "road--3-0",
       "assetIds": [
+        "city-782acfedcb7e623a",
+        "city-8ce48b645fa6f803",
+        "city-8e062449eb53dc5f",
+        "city-998cd1af44378053",
+        "city-d680fce447b0a018",
         "map-130da6ffc51d8d13",
         "map-a80edbf0901d9ea1",
         "map-d8fe3b88f5aa4e92"
@@ -1341,12 +1608,14 @@
       "id": "road--3--3",
       "bounds": {
         "minX": -65.0,
-        "maxX": -40,
+        "maxX": -36.0,
         "minZ": -65.0,
         "maxZ": -40
       },
       "resourceId": "road--3--3",
       "assetIds": [
+        "city-bd2b3322aa09ff3f",
+        "city-f7c61bb49f5e9dc0",
         "map-130da6ffc51d8d13",
         "map-a80edbf0901d9ea1",
         "map-d8fe3b88f5aa4e92"
@@ -1356,12 +1625,15 @@
       "id": "road-0--2",
       "bounds": {
         "minX": -15.0,
-        "maxX": 20,
+        "maxX": 24.0,
         "minZ": -55.0,
-        "maxZ": -20
+        "maxZ": -16.0
       },
       "resourceId": "road-0--2",
       "assetIds": [
+        "city-46a0e4baf8d9ab30",
+        "city-998cd1af44378053",
+        "city-d60a966b67ad3d6d",
         "map-130da6ffc51d8d13",
         "map-7214df6f54891f94",
         "map-d8fe3b88f5aa4e92",
@@ -1374,10 +1646,14 @@
         "minX": 35.0,
         "maxX": 60,
         "minZ": 15.0,
-        "maxZ": 40
+        "maxZ": 44.0
       },
       "resourceId": "road-2-1",
       "assetIds": [
+        "city-1622b5995f094e53",
+        "city-46a0e4baf8d9ab30",
+        "city-8e062449eb53dc5f",
+        "city-998cd1af44378053",
         "map-130da6ffc51d8d13",
         "map-241ce766ed87517d",
         "map-d8fe3b88f5aa4e92"
@@ -1386,13 +1662,15 @@
     {
       "id": "road-2--3",
       "bounds": {
-        "minX": 39.75,
+        "minX": 36.0,
         "maxX": 60,
         "minZ": -65.0,
         "maxZ": -40
       },
       "resourceId": "road-2--3",
       "assetIds": [
+        "city-46a0e4baf8d9ab30",
+        "city-63392b0df3ca7115",
         "map-130da6ffc51d8d13",
         "map-1ad5ba7e002b286a",
         "map-241ce766ed87517d",
@@ -1428,13 +1706,16 @@
     {
       "id": "road-2-0",
       "bounds": {
-        "minX": 40,
+        "minX": 36.0,
         "maxX": 60,
-        "minZ": 0,
+        "minZ": -4.0,
         "maxZ": 20
       },
       "resourceId": "road-2-0",
       "assetIds": [
+        "city-782acfedcb7e623a",
+        "city-8ce48b645fa6f803",
+        "city-c45031d68eb67bc4",
         "map-130da6ffc51d8d13",
         "map-d8fe3b88f5aa4e92"
       ]
@@ -1442,13 +1723,16 @@
     {
       "id": "road--1-0",
       "bounds": {
-        "minX": -20.25,
+        "minX": -24.0,
         "maxX": 0,
-        "minZ": -0.25,
+        "minZ": -4.0,
         "maxZ": 20
       },
       "resourceId": "road--1-0",
       "assetIds": [
+        "city-37fb2d75b5b4c708",
+        "city-782acfedcb7e623a",
+        "city-8e062449eb53dc5f",
         "map-0e464e3b5566cc2c",
         "map-130da6ffc51d8d13",
         "map-d8fe3b88f5aa4e92"
@@ -1457,13 +1741,16 @@
     {
       "id": "road--1--3",
       "bounds": {
-        "minX": -20.25,
+        "minX": -24.0,
         "maxX": 0,
-        "minZ": -60.25,
+        "minZ": -64.0,
         "maxZ": -40
       },
       "resourceId": "road--1--3",
       "assetIds": [
+        "city-95e72abbd6a97c26",
+        "city-998cd1af44378053",
+        "city-bd2b3322aa09ff3f",
         "map-130da6ffc51d8d13",
         "map-d8fe3b88f5aa4e92"
       ]
@@ -1543,7 +1830,17 @@
   "stats": {
     "roadTiles": 111,
     "chunks": 56,
-    "objects": 290,
-    "models": 19
-  }
+    "objects": 406,
+    "models": 42
+  },
+  "residentResources": [
+    {
+      "id": "car-kit/sedan.glb.bin",
+      "url": "/assets/car-kit/sedan.glb.bin",
+      "bytes": 24889,
+      "sha256": "0f4bb73ac81a9c02b6fedde0da36067761cf372ba6421cebd41125428e6777c1",
+      "encoding": "gzip",
+      "kind": "model"
+    }
+  ]
 }

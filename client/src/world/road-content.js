@@ -12,6 +12,8 @@ export class RoadContent {
     this.scene = scene;
     this.onStatus = onStatus;
     this.loaded = new Map();
+    this.residentResources = [];
+    this.fixedBytes = 0;
     this.reserved = 0;
     this.rendered = [];
     this.groups = new Map();
@@ -27,7 +29,11 @@ export class RoadContent {
   async init(manifestUrl = '/content/world/manifest.json') {
     const response = await fetch(manifestUrl, { cache: 'no-store' });
     if (!response.ok) throw new Error(`Манифест: HTTP ${response.status}`);
-    this.manifest = await response.json();
+    const data = await response.arrayBuffer();
+    this.manifest = JSON.parse(new TextDecoder().decode(data));
+    this.residentResources = [...this.manifest.residentResources,
+      { id: 'world-manifest', kind: 'data', bytes: data.byteLength }];
+    this.fixedBytes = this.residentResources.reduce((sum, resource) => sum + resource.bytes, 0);
     this.registry = new Map(this.manifest.resources.map(resource => [resource.id, resource]));
     this.budget = this.manifest.cacheBudgetBytes;
     const resource = this.registry.get(this.manifest.overviewResourceId);
@@ -36,7 +42,7 @@ export class RoadContent {
   }
 
   report(extra = {}) {
-    const active = [...this.loaded.values()].reduce((sum, entry) => sum + entry.resource.bytes, 0);
+    const active = this.fixedBytes + [...this.loaded.values()].reduce((sum, entry) => sum + entry.resource.bytes, 0);
     this.onStatus({ active, reserved: this.reserved, budget: this.budget,
       worldBytes: this.manifest.worldBytes, resources: this.loaded.size, ...extra });
   }
@@ -44,7 +50,7 @@ export class RoadContent {
   async acquire(resource) {
     const cached = this.loaded.get(resource.sha256);
     if (cached) return cached;
-    const used = [...this.loaded.values()].reduce((sum, entry) => sum + entry.resource.bytes, 0);
+    const used = this.fixedBytes + [...this.loaded.values()].reduce((sum, entry) => sum + entry.resource.bytes, 0);
     if (used + this.reserved + resource.bytes > this.budget) {
       throw new Error(`budget_exceeded: ${resource.id}`);
     }
@@ -81,7 +87,7 @@ export class RoadContent {
   }
 
   stats() {
-    const resources = [...this.loaded.values()].map(({ resource }) => ({ id: resource.id, bytes: resource.bytes, kind: resource.kind }));
+    const resources = [...this.residentResources, ...[...this.loaded.values()].map(({ resource }) => ({ id: resource.id, bytes: resource.bytes, kind: resource.kind }))];
     return {
       chunk: this.activeKey, requestedChunk: this.planKey, resources,
       activeBytes: resources.reduce((sum, resource) => sum + resource.bytes, 0),
@@ -156,7 +162,7 @@ export class RoadContent {
       if (this.vehicleType) ids.add(this.manifest.vehicleReference[this.vehicleType].assetId);
       for (const chunk of chunks) for (const id of [chunk.resourceId, ...chunk.assetIds]) ids.add(id);
       const unique = new Map([...ids].map(id => { const r=this.registry.get(id); return [r.sha256,r]; }));
-      const cost = [...unique.values()].reduce((sum,r)=>sum+r.bytes,0);
+      const cost = this.fixedBytes + [...unique.values()].reduce((sum,r)=>sum+r.bytes,0);
       if (cost > this.budget) { this.planKey='';throw new Error('budget_exceeded'); }
       // Исключённые из нового круга участки уже дальше streamRadius.
       this.trimDistant(new Set(chunks.map(chunk => chunk.resourceId)));
@@ -221,6 +227,7 @@ export class RoadContent {
               mesh.setIndices(source.getIndices().slice());
               mesh.sideOrientation = source.sideOrientation;
               mesh.material = source.material;
+              mesh.receiveShadows = true;
               // Впекаем только преобразование импорта: оси glTF и деквантизацию.
               mesh.bakeTransformIntoVertices(source.getWorldMatrix().multiply(normalization));
             }

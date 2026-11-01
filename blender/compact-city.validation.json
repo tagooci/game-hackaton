@@ -1,0 +1,28 @@
+{
+  "landscape": {
+    "houses": 8,
+    "trees": 81,
+    "benches": 12,
+    "parks": 7,
+    "objects_outside_safe_plots": [],
+    "blocked_road_lights": [],
+    "texture_packed": true
+  },
+  "roads": {
+    "modules": 111,
+    "directed_connections": 256,
+    "connected": true,
+    "dead_end_ports": 0,
+    "seam_errors": [],
+    "nonhorizontal_flat_modules": [],
+    "unmatched": [],
+    "curb_connections_checked": 256,
+    "missing_curbs": [],
+    "curb_seam_errors": [],
+    "maximum_plain_straight_run_tiles": 2,
+    "maximum_plain_straight_run_m": 20,
+    "street_lamps": 74,
+    "lamps_facing_away_from_road": [],
+    "original_road_geometry": true
+  }
+}

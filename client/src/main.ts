@@ -7,6 +7,8 @@ import { Engine } from '@babylonjs/core/Engines/engine';
 import { Scene } from '@babylonjs/core/scene';
 import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera';
 import { HemisphericLight } from '@babylonjs/core/Lights/hemisphericLight';
+import { DirectionalLight } from '@babylonjs/core/Lights/directionalLight';
+import { ShadowGenerator } from '@babylonjs/core/Lights/Shadows/shadowGenerator';
 import { MeshBuilder } from '@babylonjs/core/Meshes/meshBuilder';
 import { Vector3 } from '@babylonjs/core/Maths/math.vector';
 import { Color3, Color4 } from '@babylonjs/core/Maths/math.color';
@@ -47,12 +49,12 @@ function startGame(account: Account): () => void {
 
   // Сцена содержит камеру, свет и объекты.
   const scene = new Scene(engine);
-  scene.clearColor = new Color4(0.73, 0.82, 0.87, 1);
+  scene.clearColor = new Color4(0.86, 0.83, 0.76, 1);
   // Дальняя граница подгрузки скрыта за плавным туманом.
   scene.fogMode = Scene.FOGMODE_LINEAR;
-  scene.fogColor = new Color3(0.73, 0.82, 0.87);
-  scene.fogStart = 25;
-  scene.fogEnd = 40;
+  scene.fogColor = new Color3(0.86, 0.83, 0.76);
+  scene.fogStart = 40;
+  scene.fogEnd = 60;
 
   // Длина модели в метрах; пропорции сохраняются при загрузке.
   const vehicle = createVehicleView(scene, VEHICLE_LENGTH);
@@ -83,7 +85,21 @@ function startGame(account: Account): () => void {
   let targetPose: VehiclePose = vehicle.getPose();
 
   // Освещение сверху.
-  new HemisphericLight('light', new Vector3(0, 1, 0), scene);
+  const ambient = new HemisphericLight('sky', Vector3.Up(), scene);
+  ambient.intensity = 0.6;
+  ambient.diffuse = new Color3(1, 0.96, 0.88);
+  ambient.groundColor = new Color3(0.42, 0.39, 0.33);
+  const sun = new DirectionalLight('sun', new Vector3(-0.4, -1, -0.3).normalize(), scene);
+  sun.diffuse = new Color3(1, 0.88, 0.7);
+  sun.intensity = 1.0;
+  sun.shadowFrustumSize = 130;
+  sun.shadowMinZ = 1;
+  sun.shadowMaxZ = 160;
+  const shadows = new ShadowGenerator(2048, sun);
+  shadows.usePercentageCloserFiltering = true;
+  shadows.bias = 0.001;
+  shadows.normalBias = 0.08;
+  shadows.setDarkness(0.25);
 
   // Земля под картой; локальная сетка с шагом 1 м следует за машиной.
   const ground = MeshBuilder.CreateGround(
@@ -93,10 +109,11 @@ function startGame(account: Account): () => void {
   );
 
   const groundMaterial = new StandardMaterial('ground-material', scene);
-  groundMaterial.diffuseColor = Color3.FromHexString('#7D9478');
+  groundMaterial.diffuseColor = Color3.FromHexString('#77776c').toLinearSpace();
   groundMaterial.specularColor = Color3.Black();
   ground.position.y = -0.12;
   ground.material = groundMaterial;
+  ground.receiveShadows = true;
   const lines: Vector3[][] = [];
   for (let i = -50; i <= 50; i++) {
     lines.push([new Vector3(i, -0.11, -50), new Vector3(i, -0.11, 50)]);
@@ -148,14 +165,14 @@ function startGame(account: Account): () => void {
     getControls: () => mapError ? neutralControls : controls.getControls(),
     takeRespawn: controls.takeRespawn,
     prepareScene: async message => {
-      const expected = new Set(['car-kit/sedan.glb', 'car-kit/Textures/colormap.png']);
+      const expected = new Set(['car-kit/sedan.glb.bin']);
       if (message.plan.resources.length !== expected.size || message.plan.resources.some(r => !expected.has(r.id))) {
         throw new Error('Неподдерживаемый план сцены');
       }
       mapReady = false;
       overlay.textContent = 'Загрузка карты…';
       await roads.init(message.plan.mapManifestUrl);
-      if (roads.manifest.groundColor) groundMaterial.diffuseColor = Color3.FromHexString(roads.manifest.groundColor);
+      if (roads.manifest.groundColor) groundMaterial.diffuseColor = Color3.FromHexString(roads.manifest.groundColor).toLinearSpace();
       await roads.update(message.spawn.x, message.spawn.z);
       overlay.textContent = 'Загрузка машины…';
       await vehicle.ready;
@@ -208,6 +225,10 @@ function startGame(account: Account): () => void {
       }
     }
     remotePlayers.update();
+    // Одна карта теней вокруг игрока; выгруженные meshes автоматически исчезают из списка.
+    sun.position.set(pose.x + 32, 80, pose.z + 24);
+    shadows.getShadowMap()!.renderList = scene.meshes.filter(mesh =>
+      mesh !== ground && mesh !== grid && mesh.isEnabled() && mesh.isVisible && mesh.getTotalVertices() > 0);
     scene.render();
   });
 
