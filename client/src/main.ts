@@ -250,13 +250,14 @@ function startGame(account: Account): () => void {
     // Сглаживание отрисовки, не расчёт физики: движемся только к позиции сервера.
     const pose = vehicle.getPose();
     const blend = 1 - Math.exp(-20 * Math.min(engine.getDeltaTime() / 1000, 0.1));
+    const suspensionBlend = 1 - Math.exp(-8 * Math.min(engine.getDeltaTime() / 1000, 0.1));
     const angle = Math.atan2(Math.sin(targetPose.heading - pose.heading), Math.cos(targetPose.heading - pose.heading));
     vehicle.setPose({
       x: pose.x + (targetPose.x - pose.x) * blend,
       z: pose.z + (targetPose.z - pose.z) * blend,
       heading: pose.heading + angle * blend,
-      y: (pose.y ?? 0) + ((targetPose.y ?? 0) - (pose.y ?? 0)) * blend,
-      pitch: (pose.pitch ?? 0) + ((targetPose.pitch ?? 0) - (pose.pitch ?? 0)) * blend,
+      y: (pose.y ?? 0) + ((targetPose.y ?? 0) - (pose.y ?? 0)) * suspensionBlend,
+      pitch: (pose.pitch ?? 0) + ((targetPose.pitch ?? 0) - (pose.pitch ?? 0)) * suspensionBlend,
       wheelAngle: (pose.wheelAngle ?? 0) + ((targetPose.wheelAngle ?? 0) - (pose.wheelAngle ?? 0)) * blend,
       color: targetPose.color,
     });

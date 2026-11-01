@@ -8,6 +8,7 @@ from .road_surface import RoadSurface
 CAR_WIDTH = 1.95
 CAR_LENGTH = 3.3
 CAR_HEIGHT = 1.6875
+LOWER_EDGE_BEVEL = .22
 WHEELBASE = 1.95
 STEP_HEIGHT = .16
 GRAVITY = 9.81
@@ -31,12 +32,13 @@ def inside(box, x, z):
     return abs(dx*right[0]+dz*right[1]) <= box['halfWidth'] and abs(dx*forward[0]+dz*forward[1]) <= box['halfLength']
 
 
-def penetration(x,z,heading,box):
+def penetration(x,z,heading,box,inset=0.0):
     """SAT: минимальное горизонтальное смещение двух ориентированных боксов."""
     own,other = axes(heading),axes(box['heading'])
+    half_width,half_length = CAR_WIDTH/2-inset,CAR_LENGTH/2-inset
     smallest = None
     for nx,nz in (*own,*other):
-        own_radius = abs(nx*own[0][0]+nz*own[0][1])*CAR_WIDTH/2 + abs(nx*own[1][0]+nz*own[1][1])*CAR_LENGTH/2
+        own_radius = abs(nx*own[0][0]+nz*own[0][1])*half_width + abs(nx*own[1][0]+nz*own[1][1])*half_length
         other_radius = abs(nx*other[0][0]+nz*other[0][1])*box['halfWidth'] + abs(nx*other[1][0]+nz*other[1][1])*box['halfLength']
         separation = (x-box['x'])*nx+(z-box['z'])*nz
         overlap = own_radius+other_radius-abs(separation)
@@ -50,6 +52,8 @@ def penetration(x,z,heading,box):
 
 class VehicleWorld:
     def __init__(self,surfaces,boxes=(),ceilings=(),ground_y=-.12):
+        surfaces = list(surfaces)
+        self.road_ids = {surface.get('roadId') for surface in surfaces if surface.get('roadId')}
         self.surface = RoadSurface(surfaces)
         self.ceiling = RoadSurface(ceilings)
         self.ground_y = ground_y
@@ -75,7 +79,8 @@ class VehicleWorld:
 
     def floors(self,x,z,heading,boxes):
         contacts = [(self.ground_y,0.0),*self.surface.contacts(x,z,heading)]
-        contacts.extend((box['maxY'],0.0) for box in boxes if box.get('kind') != 'curb' and inside(box,x,z))
+        contacts.extend((box['maxY'],0.0) for box in boxes if box.get('kind') != 'curb' and box.get('objectId') not in self.road_ids
+                        and not box.get('playerId') and inside(box,x,z))
         return contacts
 
     def restore(self,x,z,heading,y):
@@ -102,16 +107,29 @@ class VehicleWorld:
         return False
 
     def ground_pose(self,state,height,pitch,boxes):
-        # Опора под передней и задней осями выравнивает кузов на кривом профиле подъёма.
+        # Пятно контакта колеса усредняет стыки треугольников. Высоту берём
+        # с поверхности своего уровня, а не с верхней границы наклонного бокса.
+        right, forward = axes(state.heading)
         axle_heights = []
-        for offset in (WHEELBASE/2,-WHEELBASE/2):
-            x,z = state.x+math.sin(state.heading)*offset,state.z+math.cos(state.heading)*offset
-            expected = height-offset*math.sin(pitch)
-            contacts = [(h,p) for h,p in self.floors(x,z,state.heading,boxes) if
-                        abs(h-expected) <= STEP_HEIGHT+WHEELBASE/2*abs(math.tan(p))]
-            if not contacts:
+        for axle in (WHEELBASE/2, -WHEELBASE/2):
+            wheel_heights = []
+            for side in (-CAR_WIDTH*.33, CAR_WIDTH*.33):
+                patch = []
+                for shift, weight in ((-.3,1), (0,2), (.3,1)):
+                    offset = axle+shift
+                    x = state.x+forward[0]*offset+right[0]*side
+                    z = state.z+forward[1]*offset+right[1]*side
+                    expected = height-offset*math.tan(pitch)
+                    contacts = [(h,p) for h,p in self.floors(x,z,state.heading,boxes)
+                                if abs(h-expected) <= STEP_HEIGHT+abs(offset)*abs(math.tan(p))]
+                    if contacts:
+                        h,_ = min(contacts,key=lambda contact:abs(contact[0]-expected))
+                        patch.append((h,weight))
+                if patch:
+                    wheel_heights.append(sum(h*w for h,w in patch)/sum(w for _,w in patch))
+            if not wheel_heights:
                 return VerticalState(height,pitch=pitch)
-            axle_heights.append(min(contacts,key=lambda contact:abs(contact[0]-expected))[0])
+            axle_heights.append(sum(wheel_heights)/len(wheel_heights))
         front,rear = axle_heights
         return VerticalState((front+rear)/2,pitch=-math.atan2(front-rear,WHEELBASE))
 
@@ -174,7 +192,11 @@ class VehicleWorld:
                         continue
                     if next_body.grounded and box['maxY'] <= bottom+STEP_HEIGHT:
                         continue
-                    hit = penetration(candidate.x,candidate.z,candidate.heading,box)
+                    # Скос 45° по нижнему периметру: на высоте 22 см бокс
+                    # полный, ниже его горизонтальное сечение плавно сужается.
+                    contact_height = box['maxY']-bottom
+                    inset = max(0.0, LOWER_EDGE_BEVEL-max(0.0,contact_height))
+                    hit = penetration(candidate.x,candidate.z,candidate.heading,box,inset)
                     if hit:
                         # Бокс наклонной грани хранит общий диапазон высоты и может
                         # пересекать кузов там, где точная поверхность проходит под колёсами.
