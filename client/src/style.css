@@ -56,8 +56,8 @@ button:disabled { cursor: wait; opacity: 0.6; }
 .touch-pedals .touch-throttle { background: #4b9e45cc; }
 @media (min-width: 851px) and (pointer: fine) { .touch-controls { display: none; } }
 @media (max-width: 480px) { .touch-controls { gap: 8px; } .touch-arrows, .touch-pedals { gap: 8px; } .touch-controls button { border-radius: 14px; } }
-@media (pointer: coarse) and (max-width: 1200px) {
-  .speedometer { left: 50%; transform: translateX(-50%); }
+@media (max-width: 850px) {
+  .speedometer { left: 50%; right: auto; transform: translateX(-50%); }
 }
 .scenario-queue { font: 600 15px/1.4 system-ui, sans-serif; white-space: nowrap; }
 .npc-traffic-message { position: absolute; z-index: 5; transform: translate(-50%, calc(-100% - 24px)); padding: 8px 12px; border: 2px solid #292b2b; border-radius: 12px 12px 12px 2px; background: #f8eee2; color: #292b2b; box-shadow: 2px 2px 0 #292b2b; font: 600 12px/1.4 system-ui, sans-serif; white-space: nowrap; pointer-events: none; }
