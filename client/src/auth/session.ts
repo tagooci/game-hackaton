@@ -7,6 +7,10 @@ export interface Account { playerId: string; name: string }
 export interface Profile {
   experience: number;
   level: number;
+  levelExperience: number;
+  nextLevelExperience: number;
+  experienceToNextLevel: number;
+  unlockedColors: number[];
   vehicleColor: number;
   vehicleType: 'car' | 'truck' | 'super-sedan';
   isAdmin?: boolean;
@@ -171,6 +175,20 @@ export function showGarage(
   });
   host.append(panel);
   let disposed = false;
+  const progress = root.querySelector<HTMLElement>('.progress-panel')!;
+  root.querySelector<HTMLElement>('.level-value')!.textContent = String(profile.level);
+  const progressBar = root.querySelector<HTMLElement>('.progress-bar')!;
+  const progressFill = root.querySelector<HTMLElement>('.progress-fill')!;
+  const progressValue = root.querySelector<HTMLElement>('.progress-value')!;
+  const progressPercent = profile.level >= 3
+    ? 100
+    : Math.min(100, profile.levelExperience / profile.nextLevelExperience * 100);
+  progressFill.style.width = `${progressPercent}%`;
+  progressBar.setAttribute('aria-valuenow', String(Math.round(progressPercent)));
+  progressValue.textContent = profile.level >= 3
+    ? `${profile.experience} XP · Максимальный уровень`
+    : `${profile.experience} XP · ещё ${profile.experienceToNextLevel} XP до уровня ${profile.level + 1}`;
+  progress.setAttribute('aria-label', `Уровень ${profile.level}, ${progressValue.textContent}`);
   if (profile.isAdmin) {
     const controls = root.querySelector<HTMLElement>('.controls')!;
     const admin = document.createElement('section');
@@ -263,13 +281,15 @@ export function showGarage(
     const paint = VEHICLE_PAINTS[order[index]];
     button.dataset.color = paint.color;
     button.style.background = paint.color;
-    button.disabled = false;
+    button.disabled = !profile.unlockedColors.includes(paint.id);
     button.title = paint.label;
     button.setAttribute('aria-label', paint.label);
+    if (button.disabled) button.title = `${paint.label} — откроется на 2 уровне`;
     button.replaceChildren();
   });
   const colors = Object.fromEntries(VEHICLE_PAINTS.map(paint => [paint.color, paint.id]));
-  const selectedColor = VEHICLE_PAINTS[profile.vehicleColor]?.color ?? VEHICLE_PAINTS[3].color;
+  const selectedColor = VEHICLE_PAINTS[profile.unlockedColors.includes(profile.vehicleColor)
+    ? profile.vehicleColor : 3]?.color ?? VEHICLE_PAINTS[3].color;
   const stopPreview = mountMenuPreview(root, selectedColor,
     profile.vehicleType === 'super-sedan' ? 'sports' : 'sedan',
     profile.vehicles?.some(vehicle => vehicle.id === 'super-sedan' && vehicle.unlocked) ?? false,

@@ -389,6 +389,8 @@ async def update_profile(request: Request, game_session: str | None = Cookie(def
     profile = database.profile(account["playerId"])
     if profile is None:
         raise HTTPException(status_code=404, detail="account not found")
+    if color not in profile["unlockedColors"]:
+        raise HTTPException(status_code=403, detail="vehicle color is locked")
     try:
         definition = vehicle_definition(vehicle_type)
     except ValueError as exc:

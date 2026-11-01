@@ -19,11 +19,31 @@ DEFAULT_DB_PATH = (
 
 
 def level_for_experience(experience: int) -> int:
-    if experience < 800:
+    if experience < 500:
         return 1
-    if experience < 1500:
+    if experience < 1000:
         return 2
     return 3
+
+
+def experience_progress(experience: int) -> dict[str, int]:
+    level = level_for_experience(experience)
+    if level == 1:
+        current, target = experience, 500
+    elif level == 2:
+        current, target = experience - 500, 500
+    else:
+        current, target = 500, 500
+    return {
+        "level": level,
+        "levelExperience": current,
+        "nextLevelExperience": target,
+        "experienceToNextLevel": max(0, target - current),
+    }
+
+
+def unlocked_colors(level: int) -> list[int]:
+    return [0, 3, 4] if level < 2 else [0, 1, 2, 3, 4]
 
 
 class Database:
@@ -217,7 +237,8 @@ class Database:
         experience = int(row["experience"])
         return {
             "experience": experience,
-            "level": level_for_experience(experience),
+            **experience_progress(experience),
+            "unlockedColors": unlocked_colors(level_for_experience(experience)),
             "vehicleColor": int(row["vehicle_color"]),
             "vehicleType": row["vehicle_type"],
         }
