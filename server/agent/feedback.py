@@ -21,7 +21,7 @@ class FeedbackConfig:
     """Generation settings loaded from environment variables."""
 
     base_url: str = "http://127.0.0.1:11434"
-    model: str = "qwen2.5:3b"
+    model: str = "qwen3.5:2b"
     timeout_seconds: float = 30.0
     temperature: float = 0.8
     top_p: float = 0.9
