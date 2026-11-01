@@ -62,6 +62,7 @@ async def run_physics(
                 player["id"],
                 previous,
                 (state.x, state.z, state.speed),
+                now,
             )
 
 

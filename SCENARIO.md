@@ -15,8 +15,11 @@
 прибытие в индивидуальные финишные зоны и серверный расчёт XP. Эти координаты
 не являются финальным контентом и будут заменены после импорта новой карты.
 
-Сценарное состояние находится в [`server/scenarios.py`](server/scenarios.py), а
-сетевое orchestration сценариев вынесено в
+Сценарное состояние находится в [`server/scenarios.py`](server/scenarios.py).
+Каталог временных определений находится в
+[`server/scenario_catalog.py`](server/scenario_catalog.py). При старте
+определения проходят проверку уникальности ролей, зон, spawn-точек и rule
+конфигурации. Сетевое orchestration сценариев вынесено в
 [`server/scenario_handlers.py`](server/scenario_handlers.py). WebSocket endpoint
 и lifecycle v2 вынесены в
 [`server/websocket_handlers.py`](server/websocket_handlers.py); в
@@ -346,6 +349,10 @@ xp ограничивается [minimumXp, maximumXp]
 отключается от сервера во время сценария, сессия также отменяется, но его
 безопасная позиция в БД сбрасывается на обычный `spawn` мира. При следующем
 подключении он появится на этой точке.
+
+Если истёк `timeLimitSeconds`, сервер отправляет `scenario_cancelled` с причиной
+`time_limit`, не начисляет XP и возвращает подключённых участников в
+`return_spawn`.
 
 ### Подсказка и нарушение
 

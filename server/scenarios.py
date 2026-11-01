@@ -4,14 +4,38 @@ The registry is intentionally data-driven. Map-specific zones and role spawns
 are added after the next map import; the lifecycle does not depend on Blender.
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from enum import StrEnum
 from itertools import count
 import math
 import secrets
+import time
 from typing import Any
 
 from .scenario_rules import ScenarioRuleConfig
+from .scenario_rules import ScenarioRuleEngine
+
+
+def _finite_triplet(value: tuple[float, float, float]) -> bool:
+    return len(value) == 3 and all(math.isfinite(item) for item in value)
+
+
+def _validate_zone(zone: ScenarioZone) -> None:
+    values = (zone.min_x, zone.max_x, zone.min_z, zone.max_z, zone.required_speed)
+    if not zone.id.strip() or not all(math.isfinite(value) for value in values):
+        raise ValueError(f"invalid scenario zone: {zone.id}")
+    if zone.min_x > zone.max_x or zone.min_z > zone.max_z or zone.required_speed < 0:
+        raise ValueError(f"invalid scenario zone bounds: {zone.id}")
+
+
+def _validate_rule_config(config: ScenarioRuleConfig, role_ids: set[str]) -> None:
+    unknown_roles = set(config.role_rules) - role_ids
+    if unknown_roles:
+        raise ValueError(f"rule config references unknown roles: {sorted(unknown_roles)}")
+    ScenarioRuleEngine._validate(config)
+
 
 class ScenarioState(StrEnum):
     WAITING = "waiting"
@@ -108,19 +132,51 @@ class ScenarioEvent:
 
 class ScenarioManager:
     def __init__(self, definitions: tuple[ScenarioDefinition, ...] = ()):
-        self.definitions = {definition.id: definition for definition in definitions}
+        self.definitions: dict[str, ScenarioDefinition] = {}
         self.candidates: dict[str, list[Candidate]] = {}
         self.sessions: dict[str, ScenarioSession] = {}
         self.player_sessions: dict[str, str] = {}
         self._session_ids = count(1)
+        for definition in definitions:
+            self.register(definition)
 
     def register(self, definition: ScenarioDefinition) -> None:
         if definition.id in self.definitions:
             raise ValueError(f"duplicate scenario: {definition.id}")
+        self._validate_definition(definition)
+        self.definitions[definition.id] = definition
+
+    @staticmethod
+    def _validate_definition(definition: ScenarioDefinition) -> None:
+        if not definition.id.strip() or not definition.map_id.strip():
+            raise ValueError("scenario id and map id must not be empty")
         if len(definition.roles) < 2:
             raise ValueError("a scenario needs at least two roles")
         if len(definition.roles) > 3:
             raise ValueError("a scenario supports at most three roles")
+        role_ids = [role.id for role in definition.roles]
+        if any(not role_id.strip() for role_id in role_ids):
+            raise ValueError("role ids must not be empty")
+        if len(set(role_ids)) != len(role_ids):
+            raise ValueError("role ids must be unique")
+        _validate_zone(definition.zone)
+        if not _finite_triplet(definition.return_spawn):
+            raise ValueError("return spawn must contain finite coordinates")
+        zone_ids = {definition.zone.id}
+        spawn_points: set[tuple[float, float, float]] = set()
+        for role in definition.roles:
+            if not _finite_triplet(role.spawn):
+                raise ValueError(f"invalid spawn for role: {role.id}")
+            if role.spawn in spawn_points:
+                raise ValueError("role spawn points must be unique")
+            spawn_points.add(role.spawn)
+            if role.destination is None:
+                raise ValueError(f"role needs a destination: {role.id}")
+            _validate_zone(role.destination)
+            if role.destination.id in zone_ids:
+                raise ValueError(f"zone ids must be unique: {role.destination.id}")
+            zone_ids.add(role.destination.id)
+        _validate_rule_config(definition.rule_config, set(role_ids))
         if not math.isfinite(definition.time_limit_seconds) or definition.time_limit_seconds <= 0:
             raise ValueError("time limit must be positive and finite")
         if any(value < 0 for value in (
@@ -132,7 +188,6 @@ class ScenarioManager:
             raise ValueError("experience values must be non-negative")
         if definition.maximum_xp < 0:
             raise ValueError("maximum experience must be non-negative")
-        self.definitions[definition.id] = definition
 
     def join(self, player_id: str, scenario_id: str, x: float, z: float, speed: float, now: float) -> list[ScenarioEvent]:
         definition = self.definitions.get(scenario_id)
@@ -184,7 +239,12 @@ class ScenarioManager:
         session_id = self.player_sessions.pop(player_id, None)
         if session_id is None:
             return []
+        return self.cancel(session_id, reason)
+
+    def cancel(self, session_id: str, reason: str) -> list[ScenarioEvent]:
         session = self.sessions[session_id]
+        if session.state in (ScenarioState.CANCELLED, ScenarioState.FINISHED):
+            return []
         session.state = ScenarioState.CANCELLED
         for participant_id in session.participants:
             self.player_sessions.pop(participant_id, None)
@@ -197,6 +257,12 @@ class ScenarioManager:
         session = self.sessions[session_id]
         for participant_id in session.participants:
             self.player_sessions.pop(participant_id, None)
+
+    def discard(self, session_id: str) -> None:
+        session = self.sessions.pop(session_id, None)
+        if session is not None:
+            for participant_id in session.participants:
+                self.player_sessions.pop(participant_id, None)
 
     def set_state(self, session_id: str, state: ScenarioState, now: float | None = None) -> None:
         session = self.sessions[session_id]
@@ -213,6 +279,7 @@ class ScenarioManager:
             return []
         session.state = ScenarioState.RUNNING
         session.start_tick = start_tick
+        session.started_at = time.monotonic()
         return [
             ScenarioEvent(
                 "scenario_start",
@@ -270,6 +337,27 @@ class ScenarioManager:
                 session.id,
                 reason="all_players_finished",
                 result_id=session.result_id,
+            ))
+        return events
+
+    def expire(self, now: float | None = None) -> list[ScenarioEvent]:
+        current_time = time.monotonic() if now is None else now
+        events: list[ScenarioEvent] = []
+        for session in self.sessions.values():
+            if (
+                session.state != ScenarioState.RUNNING
+                or session.started_at is None
+                or current_time - session.started_at < session.definition.time_limit_seconds
+            ):
+                continue
+            session.state = ScenarioState.CANCELLED
+            for participant_id in session.participants:
+                self.player_sessions.pop(participant_id, None)
+            events.append(ScenarioEvent(
+                "scenario_cancelled",
+                session.definition.id,
+                session.id,
+                reason="time_limit",
             ))
         return events
 

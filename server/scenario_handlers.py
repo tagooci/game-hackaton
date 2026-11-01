@@ -154,16 +154,45 @@ class ScenarioHandlers:
         if player is None or player.get("sceneKind") != "scenario":
             return
         session_id = player.get("scenarioSessionId")
-        events = self.manager.leave(player_id)
-        await self.send_events(events)
-        session = self.manager.sessions.get(session_id) if session_id else None
+        if session_id is not None:
+            await self.cancel_session(session_id)
+
+    async def cancel_session(
+        self,
+        session_id: str,
+        exclude_player_id: str | None = None,
+    ) -> None:
+        session = self.manager.sessions.get(session_id)
         if session is None:
             return
+        await self.send_events(self.manager.cancel(session_id, "participant_left"))
         x, z, heading = session.definition.return_spawn
-        self._move_to_world(player, x, z, heading)
-        websocket = self.connections.get(player_id)
-        if websocket is not None:
-            await self.send(websocket, self.world_scene_prepare(player))
+        for participant_id in session.participants:
+            if participant_id == exclude_player_id:
+                continue
+            player = self.players.get(participant_id)
+            if player is None or player.get("sceneKind") != "scenario":
+                continue
+            self._move_to_world(player, x, z, heading)
+            websocket = self.connections.get(participant_id)
+            if websocket is not None:
+                await self.send(websocket, self.world_scene_prepare(player))
+        self.manager.discard(session_id)
+
+    async def return_cancelled(self, session_id: str) -> None:
+        session = self.manager.sessions.get(session_id)
+        if session is None:
+            return
+        for participant_id in session.participants:
+            player = self.players.get(participant_id)
+            if player is None or player.get("sceneKind") != "scenario":
+                continue
+            x, z, heading = session.definition.return_spawn
+            self._move_to_world(player, x, z, heading)
+            websocket = self.connections.get(participant_id)
+            if websocket is not None:
+                await self.send(websocket, self.world_scene_prepare(player))
+        self.manager.discard(session_id)
 
     async def return_from_scenario(self, session_id: str) -> None:
         await asyncio.sleep(5)
@@ -212,6 +241,7 @@ class ScenarioHandlers:
             player.pop("scenarioFinish", None)
             self.scene_ready.discard(participant_id)
             await self.send(websocket, self.world_scene_prepare(player))
+        self.manager.discard(session_id)
 
     def _move_to_world(self, player: dict[str, Any], x: float, z: float, heading: float) -> None:
         body = self.vehicle_world.restore(

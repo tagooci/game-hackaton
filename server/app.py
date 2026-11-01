@@ -1,5 +1,4 @@
 import json
-import math
 import sqlite3
 from pathlib import Path
 import asyncio
@@ -34,13 +33,11 @@ from .state import (
     v2_scene_ready,
 )
 from .scenarios import (
-    ScenarioDefinition,
     ScenarioEvent,
     ScenarioManager,
-    ScenarioRole,
-    ScenarioZone,
 )
 from .scenario_handlers import ScenarioHandlers
+from .scenario_catalog import build_scenarios
 from .scenario_rules import ScenarioRuleEngine
 from .simulation import run_physics, run_snapshots
 from .websocket_handlers import V2WebSocketHandler
@@ -71,26 +68,7 @@ vehicle_world = VehicleWorld(NAVIGATION['surfaces'],NAVIGATION.get('colliders',(
 SESSION_COOKIE = "game_session"
 database = Database()
 auth = AuthService(database)
-scenario_manager = ScenarioManager((
-    ScenarioDefinition(
-        id="priority-test",
-        map_id=WORLD_MAP["worldId"],
-        zone=ScenarioZone("junction-waiting", 56.0, 61.0, 36.0, 44.0),
-        return_spawn=(60.0, 20.0, 0.0),
-        roles=(
-            ScenarioRole(
-                "main-straight",
-                spawn=(58.5, 28.0, math.pi),
-                destination=ScenarioZone("south-exit", 56.8, 60.2, 4.0, 10.0),
-            ),
-            ScenarioRole(
-                "secondary-turn",
-                spawn=(70.0, 20.0, -math.pi / 2),
-                destination=ScenarioZone("north-exit", 62.0, 68.0, 28.0, 32.0),
-            ),
-        ),
-    ),
-))
+scenario_manager = ScenarioManager(build_scenarios(WORLD_MAP))
 scenario_rule_engine = ScenarioRuleEngine({
     definition.id: definition.rule_config
     for definition in scenario_manager.definitions.values()
@@ -101,7 +79,13 @@ async def observe_scenario(
     player_id: str,
     previous: tuple[float, float, float],
     current: tuple[float, float, float],
+    now: float,
 ) -> None:
+    expired_events = scenario_manager.expire(now)
+    for event in expired_events:
+        await scenario_handlers.send_events([event])
+        if event.session_id is not None:
+            await scenario_handlers.return_cancelled(event.session_id)
     session = scenario_manager.session_for_player(player_id)
     if session is not None:
         violation_ids = scenario_rule_engine.evaluate(

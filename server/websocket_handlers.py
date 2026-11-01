@@ -366,6 +366,7 @@ class V2WebSocketHandler:
                     player["vertical"].y, self.world_map["worldId"],
                 )
             elif player["sceneKind"] == "scenario":
+                session_id = player.get("scenarioSessionId")
                 spawn = self.world_map["spawn"]
                 body = self.vehicle_world.restore(
                     spawn["x"],
@@ -381,7 +382,9 @@ class V2WebSocketHandler:
                     body.y,
                     self.world_map["worldId"],
                 )
-                await self.scenario_handlers.send_events(
-                    self.scenario_manager.leave(player_id)
-                )
+                if session_id is not None:
+                    await self.scenario_handlers.cancel_session(
+                        session_id,
+                        exclude_player_id=player_id,
+                    )
             self.players.pop(player_id, None)
