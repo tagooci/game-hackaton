@@ -1,5 +1,5 @@
 import './style.css';
-import { createScenarioAssistant, showAssistantPreview } from './assistant/scenarioAssistant';
+import { showAssistantPreview } from './assistant/scenarioAssistant';
 import { api, ApiError, showAuth } from './auth/session';
 import type { Account } from './auth/session';
 
@@ -13,12 +13,13 @@ import { HemisphericLight } from '@babylonjs/core/Lights/hemisphericLight';
 import { DirectionalLight } from '@babylonjs/core/Lights/directionalLight';
 import { ShadowGenerator } from '@babylonjs/core/Lights/Shadows/shadowGenerator';
 import { MeshBuilder } from '@babylonjs/core/Meshes/meshBuilder';
-import { Matrix, Vector3 } from '@babylonjs/core/Maths/math.vector';
+import { Vector3 } from '@babylonjs/core/Maths/math.vector';
 import { Color3, Color4 } from '@babylonjs/core/Maths/math.color';
 import type { VehiclePose } from './vehicle/vehicleView';
 import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial';
 import { startStateSender } from './network/stateSender';
 import { createRemotePlayers } from './players/remotePlayers';
+import { createTrafficView } from './players/trafficView';
 import { createVehicleView, VEHICLE_LENGTH } from './vehicle/vehicleView';
 import { createVehicleControls } from './vehicle/controls';
 
@@ -31,15 +32,15 @@ function authScreen(error = ''): void {
   stopScreen = showAuth(host, enterGame, error);
 }
 
-async function enterGame(account: Account): Promise<void> {
+async function enterGame(_account: Account): Promise<void> {
   await api('content/bootstrap');
   if (disposed) return;
   stopScreen();
   host.replaceChildren();
-  stopScreen = startGame(account);
+  stopScreen = startGame();
 }
 
-function startGame(account: Account): () => void {
+function startGame(): () => void {
   const events = new AbortController();
   const eventOptions = { signal: events.signal };
 
@@ -84,9 +85,6 @@ function startGame(account: Account): () => void {
   scene.activeCamera = camera;
   canvas.tabIndex = 0;
   const controls = createVehicleControls(canvas);
-  const assistant = createScenarioAssistant(host);
-  let lastScenarioResult = '';
-  let inScenario = false;
   let ownId = '';
   let targetPose: VehiclePose = vehicle.getPose();
 
@@ -126,32 +124,17 @@ function startGame(account: Account): () => void {
   canvas.addEventListener('click', async () => {
     if (!overlay.hidden || document.pointerLockElement === canvas) return;
     canvas.focus({ preventScroll: true });
-    try { if (!assistant.isOpen) await canvas.requestPointerLock?.(); }
+    try { await canvas.requestPointerLock?.(); }
     catch { /* Keyboard controls also work in browsers without pointer lock. */ }
   }, eventOptions);
-  const logout = document.createElement('button');
-  logout.className = 'logout';
-  logout.textContent = `Выйти (${account.name})`;
-  host.append(overlay, logout);
-  logout.onclick = async () => {
-    logout.disabled = true;
-    try { await api('logout', {}); authScreen(); }
-    catch { overlay.hidden = false; overlay.textContent = 'Не удалось выйти. Попробуйте ещё раз.'; logout.disabled = false; }
-  };
+  host.append(overlay);
   const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
   const serverUrl = `${wsProtocol}//${location.host}/ws/v2`;
-  const queueLabel = document.createElement('div');
-  queueLabel.className = 'scenario-queue';
-  queueLabel.hidden = true;
-  host.append(queueLabel);
   let finishArch: ReturnType<typeof createFinishArch> | undefined;
-  let queuePosition: Vector3 | undefined;
   let scenarioSigns: ReturnType<typeof createRoundaboutSigns> | undefined;
-  const scenarioInfo = document.createElement('div');
-  scenarioInfo.className = 'scenario-info';
-  host.append(scenarioInfo);
   const remotePlayers = createRemotePlayers(scene);
   const roads = new RoadContent(scene, () => {});
+  const traffic = createTrafficView(scene, state => roads.hasLoadedChunkAt(state.x, state.z));
   if (import.meta.env.DEV) Object.defineProperty(window, 'roadCache', { configurable: true, get: () => roads.stats() });
   let mapReady = false;
   let mapLoading = false;
@@ -195,19 +178,10 @@ function startGame(account: Account): () => void {
     onMessage: message => {
       if (message.type === 'welcome') ownId = message.playerId;
       if (message.type === 'scene_prepare') {
-        if (typeof message.scenarioResult === 'string' && message.scenarioResult) lastScenarioResult = message.scenarioResult;
-        const returnedFromScenario = inScenario && message.sceneKind === 'world';
-        inScenario = message.sceneKind === 'scenario';
-        if (inScenario) {
-          lastScenarioResult = '';
-          assistant.hide();
-        } else if (returnedFromScenario && lastScenarioResult) {
-          assistant.result(lastScenarioResult);
-        } else if (!lastScenarioResult) assistant.hide();
-        scenarioInfo.textContent = inScenario ? `${message.scenarioTitle ?? 'Сценарий'} · ${message.objective ?? ''} ${message.finishMode === 'pass' ? 'Проедьте через свою арку, останавливаться не нужно.' : 'Остановитесь под своей финишной аркой на секунду.'}` : 'Сценарии: №2 — перекрёсток (X 30, Z −10), №4 — круг (X 0, Z −40). Для каждого нужны 3 игрока. Остановитесь рядом с маркером и дождитесь участников.';
+        const inScenario = message.sceneKind === 'scenario';
+        traffic.setEnabled(!inScenario);
         scenarioSigns?.dispose();
         scenarioSigns = createRoundaboutSigns(scene, message.scenarioSigns ?? []);
-        queuePosition = undefined; queueLabel.hidden = true;
         finishArch?.dispose();
         finishArch = message.finish ? createFinishArch(scene, message.finish) : undefined;
         controls.clear();
@@ -216,23 +190,17 @@ function startGame(account: Account): () => void {
       }
 
       if (message.type === 'snapshot') {
-        if (inScenario && typeof message.scenarioResult === 'string' && message.scenarioResult && message.scenarioResult !== lastScenarioResult) {
-          lastScenarioResult = message.scenarioResult;
-        }
-        const queue = message.scenarioQueue;
-        queuePosition = queue ? new Vector3(queue.x, queue.y, queue.z) : undefined;
-        queueLabel.textContent = queue ? `${queue.title ?? 'Сценарий'} · ${queue.count}/${queue.required ?? 2}` : '';
+        traffic.handleSnapshot(message.traffic ?? []);
         const own = message.players.find(player => player.id === ownId);
         if (own) {
           targetPose = own;
-          if (!inScenario) scenarioInfo.textContent = `Вы: X ${own.x.toFixed(0)}, Z ${own.z.toFixed(0)}. №1: X 60, Z 20 (3 игрока). №2: X 30, Z −10 (3). №4: X 0, Z −40 (3). №5: сбор X 35, Z −40 (4). Остановитесь на дороге у маркера нужной группы.`;
         }
       }
       remotePlayers.handleMessage(message);
     },
     onDisconnect: () => {
       mapReady = false;
-      assistant.hide(); lastScenarioResult = ''; inScenario = false;
+      traffic.setEnabled(false);
       remotePlayers.clear(); controls.clear(); targetPose = vehicle.getPose();
     },
   });
@@ -260,14 +228,8 @@ function startGame(account: Account): () => void {
         void updateRoads(pose.x, pose.z).catch(() => {});
       }
     }
-    if (queuePosition && mapReady) {
-      const projected = Vector3.Project(queuePosition, Matrix.Identity(), scene.getTransformMatrix(),
-        camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight()));
-      queueLabel.hidden = projected.z < 0 || projected.z > 1 || Vector3.Distance(camera.position, queuePosition) > 60;
-      queueLabel.style.left = `${projected.x / engine.getRenderWidth() * canvas.clientWidth}px`;
-      queueLabel.style.top = `${projected.y / engine.getRenderHeight() * canvas.clientHeight}px`;
-    } else queueLabel.hidden = true;
     remotePlayers.update();
+    traffic.update();
     // Одна карта теней вокруг игрока; выгруженные meshes автоматически исчезают из списка.
     sun.position.set(pose.x + 32, 80, pose.z + 24);
     shadows.getShadowMap()!.renderList = scene.meshes.filter(mesh =>
@@ -283,22 +245,21 @@ function startGame(account: Account): () => void {
   function dispose(): void {
     if (document.pointerLockElement === canvas) document.exitPointerLock();
     stopStateSender();
-    assistant.dispose();
     scenarioSigns?.dispose();
-    scenarioInfo.remove();
     controls.dispose();
     events.abort();
     engine.stopRenderLoop();
     if (import.meta.env.DEV) Reflect.deleteProperty(window, 'roadCache');
     roads.dispose();
     remotePlayers.dispose();
+    traffic.dispose();
     vehicle.dispose();
     scene.dispose();
     engine.dispose();
     canvas.remove();
   }
 
-  return () => { dispose(); overlay.remove(); logout.remove(); queueLabel.remove(); finishArch?.dispose(); };
+  return () => { dispose(); overlay.remove(); finishArch?.dispose(); };
 }
 
 if (new URLSearchParams(location.search).has('assistant-preview')) {

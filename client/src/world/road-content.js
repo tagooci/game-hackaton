@@ -19,6 +19,7 @@ export class RoadContent {
     this.groups = new Map();
     this.activeHashes = new Set();
     this.activeObjects = [];
+    this.activeChunks = [];
     this.activeKey = "";
     this.planKey = '';
     this.serial = Promise.resolve();
@@ -27,6 +28,7 @@ export class RoadContent {
   }
 
   async init(manifestUrl = '/content/world/manifest.json') {
+    this.activeChunks = [];
     await this.serial.catch(() => {});
     this.clearMeshes();
     this.releaseUnused(new Set());
@@ -130,6 +132,7 @@ export class RoadContent {
   // До загрузки освобождаем только участки за дальностью видимости.
   // Видимая часть дороги остаётся на экране даже при ошибке сети.
   trimDistant(chunkIds) {
+    this.activeChunks = this.activeChunks.filter(chunk => chunkIds.has(chunk.resourceId));
     this.activeObjects = this.activeObjects.filter(object => !object.chunkId || chunkIds.has(object.chunkId));
     const hashes = new Set([this.registry.get(this.manifest.overviewResourceId).sha256]);
     for (const object of this.activeObjects) {
@@ -264,6 +267,7 @@ export class RoadContent {
         this.rendered = [...this.groups.values()].flat();
         this.activeKey = key;
         this.activeObjects = objects;
+        this.activeChunks = chunks;
         this.activeHashes = hashes;
         this.releaseUnused(hashes);
       } catch (error) {
@@ -280,7 +284,13 @@ export class RoadContent {
     return this.serial;
   }
 
+  hasLoadedChunkAt(x, z) {
+    return !this.disposed && this.activeChunks.some(({ bounds: b }) =>
+      x >= b.minX && x < b.maxX && z >= b.minZ && z < b.maxZ);
+  }
+
   dispose() {
+    this.activeChunks = [];
     this.disposed = true;
     this.revision++;
     this.clearMeshes();

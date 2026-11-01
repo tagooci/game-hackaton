@@ -160,6 +160,28 @@
         "client/public/content/assets/imported/sign-yield.glb.bin"
       ],
       "warnings": []
+    },
+    {
+      "id": "Kenney:Car Kit 3.1 ambient traffic",
+      "title": "Car Kit 3.1 vehicle models for world NPC traffic",
+      "author": "Kenney",
+      "source_url": "https://kenney.nl/assets/car-kit",
+      "license": "CC0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "files": [
+        "client/public/assets/traffic/sedan.glb",
+        "client/public/assets/traffic/sedan-sports.glb",
+        "client/public/assets/traffic/suv.glb",
+        "client/public/assets/traffic/taxi.glb",
+        "client/public/assets/traffic/van.glb",
+        "client/public/assets/traffic/truck.glb",
+        "client/public/assets/traffic/ambulance.glb",
+        "client/public/assets/traffic/police.glb",
+        "client/public/assets/traffic/firetruck.glb",
+        "client/public/assets/traffic/Textures/colormap.png",
+        "client/public/assets/traffic/License.txt"
+      ],
+      "notes": "The supplied archive has no bus model; van.glb is used as a passenger van."
     }
   ],
   "version": 1

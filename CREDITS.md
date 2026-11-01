@@ -3,6 +3,11 @@
 Sedan and colormap: Kenney, [Car Kit 3.1](https://kenney.nl/assets/car-kit), [CC0](https://creativecommons.org/publicdomain/zero/1.0/).
 Original license: `client/public/assets/car-kit/License.txt`.
 
+Ambient world traffic vehicles: sedan, sports sedan, SUV, taxi, van, truck,
+ambulance, police car and fire truck from Kenney, [Car Kit 3.1](https://kenney.nl/assets/car-kit), CC0.
+The supplied archive does not include a bus model. Files and original license:
+`client/public/assets/traffic/`.
+
 Road geometry and signs: Kenney, [City Kit Roads](https://kenney.nl/assets/city-kit-roads), CC0.
 Optimized reference vehicles: Kenney Car Kit, CC0.
 Original licenses: `client/public/content/assets/environment/License.txt` and

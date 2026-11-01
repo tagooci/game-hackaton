@@ -27,10 +27,3 @@ button:disabled { cursor: wait; opacity: 0.6; }
 .auth-tabs { display: flex; gap: 8px; }
 .auth-tabs button { flex: 1; }
 .auth-form [role=alert] { color: #ffb8a8; margin: 0; }
-.logout { position: absolute; top: 12px; right: 12px; }
-
-.scenario-queue { position: absolute; transform: translate(-50%, -50%); pointer-events: none; padding: 6px 14px; border-radius: 8px; background: #17212ee6; color: white; font: bold 24px sans-serif; }
-
-.scenario-info { position: absolute; top: 16px; left: 16px; width: min(380px, calc(100vw - 220px)); padding: 12px 15px; border-radius: 12px; background: #19333de8; color: #fff8e7; font: 13px/1.55 system-ui, sans-serif; pointer-events: none; }
-.scenario-info:empty { display: none; }
-.scenario-queue { font: 600 15px/1.4 system-ui, sans-serif; white-space: nowrap; }
