@@ -94,10 +94,15 @@ function startGame(account: Account, profile: Profile): () => void {
   canvas.tabIndex = 0;
   const controls = createVehicleControls(canvas);
   const speedometer = createSpeedometer(host);
+  const performanceLabel = document.createElement('div');
+  performanceLabel.className = 'ping-indicator';
   const pingLabel = document.createElement('div');
-  pingLabel.className = 'ping-indicator';
   pingLabel.textContent = 'Пинг: — мс';
-  host.append(pingLabel);
+  const fpsLabel = document.createElement('div');
+  fpsLabel.textContent = 'FPS: —';
+  performanceLabel.append(pingLabel, fpsLabel);
+  host.append(performanceLabel);
+  let lastFpsUpdate = performance.now();
   const assistant = createScenarioAssistant(host, () => {
     controls.clear();
     if (document.pointerLockElement === canvas) document.exitPointerLock();
@@ -305,6 +310,12 @@ function startGame(account: Account, profile: Profile): () => void {
 
   // На каждом кадре рисуем сцену из положения камеры.
   engine.runRenderLoop(() => {
+    const now = performance.now();
+    if (now - lastFpsUpdate >= 500) {
+      const fps = engine.getFps();
+      fpsLabel.textContent = `FPS: ${Number.isFinite(fps) ? Math.round(fps) : '—'}`;
+      lastFpsUpdate = now;
+    }
     // Сглаживание отрисовки, не расчёт физики: движемся только к позиции сервера.
     const pose = vehicle.getPose();
     const blend = 1 - Math.exp(-20 * Math.min(engine.getDeltaTime() / 1000, 0.1));
@@ -358,7 +369,7 @@ function startGame(account: Account, profile: Profile): () => void {
     scenarioInfo.remove();
     controls.dispose();
     speedometer.dispose();
-    pingLabel.remove();
+    performanceLabel.remove();
     events.abort();
     engine.stopRenderLoop();
     if (import.meta.env.DEV) Reflect.deleteProperty(window, 'roadCache');
