@@ -107,6 +107,7 @@ function startGame(account: Account, profile: Profile): () => void {
   host.append(performanceLabel);
   const engineSound = createEngineSound(host);
   let lastFpsUpdate = performance.now();
+  let currentFps: number | null = null;
   const assistant = createScenarioAssistant(host, () => {
     controls.clear();
     if (document.pointerLockElement === canvas) document.exitPointerLock();
@@ -204,6 +205,7 @@ function startGame(account: Account, profile: Profile): () => void {
   }
   const stopStateSender = startStateSender(serverUrl, {
     onPing: milliseconds => { pingLabel.textContent = `Пинг: ${milliseconds === null ? '—' : milliseconds} мс`; },
+    getFps: () => currentFps,
     getControls: () => mapError || assistant.isOpen ? neutralControls : controls.getControls(),
     takeRespawn: controls.takeRespawn,
     prepareScene: async message => {
@@ -331,7 +333,9 @@ function startGame(account: Account, profile: Profile): () => void {
     const now = performance.now();
     if (now - lastFpsUpdate >= 500) {
       const fps = engine.getFps();
-      fpsLabel.textContent = `FPS: ${Number.isFinite(fps) ? Math.round(fps) : '—'}`;
+      const roundedFps = Number.isFinite(fps) ? Math.round(fps) : null;
+      currentFps = roundedFps;
+      fpsLabel.textContent = `FPS: ${roundedFps ?? '—'}`;
       lastFpsUpdate = now;
     }
     // Сглаживание отрисовки, не расчёт физики: движемся только к позиции сервера.

@@ -210,7 +210,7 @@ export function showGarage(
         <label><input type="radio" name="admin-agent-style" value="aggressive"> Прямой</label>
       </fieldset>
       <div class="admin-pings" aria-live="polite">
-        <h3>Пинг игроков</h3>
+        <h3>Пинг и FPS игроков</h3>
         <p class="admin-pings-status">Загрузка…</p>
         <ul class="admin-pings-list"></ul>
       </div>
@@ -245,7 +245,7 @@ export function showGarage(
     const pingStatus = admin.querySelector<HTMLElement>('.admin-pings-status')!;
     const pingList = admin.querySelector<HTMLUListElement>('.admin-pings-list')!;
     const status = admin.querySelector<HTMLElement>('.admin-status')!;
-    const renderPings = (players: { name: string; ping: number | null }[]) => {
+    const renderPings = (players: { name: string; ping: number | null; fps: number | null }[]) => {
       pingList.replaceChildren();
       if (!players.length) {
         pingStatus.textContent = 'Нет подключённых игроков';
@@ -255,16 +255,16 @@ export function showGarage(
       players.forEach(player => {
         const item = document.createElement('li');
         const name = document.createElement('span');
-        const ping = document.createElement('strong');
+        const stats = document.createElement('strong');
         name.textContent = player.name;
-        ping.textContent = player.ping === null ? '—' : `${player.ping} мс`;
-        item.append(name, ping);
+        stats.textContent = `${player.ping === null ? '—' : `${player.ping} мс`} · ${player.fps === null ? '—' : `${player.fps} FPS`}`;
+        item.append(name, stats);
         pingList.append(item);
       });
     };
     const refreshPings = async (): Promise<void> => {
       try {
-        const players = await api<{ name: string; ping: number | null }[]>('admin/players');
+        const players = await api<{ name: string; ping: number | null; fps: number | null }[]>('admin/players');
         if (!disposed) renderPings(players);
       } catch {
         if (!disposed) pingStatus.textContent = 'Не удалось получить данные';

@@ -8,6 +8,7 @@ interface ConnectionOptions {
   onMessage: (message: ServerMessage) => void;
   onDisconnect: () => void;
   onPing?: (milliseconds: number | null) => void;
+  getFps?: () => number | null;
   onStatus: (status: string) => void;
   onSessionEnd: (code: number) => void;
 }
@@ -61,6 +62,10 @@ export function startStateSender(url: string, options: ConnectionOptions): () =>
           options.onPing?.(milliseconds);
           if (connection.readyState === WebSocket.OPEN) {
             connection.send(JSON.stringify({ type: 'ping_result', milliseconds }));
+            const fps = options.getFps?.();
+            if (fps !== null && fps !== undefined) {
+              connection.send(JSON.stringify({ type: 'fps_result', fps }));
+            }
           }
           pendingPing = undefined;
         }

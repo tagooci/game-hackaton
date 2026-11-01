@@ -356,6 +356,7 @@ async def get_admin_players(game_session: str | None = Cookie(default=None)):
             "id": player["id"],
             "name": player["name"],
             "ping": player.get("ping"),
+            "fps": player.get("fps"),
             "lastSeen": round(time.monotonic() - player.get("last_ping_at", time.monotonic()), 1)
             if player.get("last_ping_at") else None,
         }
@@ -671,6 +672,12 @@ async def get_v2_websocket(websocket: WebSocket):
                 if type(milliseconds) is int and 0 <= milliseconds <= 60000:
                     player["ping"] = milliseconds
                     player["last_ping_at"] = time.monotonic()
+                continue
+            if msg_type == "fps_result":
+                fps = message.get("fps")
+                if type(fps) is int and 1 <= fps <= 1000:
+                    player["fps"] = fps
+                    player["last_fps_at"] = time.monotonic()
                 continue
             if msg_type == "respawn":
                 if player['sceneKind'] != 'world' or player['sceneId'] != 'world:main':
