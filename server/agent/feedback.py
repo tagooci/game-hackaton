@@ -175,6 +175,7 @@ def _build_prompt(result: ScenarioResult, verbosity: str = "normal", tone: str =
         },
         "violations": [
             {
+                "id": violation.id,
                 "category": violation.category.value,
                 "ruleId": violation.rule_id,
                 "timeMs": violation.time_ms,
@@ -184,22 +185,20 @@ def _build_prompt(result: ScenarioResult, verbosity: str = "normal", tone: str =
             for violation in result.violations
         ],
     }
+    length = "До двух коротких предложений" if verbosity == "detailed" else "Одна короткая фраза"
+    voice = {"neutral": "Спокойно и по делу", "friendly": "Доброжелательно, без пафоса", "coach": "Как терпеливый инструктор"}[tone]
     return (
-        "Ты создаёшь структурированную обратную связь по прохождению учебного участка ПДД.\n"
-        "Используй только факты из JSON. Не придумывай нарушения и не меняй их количество.\n"
-        "Не называй непроверенную категорию успешной. Не выставляй оценку и не говори "
-        "«сдал» или «не сдал».\n"
-        "Верни только JSON точно такого вида: "
-        '{"successful":[{"category":"roadMarkings","comment":"фраза о выполненном элементе"}],'
-        '"errors":[{"violationId":"id из violations","comment":"комментарий об ошибке"}]}.\n'
-        "В successful добавь по одной короткой фразе для каждой проверенной категории "
-        "с нулём нарушений. В errors добавь ровно по одному объекту для каждого нарушения, "
-        "используя точное значение поля id, а не ruleId. "
-        f"Объём текста: {verbosity}. Тон: {tone}. "
-        "Пиши по-русски, естественно и каждый раз немного по-разному. "
-        "Для brief используй короткие фразы, для detailed добавляй краткое пояснение "
-        "причины ошибки, но не выдумывай факты.\n\n"
-        f"Факты:\n{json.dumps(facts, ensure_ascii=False, indent=2)}"
+        "Ты инструктор по вождению. Обратись к игроку на «вы», простым русским языком. "
+        f"{voice}. {length} на комментарий. "
+        "Термины: roadMarkings — разметка (не «марки»), rightOfWay — очередность проезда, "
+        "trafficSigns — соблюдение требований знаков, collisions — столкновения (не «коллизии»). "
+        "Например: «Запрещённую разметку не пересекали», «Вы проехали раньше встречного — сначала пропустите его». "
+        "Только факты ниже: не выдумывай события, не ставь оценку и не говори «сдали».\n"
+        'Верни JSON: {"successful":[{"category":"...","comment":"..."}],'
+        '"errors":[{"violationId":"...","comment":"..."}]}. '
+        "successful: по записи на проверенную категорию без нарушений. "
+        "errors: по записи на каждое нарушение, violationId строго из его id.\n"
+        f"Факты: {json.dumps(facts, ensure_ascii=False, separators=(',', ':'))}"
     )
 
 
@@ -295,7 +294,8 @@ def _build_repair_prompt(
     ]
     return (
         "Исправь JSON обратной связи. Верни только валидный JSON без markdown.\n"
-        "Сохрани смысл комментариев, но используй только точные идентификаторы из списка.\n"
+        "Пиши коротко, естественно, на «вы». Используй слово «разметка», не «марки».\n"
+        "Сохрани факты и используй только точные идентификаторы из списка.\n"
         f"Точные violationId: {json.dumps(expected_ids, ensure_ascii=False)}\n"
         f"Точные категории successful, все обязательны ровно по одному разу: "
         f"{json.dumps(expected_successes, ensure_ascii=False)}\n"
