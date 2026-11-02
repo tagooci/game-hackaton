@@ -1,13 +1,19 @@
 import type { VehicleControls } from '../network/protocol';
 
-export function createVehicleControls(canvas: HTMLCanvasElement, getSpeed: () => number = () => 0) {
+export function createVehicleControls(canvas: HTMLCanvasElement) {
   const keys = new Set<string>();
   const touchKeys = new Set<string>();
   let respawn = false;
   const movementKeys = new Set(['KeyW', 'KeyA', 'KeyS', 'KeyD', 'Space']);
   const events = new AbortController();
   const options = { signal: events.signal };
-  const clear = () => { keys.clear(); touchKeys.clear(); respawn = false; };
+  const clear = () => {
+    keys.clear();
+    touchKeys.clear();
+    respawn = false;
+    canvas.parentElement?.querySelectorAll('.touch-controls .is-pressed')
+      .forEach(button => button.classList.remove('is-pressed'));
+  };
 
   const hasGameFocus = () => document.activeElement === canvas
     || Boolean(document.activeElement?.closest('.scenario-assistant'));
@@ -37,8 +43,8 @@ export function createVehicleControls(canvas: HTMLCanvasElement, getSpeed: () =>
       <button type="button" data-touch-key="ArrowRight" aria-label="Повернуть направо">→</button>
     </div>
     <div class="touch-pedals" aria-label="Педали">
-      <button type="button" data-touch-key="Space" class="touch-brake" aria-label="Тормоз и задний ход">Тормоз</button>
-      <button type="button" data-touch-key="KeyW" class="touch-throttle" aria-label="Газ">Газ</button>
+      <button type="button" data-touch-key="KeyS" class="touch-brake" aria-label="Тормоз и задний ход"><span class="touch-pedal-face"><span>Тормоз</span></span></button>
+      <button type="button" data-touch-key="KeyW" class="touch-throttle" aria-label="Газ"><span class="touch-pedal-face"><span>Газ</span></span></button>
     </div>
   `;
   canvas.parentElement?.append(touchControls);
@@ -65,14 +71,11 @@ export function createVehicleControls(canvas: HTMLCanvasElement, getSpeed: () =>
     if ((!hasGameFocus() && touchKeys.size === 0) || !document.hasFocus() || document.hidden) {
       return { throttle: 0, steering: 0, brake: 1 };
     }
-    const touchBrake = touchKeys.has('Space');
-    const reversingFromStop = touchBrake && Math.abs(getSpeed()) < 0.05;
     return {
       throttle: Number(keys.has('KeyW') || touchKeys.has('KeyW'))
-        - Number(keys.has('KeyS'))
-        - Number(reversingFromStop),
+        - Number(keys.has('KeyS') || touchKeys.has('KeyS')),
       steering: Number(keys.has('KeyD') || touchKeys.has('ArrowRight')) - Number(keys.has('KeyA') || touchKeys.has('ArrowLeft')),
-      brake: Number(keys.has('Space') && !reversingFromStop),
+      brake: Number(keys.has('Space')),
     };
   }
 

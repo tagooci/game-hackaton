@@ -57,12 +57,12 @@ JavaScript и служебные сетевые сообщения не явля
 Для обновления карты остановите Python-сервер, сохраните Blender-файл и выполните:
 
 ```sh
-cd /Users/tagooc/game-hackaton
+cd /path/to/game-hackaton
 .venv/bin/python -m pip install -r client/scripts/requirements-assets.txt
 .venv/bin/python client/scripts/import-blender-map.py \
   --scene blender/compact-reference.blend \
   --environment-scene blender/compact-city.blend \
-  --assets "/Users/tagooc/Downloads/kenney_city-kit-roads/Models/GLB format" \
+  --assets "/path/to/downloads/kenney_city-kit-roads/Models/GLB format" \
   --blender /Applications/Blender.app/Contents/MacOS/Blender
 npm --prefix client run build
 .venv/bin/python -m uvicorn server.app:app --host 0.0.0.0 --port 8000

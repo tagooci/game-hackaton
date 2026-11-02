@@ -2,11 +2,11 @@
 
 from dataclasses import dataclass
 import threading
+import os
 
 
 AGENT_STYLES = frozenset({"normal", "coach", "aggressive"})
 WEATHERS = frozenset({"clear", "rain", "fog", "dark"})
-ADMIN_USERNAME = "ochov@gmail.com"
 
 
 @dataclass
@@ -43,5 +43,6 @@ class ServerSettingsStore:
             self._settings = ServerSettings(self._settings.agent_style, weather)
         return self.get()
 
-    def is_admin(self, username: str) -> bool:
-        return username == ADMIN_USERNAME
+    def is_admin(self, player_id: str) -> bool:
+        admin_id = os.getenv("GAME_ADMIN_PLAYER_ID", "").strip()
+        return bool(admin_id) and player_id == admin_id

@@ -51,12 +51,64 @@ button:disabled { cursor: wait; opacity: 0.6; }
 .touch-arrows, .touch-pedals { display: flex; align-items: end; gap: 12px; pointer-events: auto; }
 .touch-controls button { width: clamp(58px, 12vw, 82px); height: clamp(58px, 12vw, 82px); padding: 0; border: 2px solid #fff; border-radius: 18px; background: #17212eb8; color: #fff; box-shadow: 0 2px 8px #0008; font: 700 clamp(24px, 5vw, 36px)/1 system-ui, sans-serif; touch-action: none; -webkit-user-select: none; }
 .touch-controls button.is-pressed { background: #e9422bcc; transform: scale(.94); }
-.touch-pedals button { width: clamp(72px, 15vw, 106px); height: clamp(82px, 18vw, 122px); border-radius: 22px; font-size: clamp(13px, 2.5vw, 18px); }
-.touch-pedals .touch-brake { background: #b94135cc; }
-.touch-pedals .touch-throttle { background: #4b9e45cc; }
+/* Keep the touch target fixed while only the pedal face moves. */
+.touch-pedals button {
+  position: relative;
+  width: clamp(86px, 15vw, 118px);
+  height: clamp(104px, 18vw, 140px);
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  perspective: 420px;
+  -webkit-touch-callout: none;
+}
+.touch-pedals button::before {
+  content: '';
+  position: absolute;
+  left: 42%;
+  right: 42%;
+  top: 55%;
+  bottom: 0;
+  border: 2px solid #303032;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #555, #b5b6b3 45%, #656662);
+}
+.touch-pedal-face {
+  position: absolute;
+  inset: 0 0 auto;
+  aspect-ratio: 1;
+  background: url('/assets/ui/metal-pedal.png') center / contain no-repeat;
+  transform-origin: 50% 90%;
+  transform: rotateX(-8deg);
+  transition: transform 110ms ease-out, filter 110ms ease-out;
+  filter: drop-shadow(0 6px 3px #0007);
+  pointer-events: none;
+}
+.touch-pedal-face span {
+  position: absolute;
+  top: 68%;
+  left: 7%;
+  right: 7%;
+  color: #202020;
+  font: 900 clamp(13px, 2.3vw, 19px)/1 system-ui, sans-serif;
+  text-align: center;
+  text-transform: uppercase;
+  text-shadow: 0 1px 0 #fff7;
+}
+.touch-pedals button.is-pressed {
+  background: transparent;
+  transform: none;
+}
+.touch-pedals button.is-pressed .touch-pedal-face {
+  transform: translateY(9px) rotateX(32deg) scale(.96);
+  filter: brightness(.85) drop-shadow(0 2px 1px #0008);
+}
+.touch-pedals button:focus-visible { outline: 3px solid #fff; outline-offset: 4px; }
+@media (prefers-reduced-motion: reduce) { .touch-pedal-face { transition: none; } }
 @media (min-width: 851px) and (pointer: fine) { .touch-controls { display: none; } }
 @media (max-width: 480px) { .touch-controls { gap: 8px; } .touch-arrows, .touch-pedals { gap: 8px; } .touch-controls button { border-radius: 14px; } }
-@media (hover: none) and (max-width: 1200px) {
+@media (hover: none) and (pointer: coarse) {
   .touch-controls {
     inset: 0;
     display: block;
@@ -76,7 +128,7 @@ button:disabled { cursor: wait; opacity: 0.6; }
   .touch-pedals {
     position: absolute;
     right: max(18px, env(safe-area-inset-right));
-    bottom: max(18px, env(safe-area-inset-bottom));
+    bottom: calc(max(18px, env(safe-area-inset-bottom)) + 64px);
   }
 }
 .scenario-queue { font: 600 15px/1.4 system-ui, sans-serif; white-space: nowrap; }

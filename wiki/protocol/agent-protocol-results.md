@@ -128,7 +128,7 @@ STOP не требует секундной остановки: достаточ
 Запуск сервера с установленной локальной моделью:
 
 ```bash
-cd /Users/tagooc/game-hackaton
+cd /path/to/game-hackaton
 OLLAMA_MODEL=qwen3.5:4b .venv/bin/python -m uvicorn server.app:app --host 0.0.0.0 --port 8000
 ```
 

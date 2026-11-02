@@ -1,5 +1,0 @@
-Dodecagon Traffic Signs by Keet. CC0 1.0 Universal.
-https://dodecagon.nl/dodecagontrafficsigns
-https://creativecommons.org/publicdomain/zero/1.0/
-Original download: POST https://dodecagon.nl/download fileid=48
-Unmodified source OBJ/MTL/PNG files retained here. Runtime export scales to 2.8m and uses matte materials.

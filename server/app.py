@@ -331,13 +331,13 @@ async def get_profile(game_session: str | None = Cookie(default=None)):
     return {
         **profile,
         "vehicles": vehicle_profile(profile["level"]),
-        "isAdmin": server_settings.is_admin(account["username"]),
+        "isAdmin": server_settings.is_admin(account["playerId"]),
     }
 
 
 async def _admin_account(game_session: str | None) -> dict:
     account = await _authenticated_account(game_session)
-    if not server_settings.is_admin(account["username"]):
+    if not server_settings.is_admin(account["playerId"]):
         raise HTTPException(status_code=403, detail="administrator access required")
     return account
 

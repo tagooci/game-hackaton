@@ -96,7 +96,7 @@ function startGame(account: Account, profile: Profile): () => void {
   scene.activeCamera = camera;
   canvas.tabIndex = 0;
   let targetPose: VehiclePose = vehicle.getPose();
-  const controls = createVehicleControls(canvas, () => targetPose.speed ?? 0);
+  const controls = createVehicleControls(canvas);
   const speedometer = createSpeedometer(host);
   const performanceLabel = document.createElement('div');
   performanceLabel.className = 'ping-indicator';

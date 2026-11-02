@@ -48,8 +48,7 @@
       "license": "CC0",
       "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
       "files": [
-        "client/public/content/assets/railway/railroad-straight.glb",
-        "client/public/content/assets/railway/License.txt"
+        "client/public/content/assets/railway/railroad-straight.glb"
       ]
     },
     {

@@ -56,3 +56,20 @@ htmlcov/
 *.njsproj
 *.sln
 *.sw?
+
+# Runtime state, exports and private credentials (examples stay shareable)
+/db/*
+!/db/.gitkeep
+*.db
+*.db-*
+*.sqlite*
+*.sql
+*.dump
+*.backup
+*.bak
+*.pem
+*.key
+*.p12
+*.pfx
+/backups/
+/dumps/
